@@ -552,8 +552,11 @@ export function* updateStoreCurrencyAndMeasurementUnits( countryCode: string ) {
 	yield setIsRequesting( 'updateStoreCurrencyAndMeasurementUnits', true );
 
 	try {
-		const results = yield apiFetch( {
-			path: 'wc-admin/onboarding/profile/update-store-currency-and-measurement-units',
+		const results: {
+			results: null;
+			status: string;
+		} = yield apiFetch( {
+			path: `${ WC_ADMIN_NAMESPACE }/onboarding/profile/update-store-currency-and-measurement-units`,
 			method: 'POST',
 			data: {
 				country_code: countryCode,
