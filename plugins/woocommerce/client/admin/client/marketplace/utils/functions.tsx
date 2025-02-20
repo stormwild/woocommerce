@@ -33,8 +33,11 @@ import { noticeStore } from '../contexts/notice-store';
 interface ProductGroup {
 	id: string;
 	title: string;
+	description: string;
 	items: Product[];
 	url: string;
+	url_text: string | null;
+	url_type: 'wc-admin' | 'wp-admin' | 'external' | undefined; // types defined by Link component
 	itemType: ProductType;
 }
 
