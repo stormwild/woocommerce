@@ -121,3 +121,21 @@ setup( 'determine if multisite', async ( { api } ) => {
 		console.log( `IS_MULTISITE: ${ process.env.IS_MULTISITE }` );
 	}
 } );
+
+setup( 'general settings', async ( { api } ) => {
+	await api.put( 'settings/general/woocommerce_allowed_countries', {
+		value: 'all',
+	} );
+	await api.put( 'settings/general/woocommerce_currency', {
+		value: 'USD',
+	} );
+	await api.put( 'settings/general/woocommerce_price_thousand_sep', {
+		value: ',',
+	} );
+	await api.put( 'settings/general/woocommerce_price_decimal_sep', {
+		value: '.',
+	} );
+	await api.put( 'settings/general/woocommerce_price_num_decimals', {
+		value: '2',
+	} );
+} );
