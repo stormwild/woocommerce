@@ -5,11 +5,16 @@ import { Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { getAdminLink } from '@woocommerce/settings';
 import {
+	PAYMENT_SETTINGS_STORE_NAME,
+	type PaymentSettingsSelectors,
+} from '@woocommerce/data';
+import {
 	WCPayBanner,
 	WCPayBannerBody,
 	WCPayBannerFooter,
 } from '@woocommerce/onboarding';
 import { recordEvent } from '@woocommerce/tracks';
+import { useSelect } from '@wordpress/data';
 
 /**
  * Internal dependencies
@@ -27,7 +32,13 @@ const WCPaySettingBanner = () => {
 		'admin.php?wcpay-connect=1&_wpnonce=' +
 			getAdminSetting( 'wcpay_welcome_page_connect_nonce' )
 	);
-	const isWooPayEligible = getAdminSetting( 'isWooPayEligible' );
+
+	const isWooPayEligible = useSelect( ( select ) => {
+		const store = select(
+			PAYMENT_SETTINGS_STORE_NAME
+		) as PaymentSettingsSelectors;
+		return store.getIsWooPayEligible();
+	}, [] );
 
 	return (
 		<WCPayBanner>

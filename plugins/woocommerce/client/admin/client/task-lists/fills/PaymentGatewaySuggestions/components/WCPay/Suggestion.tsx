@@ -9,18 +9,36 @@ import {
 	WCPayBenefits,
 	WCPayBannerImageCut,
 } from '@woocommerce/onboarding';
-import { useDispatch } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
+import React from 'react';
+import {
+	PAYMENT_SETTINGS_STORE_NAME,
+	type PaymentSettingsSelectors,
+} from '@woocommerce/data';
 
 /**
  * Internal dependencies
  */
-
 import { Action } from '../Action';
 import { connectWcpay } from './utils';
 import './suggestion.scss';
-import { getAdminSetting } from '~/utils/admin-settings';
 
-export const Suggestion = ( { paymentGateway, onSetupCallback = null } ) => {
+interface PaymentGateway {
+	id: string;
+	needsSetup: boolean;
+	installed: boolean;
+	enabled: boolean;
+}
+
+interface SuggestionProps {
+	paymentGateway: PaymentGateway;
+	onSetupCallback?: ( () => void ) | null;
+}
+
+export const Suggestion: React.FC< SuggestionProps > = ( {
+	paymentGateway,
+	onSetupCallback = null,
+} ) => {
 	const {
 		id,
 		needsSetup,
@@ -28,7 +46,13 @@ export const Suggestion = ( { paymentGateway, onSetupCallback = null } ) => {
 		enabled: isEnabled,
 		installed: isInstalled,
 	} = paymentGateway;
-	const isWooPayEligible = getAdminSetting( 'isWooPayEligible' );
+
+	const isWooPayEligible = useSelect( ( select ) => {
+		const store = select(
+			PAYMENT_SETTINGS_STORE_NAME
+		) as PaymentSettingsSelectors;
+		return store.getIsWooPayEligible();
+	}, [] );
 
 	const { createNotice } = useDispatch( 'core/notices' );
 	// When WCPay is installed and onSetupCallback is null

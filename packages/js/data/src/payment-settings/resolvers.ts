@@ -10,6 +10,7 @@ import {
 	getPaymentProvidersSuccess,
 	getPaymentProvidersError,
 	getPaymentProvidersRequest,
+	setIsWooPayEligible,
 } from './actions';
 import { PaymentProvidersResponse } from './types';
 import { WC_ADMIN_NAMESPACE } from '../constants';
@@ -38,4 +39,17 @@ export function* getPaymentProviders( country?: string ) {
 
 export function* getOfflinePaymentGateways( country?: string ) {
 	yield getPaymentProviders( country );
+}
+
+export function* getWooPayEligibility() {
+	const response: WooPayEligibilityResponse = yield apiFetch( {
+		path: `${ WC_ADMIN_NAMESPACE }/settings/payments/woopay-eligibility`,
+	} );
+
+	return response;
+}
+
+export function* getIsWooPayEligible() {
+	const response = yield getWooPayEligibility();
+	yield setIsWooPayEligible( response.is_eligible );
 }

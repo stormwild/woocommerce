@@ -116,10 +116,18 @@ export function updateProviderOrdering( orderMap: OrderMap ): {
 	};
 }
 
+export function setIsWooPayEligible( isEligible: boolean ) {
+	return {
+		type: ACTION_TYPES.SET_IS_ELIGIBLE,
+		isEligible,
+	};
+}
+
 export type Actions =
 	| ReturnType< typeof getPaymentProvidersRequest >
 	| ReturnType< typeof getPaymentProvidersSuccess >
 	| ReturnType< typeof getPaymentProvidersError >
 	| ReturnType< typeof togglePaymentGateway >
 	| ReturnType< typeof hidePaymentExtensionSuggestion >
-	| ReturnType< typeof updateProviderOrdering >;
+	| ReturnType< typeof updateProviderOrdering >
+	| ReturnType< typeof setIsWooPayEligible >;
