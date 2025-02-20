@@ -376,6 +376,15 @@ class FeaturesController {
 					'is_legacy'          => true,
 					'is_experimental'    => false,
 				),
+				'block_email_editor'     => array(
+					'name'               => __( 'Block Email Editor (alpha)', 'woocommerce' ),
+					'description'        => __(
+						'Enable the block-based email editor for transactional emails',
+						'woocommerce'
+					),
+					'enabled_by_default' => false,
+					'disable_ui'         => true,
+				),
 			);
 
 			if ( ! $tracking_enabled ) {
