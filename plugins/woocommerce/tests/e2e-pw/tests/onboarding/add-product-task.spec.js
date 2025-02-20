@@ -25,7 +25,6 @@ const show_task_list = async ( wcAdminApi, task_list_name ) => {
 	return isHidden === false;
 };
 
-// TODO (E2E Audit): This test should be combined with other WC Homepage setup tests like the tests in activate-and-setup/stats-overview.spec.js into a single spec.
 test.describe( 'Add Product Task', () => {
 	test.use( { storageState: ADMIN_STATE_PATH } );
 
