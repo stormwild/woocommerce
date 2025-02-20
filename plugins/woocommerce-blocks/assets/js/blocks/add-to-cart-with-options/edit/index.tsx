@@ -70,7 +70,7 @@ const AddToCartOptionsEdit = ( props: BlockEditProps< Attributes > ) => {
 				/>
 			) : (
 				<div { ...blockProps }>
-					<div className="wc-block-editor-add-to-cart-with-options__skeleton-wrapper">
+					<div className="wp-block-woocommerce-add-to-cart-with-options__skeleton-wrapper">
 						<Skeleton numberOfLines={ 3 } />
 					</div>
 					<Disabled>

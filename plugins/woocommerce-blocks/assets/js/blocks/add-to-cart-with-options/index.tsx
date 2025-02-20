@@ -30,7 +30,14 @@ if ( shouldBlockifiedAddToCartWithOptionsBeRegistered ) {
 		{
 			...( metadata as BlockConfiguration< Attributes > ),
 			icon: {
-				src: button,
+				src: ( { size }: { size?: number } ) => (
+					<span
+						className="wp-block-woocommerce-add-to-cart-with-options__block-icon"
+						style={ { height: size, width: size } }
+					>
+						{ button }
+					</span>
+				),
 			},
 			edit: AddToCartOptionsEdit,
 			save: () => null,
