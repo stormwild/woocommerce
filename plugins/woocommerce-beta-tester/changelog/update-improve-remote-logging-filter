@@ -1,4 +1,0 @@
-Significance: patch
-Type: update
-
-Change remote logging event level from critical to info
