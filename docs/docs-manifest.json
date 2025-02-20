@@ -212,7 +212,7 @@
               "menu_title": "Totals Footer Item",
               "tags": "reference",
               "edit_url": "https://github.com/woocommerce/woocommerce/edit/trunk/docs/cart-and-checkout-blocks/available-filters/totals-footer-item.md",
-              "hash": "71c7e2fcfa20530c6c0251912dcd1cbbd87191d795d7b3bdb53420f2caa89ddf",
+              "hash": "548edd70e3a3c4ee7b35d56191bd8cdbb42ca4ec2f68ad21b19e49300c564433",
               "url": "https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/docs/cart-and-checkout-blocks/available-filters/totals-footer-item.md",
               "id": "90a9b8df374082f1713866a58b810303adb4d3da",
               "links": {
@@ -224,7 +224,7 @@
               "menu_title": "Order Summary Items",
               "tags": "reference",
               "edit_url": "https://github.com/woocommerce/woocommerce/edit/trunk/docs/cart-and-checkout-blocks/available-filters/order-summary-items.md",
-              "hash": "d736a1951e885445e2d4e1b35dae62071e879c5df3d3eeabe27e2eea04eddfc9",
+              "hash": "21056453b5e6a2e25a8c0545e7f3014f6483936203692863bcb3d06a1963c419",
               "url": "https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/docs/cart-and-checkout-blocks/available-filters/order-summary-items.md",
               "id": "78eb3b135f82a3624a49979e3e93334295abd060",
               "links": {
@@ -236,7 +236,7 @@
               "menu_title": "Coupons",
               "tags": "reference",
               "edit_url": "https://github.com/woocommerce/woocommerce/edit/trunk/docs/cart-and-checkout-blocks/available-filters/coupons.md",
-              "hash": "1dbb6637376fb86a633270edb2aa6665b8216a9f673dd00f79edff5d43c3485f",
+              "hash": "c860ad4efe70bf7ef4447c82d05af4099d1f1483e411cb313b788397bf083d37",
               "url": "https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/docs/cart-and-checkout-blocks/available-filters/coupons.md",
               "id": "5a022617f3d0267c9b771374f28970e779a6e99d",
               "links": {
@@ -248,7 +248,7 @@
               "menu_title": "Checkout and Place Order Button",
               "tags": "reference",
               "edit_url": "https://github.com/woocommerce/woocommerce/edit/trunk/docs/cart-and-checkout-blocks/available-filters/checkout-and-place-order-button.md",
-              "hash": "a5a8419038d538339422690c5609f13a9f8837f359d5d97af479f4c960b8011d",
+              "hash": "485ba5799e3fe2236e18ff4dc310ee9126a2c0ad06ae7cea0aec9ab0cef5d9d3",
               "url": "https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/docs/cart-and-checkout-blocks/available-filters/checkout-and-place-order-button.md",
               "id": "c97ca710c2e8107bf90915e038a34c8a1016c63a",
               "links": {
@@ -1954,5 +1954,5 @@
       "categories": []
     }
   ],
-  "hash": "fe9444e7bad4c3d1311becc4382f47065c79a7ecb526356ea3c79e5d13df149b"
+  "hash": "b3d613ab1d3bbc6eea01b17d9fb239892ce048f268cb8656bf805dfe700ae04b"
 }
