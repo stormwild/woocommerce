@@ -65,7 +65,7 @@ class AddToCartWithOptionsPage {
 		// Add to Cart is a dynamic block, so we need to wait for it to be
 		// ready. If we don't do that, it might clear the paragraph we're
 		// inserting below (depending on the test execution speed).
-		await parentBlock.getByText( 'Add to Cart' ).waitFor();
+		await parentBlock.getByText( 'Add to cart', { exact: true } ).waitFor();
 
 		await this.editor.insertBlock(
 			{
