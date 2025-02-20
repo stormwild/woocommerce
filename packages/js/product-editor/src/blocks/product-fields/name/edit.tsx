@@ -164,7 +164,7 @@ export function NameBlockEdit( {
 		const tooltipText = featured ? unmarkedText : markedText;
 
 		return (
-			<Tooltip text={ tooltipText } position="top center">
+			<Tooltip text={ tooltipText } placement="top">
 				{ featured ? (
 					<Button
 						icon={ starFilled }

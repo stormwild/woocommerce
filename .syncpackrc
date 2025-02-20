@@ -63,6 +63,7 @@
 				"@wordpress/postcss-themes",
 				"@wordpress/prettier-config",
 				"@wordpress/primitives",
+				"@wordpress/private-apis",
 				"@wordpress/scripts",
 				"@wordpress/server-side-render",
 				"@wordpress/style-engine",

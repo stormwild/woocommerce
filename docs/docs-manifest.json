@@ -153,10 +153,11 @@
           "menu_title": "Frequently Asked Questions",
           "tags": "reference",
           "edit_url": "https://github.com/woocommerce/woocommerce/edit/trunk/docs/cart-and-checkout-blocks/faq.md",
-          "hash": "3289920c5224a5c392617620b839df1454431257abf2162744b1fa9040314378",
+          "hash": "31bfbf216252c709466e293c6b2159858db994e9cdb530d8f13ffc327ab07ea7",
           "url": "https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/docs/cart-and-checkout-blocks/faq.md",
           "id": "041787aca25af363a5eff3e710bd669cc8aebc4b",
           "links": {
+            "./slot-fills.md": "e388101586765dd9aca752d66d667d74951a1504",
             "./removing-checkout-fields.md": "030247059754260bce6285cfb352a4a733f1f677"
           }
         },
@@ -1249,7 +1250,7 @@
             {
               "post_title": "Extending the product form with custom fields",
               "edit_url": "https://github.com/woocommerce/woocommerce/edit/trunk/docs/product-editor-development/how-to-guides/custom-field-tutorial.md",
-              "hash": "dfa00ed71af6eda1f539684657d5c880850ececea4c07bd11e89a605fab77ec7",
+              "hash": "75a6f3c40384262c44c3c4ae71fdf7f26e6c7c5561c5b0f88661e1f6d63fc2a2",
               "url": "https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/docs/product-editor-development/how-to-guides/custom-field-tutorial.md",
               "id": "fed80efbb225df9054fadd6e1fc45c2cd03e7f99"
             }
@@ -1953,5 +1954,5 @@
       "categories": []
     }
   ],
-  "hash": "c65911eef0536e1d618ee58176ebfa0074433a61f7b8b7c8b043b639610f263b"
+  "hash": "7a688f3ce563ed941994959844bdc4f90e8e7efb2ecefd4d121f264d947fcab0"
 }
