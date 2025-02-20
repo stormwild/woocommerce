@@ -831,6 +831,9 @@ final class WooCommerce {
 	 * Init WooCommerce when WordPress Initialises.
 	 */
 	public function init() {
+		// See the comment inside FeaturesController::__construct.
+		wc_get_container()->get( FeaturesController::class )->register_additional_features();
+
 		/**
 		 * Action triggered before WooCommerce initialization begins.
 		 */
