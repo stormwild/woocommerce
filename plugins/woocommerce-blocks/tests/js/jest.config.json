@@ -35,15 +35,13 @@
 		"@woocommerce/interactivity": "assets/js/interactivity",
 		"^react$": "<rootDir>/node_modules/react",
 		"^react-dom$": "<rootDir>/node_modules/react-dom",
-		"^(.+)/build-module/(.*)$": "$1/build/$2",
-		"^client-zip$": "<rootDir>/tests/js/mocks/client-zip.js"
+		"^(.+)/build-module/(.*)$": "$1/build/$2"
 	},
+	"preset": "@wordpress/jest-preset-default",
 	"setupFiles": [
-		"@wordpress/jest-preset-default/scripts/setup-globals.js",
-		"<rootDir>/tests/js/setup-globals.js",
-		"<rootDir>/tests/js/setup-fetch.js"
+		"<rootDir>/tests/js/config/global-mocks.js"
 	],
-	"setupFilesAfterEnv": [ "<rootDir>/tests/js/setup-after-env.ts" ],
+	"setupFilesAfterEnv": [ "<rootDir>/tests/js/config/testing-library.js" ],
 	"testPathIgnorePatterns": [
 		"<rootDir>/bin/",
 		"<rootDir>/build/",
@@ -52,11 +50,9 @@
 		"<rootDir>/vendor/",
 		"<rootDir>/tests/"
 	],
-	"resolver": "<rootDir>/tests/js/jest-resolver.js",
-	"testEnvironment": "jsdom",
-	"preset": "@wordpress/jest-preset-default",
+	"resolver": "<rootDir>/tests/js/scripts/resolver.js",
 	"transform": {
-		"^.+\\.(js|ts|tsx)$": "<rootDir>/tests/js/jestPreprocess.js"
+		"^.+\\.(js|ts|tsx)$": "<rootDir>/tests/js/scripts/babel-transformer.js"
 	},
 	"verbose": true,
 	"cacheDirectory": "<rootDir>/../../node_modules/.cache/jest"

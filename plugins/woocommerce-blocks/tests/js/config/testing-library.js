@@ -1,12 +1,14 @@
 /**
  * External dependencies
  */
-import '@testing-library/jest-dom';
-import '@wordpress/jest-console';
+require( '@testing-library/jest-dom' );
+require( '@wordpress/jest-console' );
 
 /**
  * Ignore messages that match the pattern `Store ".*" is already registered.`
- * It's expected to have duplicate registration in the test environment as there are multiple instances of the same store such as core-data, core/block-editor, etc.
+ * It's expected to have duplicate registration in the test environment as there
+ * are multiple instances of the same store such as core-data,
+ * core/block-editor, etc.
  */
 const consoleErrorSpy = jest
 	.spyOn( console, 'error' )

@@ -5,10 +5,17 @@ global.crypto = webcrypto;
 global.TextEncoder = require( 'util' ).TextEncoder;
 global.TextDecoder = require( 'util' ).TextDecoder;
 
-// Set up `wp.*` aliases.  Doing this because any tests importing wp stuff will likely run into this.
+/**
+ * Set up `wp.*` aliases.  Doing this because any tests importing wp stuff will
+ * likely run into this.
+ */
 global.wp = {};
+
 require( '@wordpress/data' );
-// wcSettings is required by @woocommerce/* packages
+
+/**
+ * wcSettings is required by @woocommerce/* packages.
+ */
 global.wcSettings = {
 	adminUrl: 'https://vagrant.local/wp/wp-admin/',
 	addressFormats: {
@@ -271,6 +278,10 @@ global.IntersectionObserver = function () {
 	};
 };
 
+global.ResizeObserver = require( 'resize-observer-polyfill' );
+
+global.__webpack_public_path__ = '';
+
 Object.defineProperty( window, 'matchMedia', {
 	writable: true,
 	value: jest.fn().mockImplementation( ( query ) => ( {
@@ -285,4 +296,16 @@ Object.defineProperty( window, 'matchMedia', {
 	} ) ),
 } );
 
-global.__webpack_public_path__ = '';
+/**
+ * client-zip is meant to be used in a browser and is therefore released as an
+ * ES6 module only, in order to use it in node environment, we need to mock it.
+ * See: https://github.com/Touffy/client-zip/issues/28
+ */
+jest.mock( 'client-zip', () => ( {
+	downloadZip: jest.fn(),
+} ) );
+
+/*
+ * Enables `window.fetch()` in Jest tests.
+ */
+require( 'jest-fetch-mock' ).enableMocks();
