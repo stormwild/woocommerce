@@ -47,7 +47,6 @@ const Option = ( {
 				onChange={ onChangeValue }
 				checked={ checked }
 				aria-describedby={ clsx( {
-					[ `${ name }-${ value }__label` ]: label,
 					[ `${ name }-${ value }__secondary-label` ]: secondaryLabel,
 					[ `${ name }-${ value }__description` ]: description,
 					[ `${ name }-${ value }__secondary-description` ]:
