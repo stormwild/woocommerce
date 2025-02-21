@@ -1,5 +1,5 @@
 <?php
-declare( strict_types = 1);
+declare(strict_types=1);
 namespace Automattic\WooCommerce\StoreApi\Routes\V1;
 
 use Automattic\WooCommerce\StoreApi\Payments\PaymentResult;
@@ -112,6 +112,28 @@ class Checkout extends AbstractCartRoute {
 					$this->schema->get_endpoint_args_for_item_schema( \WP_REST_Server::CREATABLE )
 				),
 			],
+			[
+				'methods'             => \WP_REST_Server::EDITABLE,
+				'callback'            => [ $this, 'get_response' ],
+				'permission_callback' => '__return_true',
+				'args'                => array_merge(
+					[
+						'additional_fields' => [
+							'description' => __( 'Additional fields related to the order.', 'woocommerce' ),
+							'type'        => 'object',
+						],
+						'payment_method'    => [
+							'description' => __( 'Selected payment method for the order.', 'woocommerce' ),
+							'type'        => 'string',
+						],
+						'order_notes'       => [
+							'description' => __( 'Order notes.', 'woocommerce' ),
+							'type'        => 'string',
+						],
+					],
+					$this->schema->get_endpoint_args_for_item_schema( \WP_REST_Server::EDITABLE )
+				),
+			],
 			'schema'      => [ $this->schema, 'get_public_item_schema' ],
 			'allow_batch' => [ 'v1' => true ],
 		];
@@ -166,7 +188,6 @@ class Checkout extends AbstractCartRoute {
 	 */
 	protected function get_route_response( \WP_REST_Request $request ) {
 		$this->create_or_update_draft_order( $request );
-
 		return $this->prepare_item_for_response(
 			(object) [
 				'order'          => $this->order,
@@ -335,6 +356,54 @@ class Checkout extends AbstractCartRoute {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Get route response for PUT requests.
+	 *
+	 * @param \WP_REST_Request $request Request object.
+	 * @throws RouteException On error.
+	 * @return \WP_REST_Response
+	 */
+	protected function get_route_update_response( \WP_REST_Request $request ) {
+		/**
+		 * Create (or update) Draft Order and process request data.
+		 */
+		$this->create_or_update_draft_order( $request );
+
+		/**
+		 * Persist additional fields, order notes and payment method for order.
+		 */
+		$this->persist_additional_fields_for_order( $request );
+		$this->persist_order_notes_for_order( $request );
+		$this->persist_payment_method_for_order( $request );
+
+		if ( $request->get_param( '__experimental_calc_totals' ) ) {
+			/**
+			 * Before triggering validation, ensure totals are current and in turn, things such as shipping costs are present.
+			 * This is so plugins that validate other cart data (e.g. conditional shipping and payments) can access this data.
+			 */
+			$this->cart_controller->calculate_totals();
+			/**
+			 * Validate that the cart is not empty.
+			 */
+			$this->cart_controller->validate_cart_not_empty();
+
+			/**
+			 * Validate items and fix violations before the order is processed.
+			 */
+			$this->cart_controller->validate_cart();
+		}
+
+		$this->order->save();
+
+		return $this->prepare_item_for_response(
+			(object) [
+				'order' => wc_get_order( $this->order ),
+				'cart'  => $this->cart_controller->get_cart_instance(),
+			],
+			$request
+		);
 	}
 
 	/**
@@ -782,6 +851,30 @@ class Checkout extends AbstractCartRoute {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Persists order notes from the request to the order.
+	 *
+	 * @param \WP_REST_Request $request Request object.
+	 */
+	private function persist_order_notes_for_order( \WP_REST_Request $request ) {
+		if ( isset( $request['order_notes'] ) ) {
+			$this->order->set_customer_note( sanitize_text_field( wp_unslash( $request['order_notes'] ) ) );
+		}
+	}
+
+	/**
+	 * Persists the chosen payment method to the order.
+	 *
+	 * @param \WP_REST_Request $request Request object.
+	 */
+	private function persist_payment_method_for_order( \WP_REST_Request $request ) {
+		$available_gateways = WC()->payment_gateways()->get_available_payment_gateways();
+		if ( isset( $request['payment_method'] ) && in_array( $request['payment_method'], array_keys( $available_gateways ), true ) ) {
+			WC()->session->set( 'chosen_payment_method', sanitize_text_field( wp_unslash( $request['payment_method'] ) ) );
+			$this->order->set_payment_method( sanitize_text_field( wp_unslash( $request['payment_method'] ) ) );
+		}
 	}
 
 	/**

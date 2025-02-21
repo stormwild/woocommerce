@@ -2,6 +2,7 @@
  * Internal dependencies
  */
 import { setDefaultPaymentMethod as setDefaultPaymentMethodOriginal } from '../utils/set-default-payment-method';
+import '../../checkout';
 import { store as paymentStore } from '..';
 import { PlainPaymentMethods } from '../../../types';
 

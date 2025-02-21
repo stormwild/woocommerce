@@ -31,7 +31,11 @@ import {
 import type {
 	emitValidateEventType,
 	emitAfterProcessingEventsType,
+	CheckoutPutData,
 } from './types';
+import { apiFetchWithHeaders } from '../shared-controls';
+import { CheckoutPutAbortController } from '../utils/clear-put-requests';
+import { CART_STORE_KEY } from '../cart';
 
 interface CheckoutThunkArgs {
 	select?: CurriedSelectorsOf< typeof checkoutStore >;
@@ -140,3 +144,23 @@ export const __internalEmitAfterProcessingEvents: emitAfterProcessingEventsType 
 			}
 		};
 	};
+
+export const updateDraftOrder = ( data: CheckoutPutData ) => {
+	return async ( { registry } ) => {
+		const { receiveCart } = registry.dispatch( CART_STORE_KEY );
+		try {
+			const response = await apiFetchWithHeaders( {
+				path: '/wc/store/v1/checkout?__experimental_calc_totals=true',
+				method: 'PUT',
+				data,
+				signal: CheckoutPutAbortController.signal,
+			} );
+			if ( response?.response?.__experimentalCart ) {
+				receiveCart( response.response.__experimentalCart );
+			}
+			return response;
+		} catch ( error ) {
+			return Promise.reject( error );
+		}
+	};
+};
