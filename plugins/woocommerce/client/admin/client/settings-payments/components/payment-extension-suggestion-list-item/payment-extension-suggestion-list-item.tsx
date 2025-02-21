@@ -1,7 +1,6 @@
 /**
  * External dependencies
  */
-import React from 'react';
 import { decodeEntities } from '@wordpress/html-entities';
 import { Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';

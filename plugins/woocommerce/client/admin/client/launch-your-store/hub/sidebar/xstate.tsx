@@ -11,7 +11,6 @@ import {
 	spawnChild,
 	enqueueActions,
 } from 'xstate5';
-import React from 'react';
 import clsx from 'clsx';
 import { getQuery, navigateTo } from '@woocommerce/navigation';
 import {

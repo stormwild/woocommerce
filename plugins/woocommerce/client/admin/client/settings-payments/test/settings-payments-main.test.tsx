@@ -1,7 +1,6 @@
 /**
  * External dependencies
  */
-import React from 'react';
 import { recordEvent } from '@woocommerce/tracks';
 import { render } from '@testing-library/react';
 

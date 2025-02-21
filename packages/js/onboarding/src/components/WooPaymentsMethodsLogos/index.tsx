@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { createElement } from '@wordpress/element';
 import { Popover } from '@wordpress/components';
 import { useDebounce } from '@wordpress/compose';

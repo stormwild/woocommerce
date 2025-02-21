@@ -10,7 +10,6 @@ import {
 	WCPayBannerImageCut,
 } from '@woocommerce/onboarding';
 import { useDispatch, useSelect } from '@wordpress/data';
-import React from 'react';
 import {
 	PAYMENT_SETTINGS_STORE_NAME,
 	type PaymentSettingsSelectors,
