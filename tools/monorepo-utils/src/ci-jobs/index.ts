@@ -24,6 +24,11 @@ const program = new Command( 'ci-jobs' )
 		''
 	)
 	.option(
+		'-p --pr-number <prNumber>',
+		'Base ref to compare the current ref against for change detection. If not specified, all projects will be considered changed.',
+		''
+	)
+	.option(
 		'-e --event <event>',
 		'Github event for which to run the jobs. If not specified, all events will be considered.',
 		''
@@ -44,14 +49,18 @@ const program = new Command( 'ci-jobs' )
 		}
 
 		let fileChanges;
-		if ( options.baseRef === '' ) {
+		if ( options.baseRef === '' && options.prNumber === '' ) {
 			Logger.warn(
 				'No base ref was specified, forcing all projects to be marked as changed.'
 			);
 			fileChanges = true;
 		} else {
 			Logger.startTask( 'Pulling File Changes', true );
-			fileChanges = getFileChanges( projectGraph, options.baseRef );
+			fileChanges = getFileChanges(
+				projectGraph,
+				options.baseRef,
+				options.prNumber
+			);
 			Logger.endTask( true );
 		}
 

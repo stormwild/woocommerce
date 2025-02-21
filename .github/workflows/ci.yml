@@ -72,26 +72,25 @@ jobs:
     steps:
       - uses: 'actions/checkout@v4'
         name: 'Checkout'
-        with:
-          # We tried to speed checkout up with shallow copies, but supporting PRs from forks forces us to follow this approach.
-          fetch-depth: ${{ ( ( github.base_ref && '0' ) || '1' ) }}
-      # Now let's get to generating the build matrix itself.
+
       - name: Setup - pnpm
         uses: 'pnpm/action-setup@a3252b78c470c02df07e9d59298aecedc3ccdd6d'
+
       - name: Setup - spawn linting and testing jobs
         uses: actions/github-script@v7
         id: 'project-jobs'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         with:
           script: |
             // Intended behaviour of the jobs generation:
             // - PRs: run CI jobs aiming PRs and filter out jobs based on the content changes
             // - Pushes: run CI jobs aiming pushes without filtering based on the content changes
 
-            let baseRef   = '';
-            const baseSha = ${{ toJson( github.event.pull_request.base.sha ) }};
-            if ( baseSha ) {
-              // Use-case: trigger is pull request
-              baseRef = `--base-ref ${ baseSha }`;
+            let prNumberFilter   = '';
+            if ( '${{ github.event_name }}' === 'pull_request' ) {
+              prNumberFilter = `--pr-number ${{ github.event.pull_request.number }}`;
             }
 
             let githubEvent = ${{ toJson( github.event_name ) }};
@@ -119,7 +118,7 @@ jobs:
             }
 
             const child_process = require( 'node:child_process' );
-            child_process.execSync( `pnpm utils ci-jobs ${ baseRef } --event ${ githubEvent }` );
+            child_process.execSync( `pnpm utils ci-jobs ${ prNumberFilter } --event ${ githubEvent }` );
 
   project-lint-jobs:
     name: "Lint - ${{ matrix.projectName }} ${{ ( matrix.optional && ' (optional)' ) || '' }}"
