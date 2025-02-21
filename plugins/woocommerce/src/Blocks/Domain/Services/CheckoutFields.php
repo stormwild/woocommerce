@@ -45,7 +45,7 @@ class CheckoutFields {
 	 *
 	 * @var array
 	 */
-	protected $groups = [ 'billing', 'shipping', 'other' ];
+	private $groups = [ 'billing', 'shipping', 'other' ];
 
 	/**
 	 * Instance of the asset data registry.
@@ -233,18 +233,57 @@ class CheckoutFields {
 	 *
 	 * @param array|string        $field The field array or field key.
 	 * @param DocumentObject|null $document_object The document object.
-	 * @param string|null         $context The context for the document object.
 	 * @return bool
 	 */
-	public function is_required_field( $field, $document_object = null, $context = null ) {
+	public function is_required_field( $field, $document_object = null ) {
 		if ( is_string( $field ) ) {
 			$field = $this->additional_fields[ $field ] ?? [];
 		}
-		if ( $document_object && ! empty( $field['rules']['required'] ) ) {
-			$document_object->set_context( $context );
-			return true === Validation::validate_document_object( $document_object, $field['rules']['required'] );
+
+		if ( empty( $field ) ) {
+			return false;
+		}
+
+		if ( $document_object ) {
+			// Hidden fields cannot be required.
+			if ( $this->is_hidden_field( $field, $document_object ) ) {
+				return false;
+			}
+			if ( ! empty( $field['rules']['required'] ) ) {
+				return true === Validation::validate_document_object( $document_object, $field['rules']['required'] );
+			}
 		}
 		return true === $field['required'];
+	}
+
+	/**
+	 * Returns true if the field is hidden. Takes rules into consideration if a document object is provided.
+	 *
+	 * @param array|string        $field The field array or field key.
+	 * @param DocumentObject|null $document_object The document object.
+	 * @return bool
+	 */
+	public function is_hidden_field( $field, $document_object = null ) {
+		if ( is_string( $field ) ) {
+			$field = $this->additional_fields[ $field ] ?? [];
+		}
+		if ( $document_object && ! empty( $field['rules']['hidden'] ) ) {
+			return true === Validation::validate_document_object( $document_object, $field['rules']['hidden'] );
+		}
+		return false; // `hidden` prop is not supported yet.
+	}
+
+	/**
+	 * Returns true if the field is conditionally required or rendered.
+	 *
+	 * @param array|string $field The field array or field key.
+	 * @return bool
+	 */
+	public function is_conditional_field( $field ) {
+		if ( is_string( $field ) ) {
+			$field = $this->additional_fields[ $field ] ?? [];
+		}
+		return ! empty( $field['rules']['required'] ) || ! empty( $field['rules']['hidden'] );
 	}
 
 	/**
@@ -252,16 +291,50 @@ class CheckoutFields {
 	 *
 	 * @param array               $field The field.
 	 * @param DocumentObject|null $document_object The document object.
-	 * @param string|null         $context The context for the document object.
 	 * @return bool|\WP_Error True if the field is valid, a WP_Error otherwise.
 	 */
-	public function is_valid_field( $field, $document_object = null, $context = null ) {
+	public function is_valid_field( $field, $document_object = null ) {
 		if ( $document_object && ! empty( $field['rules']['validation'] ) ) {
-			$document_object->set_context( $context );
-			$field_schema = Validation::get_field_schema_with_context( $field['id'], $field['rules']['validation'], $context );
+			$field_schema = Validation::get_field_schema_with_context( $field['id'], $field['rules']['validation'], $document_object->get_context() );
 			return Validation::validate_document_object( $document_object, $field_schema );
 		}
 		return true;
+	}
+
+	/**
+	 * Returns the validate callback for a given field.
+	 *
+	 * @param array               $field The field.
+	 * @param DocumentObject|null $document_object The document object.
+	 * @return callable The validate callback.
+	 */
+	public function get_validate_callback( $field, $document_object = null ) {
+		if ( is_string( $field ) ) {
+			$field = $this->additional_fields[ $field ] ?? [];
+		}
+		if ( $document_object && ! empty( $field['rules']['validation'] ) ) {
+			return function ( $field_value, $field ) use ( $document_object ) {
+				$errors = new WP_Error();
+
+				// Only validate if we have a field.
+				if ( ! $field ) {
+					return true;
+				}
+
+				// Evaluate custom validation schema rules on the field.
+				$validate_result = $this->is_valid_field( $field, $document_object );
+
+				if ( is_wp_error( $validate_result ) ) {
+					/* translators: %s: is the field label */
+					$error_message = sprintf( __( 'Please provide a valid %s', 'woocommerce' ), $field['label'] );
+					$error_code    = 'woocommerce_invalid_checkout_field';
+					$errors->add( $error_code, $error_message );
+				}
+
+				return $errors->has_errors() ? $errors : true;
+			};
+		}
+		return $field['validate_callback'] ?? null;
 	}
 
 	/**
@@ -367,8 +440,8 @@ class CheckoutFields {
 			return false;
 		}
 
-		// Hidden fields are not supported right now. They will be registered with hidden => false.
 		if ( ! empty( $options['hidden'] ) && true === $options['hidden'] ) {
+			// Hidden fields are not supported right now. They will be registered with hidden => false.
 			$message = sprintf( 'Registering a field with hidden set to true is not supported. The field "%s" will be registered as visible.', $id );
 			_doing_it_wrong( 'woocommerce_register_additional_checkout_field', esc_html( $message ), '8.6.0' );
 			// Don't return here unlike the other fields because this is not an issue that will prevent registration.
@@ -406,7 +479,7 @@ class CheckoutFields {
 		} elseif ( 'select' === $field_data['type'] ) {
 			$field_data = $this->process_select_field( $field_data, $options );
 		}
-		// If the field has conditional required rules, we need to set the required property to false so it can be evaluated.
+		// If the field has conditional rules, we need to set the required property to false so it can be evaluated.
 		if ( Features::is_enabled( 'experimental-blocks' ) && ! empty( $field_data['rules']['required'] ) ) {
 			$field_data['required'] = false;
 		}
@@ -807,40 +880,24 @@ class CheckoutFields {
 	}
 
 	/**
-	 * Validate an additional field against any custom validation rules.
+	 * Validate an additional field.
 	 *
 	 * @since 8.6.0
 	 *
-	 * @param string $field_key    The key of the field.
-	 * @param mixed  $field_value  The value of the field.
-	 * @param array  $document_object The document object.
-	 * @param string $context The context for the document object.
+	 * @param array $field        The field.
+	 * @param mixed $field_value  The value of the field.
 	 * @return WP_Error
 	 */
-	public function validate_field( $field_key, $field_value, $document_object = null, $context = null ) {
+	public function validate_field( $field, $field_value ) {
 		$errors = new WP_Error();
 
 		try {
-			$field = $this->additional_fields[ $field_key ] ?? null;
-
 			// Only validate if we have a field.
 			if ( ! $field ) {
 				return $errors;
 			}
 
-			// Evaluate custom validation schema rules on the field.
-			$validate_result = $this->is_valid_field( $field, $document_object, $context );
-
-			if ( is_wp_error( $validate_result ) ) {
-				/* translators: %s: is the field label */
-				$error_message = sprintf( __( 'Please provide a valid %s', 'woocommerce' ), $field['label'] );
-				$error_code    = 'woocommerce_invalid_checkout_field';
-				$errors->add( $error_code, $error_message );
-				return $errors;
-			}
-
-			// Run custom validation callbacks.
-			if ( ! empty( $field['validate_callback'] ) ) {
+			if ( ! empty( $field['validate_callback'] ) && is_callable( $field['validate_callback'] ) ) {
 				$validate_callback_result = call_user_func( $field['validate_callback'], $field_value, $field );
 
 				if ( is_wp_error( $validate_callback_result ) ) {
@@ -848,7 +905,7 @@ class CheckoutFields {
 				}
 			}
 
-			wc_do_deprecated_action( '__experimental_woocommerce_blocks_validate_additional_field', array( $errors, $field_key, $field_value ), '8.7.0', 'woocommerce_validate_additional_field', 'This action has been graduated, use woocommerce_validate_additional_field instead.' );
+			wc_do_deprecated_action( '__experimental_woocommerce_blocks_validate_additional_field', array( $errors, $field['id'], $field_value ), '8.7.0', 'woocommerce_validate_additional_field', 'This action has been graduated, use woocommerce_validate_additional_field instead.' );
 
 			/**
 			 * Pass an error object to allow validation of an additional field.
@@ -859,7 +916,7 @@ class CheckoutFields {
 			 *
 			 * @since 8.7.0
 			 */
-			do_action( 'woocommerce_validate_additional_field', $errors, $field_key, $field_value );
+			do_action( 'woocommerce_validate_additional_field', $errors, $field['id'], $field_value );
 
 		} catch ( \Throwable $e ) {
 
@@ -885,9 +942,13 @@ class CheckoutFields {
 	 * @return mixed
 	 */
 	public function update_default_locale_with_fields( $locale ) {
-		foreach ( $this->get_fields_for_location( 'address' ) as $field_id => $additional_field ) {
-			if ( empty( $locale[ $field_id ] ) ) {
-				$locale[ $field_id ] = $additional_field;
+		foreach ( $this->get_fields_for_location( 'address' ) as $field_key => $field ) {
+			if ( empty( $locale[ $field_key ] ) ) {
+				// If the field has conditional rules, we need to set the required property to false so it can be evaluated.
+				if ( $this->is_conditional_field( $field_key ) ) {
+					$field['required'] = false;
+				}
+				$locale[ $field_key ] = $field;
 			}
 		}
 		return $locale;
@@ -938,10 +999,7 @@ class CheckoutFields {
 	 * @return array An array of fields definitions.
 	 */
 	public function get_fields_for_location( $location ) {
-		if ( 'additional' === $location ) {
-			wc_deprecated_argument( 'location', '8.9.0', 'The "additional" location is deprecated. Use "order" instead.' );
-			$location = 'order';
-		}
+		$location = $this->prepare_location_name( $location );
 
 		if ( in_array( $location, array_keys( $this->fields_locations ), true ) ) {
 			$order_fields_keys = $this->fields_locations[ $location ];
@@ -958,6 +1016,28 @@ class CheckoutFields {
 	}
 
 	/**
+	 * Returns an array of fields for a given location and uses context to evaluate hidden and required fields.
+	 *
+	 * @param string              $location The location to get fields for (address|contact|order).
+	 * @param DocumentObject|null $document_object The document object.
+	 * @return array An array of fields definitions.
+	 */
+	public function get_contextual_fields_for_location( $location, $document_object = null ) {
+		$location_fields = $this->get_fields_for_location( $location );
+		$fields          = [];
+		foreach ( $location_fields as $key => $field ) {
+			if ( $this->is_hidden_field( $key, $document_object ) ) {
+				continue;
+			}
+			$field['required']          = $this->is_required_field( $field, $document_object );
+			$field['validate_callback'] = $this->get_validate_callback( $field, $document_object );
+			$fields[ $key ]             = $field;
+		}
+
+		return $fields;
+	}
+
+	/**
 	 * Validates a set of fields for a given location against custom validation rules.
 	 *
 	 * @param array  $fields Array of key value pairs of field values to validate.
@@ -966,17 +1046,9 @@ class CheckoutFields {
 	 * @return WP_Error
 	 */
 	public function validate_fields_for_location( $fields, $location, $group = 'other' ) {
-		$errors = new WP_Error();
-
-		if ( 'additional' === $location ) {
-			wc_deprecated_argument( 'location', '8.9.0', 'The "additional" location is deprecated. Use "order" instead.' );
-			$location = 'order';
-		}
-
-		if ( 'additional' === $group ) {
-			wc_deprecated_argument( 'group', '8.9.0', 'The "additional" group is deprecated. Use "other" instead.' );
-			$group = 'other';
-		}
+		$errors   = new WP_Error();
+		$location = $this->prepare_location_name( $location );
+		$group    = $this->prepare_group_name( $group );
 
 		try {
 			wc_do_deprecated_action( '__experimental_woocommerce_blocks_validate_location_' . $location . '_fields', array( $errors, $fields, $group ), '8.9.0', 'woocommerce_blocks_validate_location_' . $location . '_fields', 'This action has been graduated, use woocommerce_blocks_validate_location_' . $location . '_fields instead.' );
@@ -1022,10 +1094,7 @@ class CheckoutFields {
 	 * @return true|WP_Error True if the field is valid, a WP_Error otherwise.
 	 */
 	public function validate_field_for_location( $key, $value, $location ) {
-		if ( 'additional' === $location ) {
-			wc_deprecated_argument( 'location', '8.9.0', 'The "additional" location is deprecated. Use "order" instead.' );
-			$location = 'order';
-		}
+		$location = $this->prepare_location_name( $location );
 
 		if ( ! $this->is_field( $key ) ) {
 			return new WP_Error(
@@ -1050,18 +1119,6 @@ class CheckoutFields {
 			);
 		}
 
-		$field = $this->additional_fields[ $key ];
-		if ( ! empty( $field['required'] ) && empty( $value ) ) {
-			return new WP_Error(
-				'woocommerce_required_checkout_field',
-				\sprintf(
-					// translators: %s is field key.
-					__( 'The field %s is required.', 'woocommerce' ),
-					$key
-				)
-			);
-		}
-
 		return true;
 	}
 
@@ -1073,6 +1130,7 @@ class CheckoutFields {
 	 * @return string[] Field keys.
 	 */
 	public function get_fields_for_group( $group = 'other' ) {
+		$group = $this->prepare_group_name( $group );
 		if ( 'shipping' === $group || 'billing' === $group ) {
 			return $this->get_fields_for_location( 'address' );
 		}
@@ -1118,11 +1176,7 @@ class CheckoutFields {
 	 * @return void
 	 */
 	public function persist_field_for_order( string $key, $value, WC_Order $order, string $group = 'other', bool $set_customer = true ) {
-		if ( 'additional' === $group ) {
-			wc_deprecated_argument( 'group', '8.9.0', 'The "additional" group is deprecated. Use "other" instead.' );
-			$group = 'other';
-		}
-
+		$group = $this->prepare_group_name( $group );
 		$this->set_array_meta( $key, $value, $order, $group );
 		if ( $set_customer && $order->get_customer_id() ) {
 			$customer = new WC_Customer( $order->get_customer_id() );
@@ -1141,11 +1195,7 @@ class CheckoutFields {
 	 * @return void
 	 */
 	public function persist_field_for_customer( string $key, $value, WC_Customer $customer, string $group = 'other' ) {
-		if ( 'additional' === $group ) {
-			wc_deprecated_argument( 'group', '8.9.0', 'The "additional" group is deprecated. Use "other" instead.' );
-			$group = 'other';
-		}
-
+		$group = $this->prepare_group_name( $group );
 		$this->set_array_meta( $key, $value, $customer, $group );
 	}
 
@@ -1177,8 +1227,7 @@ class CheckoutFields {
 		if ( is_bool( $value ) ) {
 			$value = $value ? '1' : '0';
 		}
-		// Replacing all meta using `add_meta_data`. For some reason `update_meta_data` causes duplicate keys.
-		$wc_object->add_meta_data( $meta_key, $value, true );
+		$wc_object->update_meta_data( $meta_key, $value );
 	}
 
 	/**
@@ -1191,14 +1240,9 @@ class CheckoutFields {
 	 * @return mixed The field value.
 	 */
 	public function get_field_from_object( string $key, WC_Data $wc_object, string $group = 'other' ) {
-		if ( 'additional' === $group ) {
-			wc_deprecated_argument( 'group', '8.9.0', 'The "additional" group is deprecated. Use "other" instead.' );
-			$group = 'other';
-		}
-
+		$group    = $this->prepare_group_name( $group );
 		$meta_key = self::get_group_key( $group ) . $key;
-
-		$value = $wc_object->get_meta( $meta_key, true );
+		$value    = $wc_object->get_meta( $meta_key, true );
 
 		if ( ! $value && '0' !== $value ) {
 			/**
@@ -1231,18 +1275,12 @@ class CheckoutFields {
 	 * @param WC_Data $wc_object The object or order to get the fields for.
 	 * @param string  $group The group to get the fields for (shipping|billing|other).
 	 * @param bool    $all Whether to return all fields or only the ones that are still registered. Default false.
-	 *
 	 * @return array An array of fields.
 	 */
 	public function get_all_fields_from_object( WC_Data $wc_object, string $group = 'other', bool $all = false ) {
-		if ( 'additional' === $group ) {
-			wc_deprecated_argument( 'group', '8.9.0', 'The "additional" group is deprecated. Use "other" instead.' );
-			$group = 'other';
-		}
-
 		$meta_data = [];
-
-		$prefix = self::get_group_key( $group );
+		$group     = $this->prepare_group_name( $group );
+		$prefix    = self::get_group_key( $group );
 
 		if ( $wc_object instanceof WC_Data ) {
 			$meta = $wc_object->get_meta_data();
@@ -1324,10 +1362,7 @@ class CheckoutFields {
 	 * @return array The filtered fields.
 	 */
 	public function filter_fields_for_location( array $fields, string $location ) {
-		if ( 'additional' === $location ) {
-			wc_deprecated_argument( 'location', '8.9.0', 'The "additional" location is deprecated. Use "order" instead.' );
-			$location = 'order';
-		}
+		$location = $this->prepare_location_name( $location );
 
 		return array_filter(
 			$fields,
@@ -1372,16 +1407,8 @@ class CheckoutFields {
 			return [];
 		}
 
-		if ( 'additional' === $location ) {
-			wc_deprecated_argument( 'location', '8.9.0', 'The "additional" location is deprecated. Use "order" instead.' );
-			$location = 'order';
-		}
-
-		if ( 'additional' === $group ) {
-			wc_deprecated_argument( 'group', '8.9.0', 'The "additional" group is deprecated. Use "other" instead.' );
-			$group = 'other';
-		}
-
+		$location           = $this->prepare_location_name( $location );
+		$group              = $this->prepare_group_name( $group );
 		$fields             = $this->get_fields_for_location( $location );
 		$fields_with_values = [];
 
@@ -1424,6 +1451,32 @@ class CheckoutFields {
 	}
 
 	/**
+	 * Prepares a group name for use.
+	 *
+	 * @param string $group The group name to prepare.
+	 * @return string The prepared group name.
+	 */
+	private function prepare_group_name( $group ) {
+		if ( ! in_array( $group, $this->groups, true ) ) {
+			$group = 'other';
+		}
+		return $group;
+	}
+
+	/**
+	 * Prepares a location name for use.
+	 *
+	 * @param string $location The location name to prepare.
+	 * @return string The prepared location name.
+	 */
+	private function prepare_location_name( $location ) {
+		if ( 'additional' === $location ) {
+			$location = 'order';
+		}
+		return $location;
+	}
+
+	/**
 	 * Returns a group meta prefix based on its name.
 	 *
 	 * @param string $group_name The group name (billing|shipping|other).
@@ -1434,7 +1487,6 @@ class CheckoutFields {
 			wc_deprecated_argument( 'group_name', '8.9.0', 'The "additional" group is deprecated. Use "other" instead.' );
 			$group_name = 'other';
 		}
-
 		if ( 'billing' === $group_name ) {
 			return self::BILLING_FIELDS_PREFIX;
 		}
@@ -1455,7 +1507,6 @@ class CheckoutFields {
 			wc_deprecated_argument( 'group_key', '8.9.0', 'The "_wc_additional" group key is deprecated. Use "_wc_other" instead.' );
 			$group_key = '_wc_other';
 		}
-
 		if ( 0 === \strpos( self::BILLING_FIELDS_PREFIX, $group_key ) ) {
 			return 'billing';
 		}

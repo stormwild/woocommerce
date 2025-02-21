@@ -1,11 +1,15 @@
 <?php
+declare( strict_types = 1);
 namespace Automattic\WooCommerce\StoreApi\Utilities;
 
 use Automattic\Jetpack\Constants;
 use Automattic\WooCommerce\StoreApi\Exceptions\RouteException;
 use Automattic\WooCommerce\StoreApi\Payments\PaymentContext;
 use Automattic\WooCommerce\StoreApi\Payments\PaymentResult;
+use Automattic\WooCommerce\Blocks\Domain\Services\CheckoutFieldsSchema\DocumentObject;
+use Automattic\WooCommerce\Admin\Features\Features;
 use WC_Customer;
+
 /**
  * CheckoutTrait
  *
@@ -201,29 +205,22 @@ trait CheckoutTrait {
 	 * Persist additional fields for the order after validating them.
 	 *
 	 * @param \WP_REST_Request $request Full details about the request.
-	 *
-	 * @throws RouteException On error.
 	 */
 	private function persist_additional_fields_for_order( \WP_REST_Request $request ) {
-		$errors         = new \WP_Error();
-		$request_fields = $request['additional_fields'] ?? [];
-
-		if ( empty( $request_fields ) ) {
-			return;
+		if ( Features::is_enabled( 'experimental-blocks' ) ) {
+			$document_object = $this->get_document_object_from_rest_request( $request );
+			$document_object->set_context( 'order' );
+			$additional_fields = $this->additional_fields_controller->get_contextual_fields_for_location( 'order', $document_object );
+		} else {
+			$additional_fields = $this->additional_fields_controller->get_fields_for_location( 'order' );
 		}
 
-		foreach ( $request_fields as $key => $value ) {
-			try {
-				$this->additional_fields_controller->validate_field_for_location( $key, $value, 'order' );
-			} catch ( \Exception $e ) {
-				$errors[] = $e->getMessage();
-				continue;
+		$field_values = (array) $request['additional_fields'] ?? [];
+
+		foreach ( $additional_fields as $key => $field ) {
+			if ( isset( $field_values[ $key ] ) ) {
+				$this->additional_fields_controller->persist_field_for_order( $key, $field_values[ $key ], $this->order, 'other', false );
 			}
-			$this->additional_fields_controller->persist_field_for_order( $key, $value, $this->order, 'other', false );
-		}
-
-		if ( $errors->has_errors() ) {
-			throw new RouteException( 'woocommerce_rest_checkout_invalid_additional_fields', $errors->get_error_messages(), 400 );
 		}
 
 		// We need to sync the customer additional fields with the order otherwise they will be overwritten on next page load.
@@ -235,5 +232,35 @@ trait CheckoutTrait {
 			);
 			$customer->save();
 		}
+	}
+
+	/**
+	 * Returns a document object from a REST request.
+	 *
+	 * @param \WP_REST_Request $request The REST request.
+	 * @return DocumentObject The document object or null if experimental blocks are not enabled.
+	 */
+	public function get_document_object_from_rest_request( \WP_REST_Request $request ) {
+		return new DocumentObject(
+			[
+				'customer' => [
+					'billing_address'   => $request['billing_address'],
+					'shipping_address'  => $request['shipping_address'],
+					'additional_fields' => array_intersect_key(
+						$request['additional_fields'] ?? [],
+						array_flip( $this->additional_fields_controller->get_contact_fields_keys() )
+					),
+				],
+				'checkout' => [
+					'payment_method'    => $request['payment_method'],
+					'create_account'    => $request['create_account'],
+					'customer_note'     => $request['customer_note'],
+					'additional_fields' => array_intersect_key(
+						$request['additional_fields'] ?? [],
+						array_flip( $this->additional_fields_controller->get_order_fields_keys() )
+					),
+				],
+			]
+		);
 	}
 }

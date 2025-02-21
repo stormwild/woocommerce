@@ -326,7 +326,7 @@ class CheckoutSchema extends AbstractSchema {
 				'description' => $field['label'],
 				'type'        => 'string',
 				'context'     => [ 'view', 'edit' ],
-				'required'    => $field['required'],
+				'required'    => $this->additional_fields_controller->is_conditional_field( $field ) ? false : $field['required'],
 			];
 
 			if ( 'select' === $field['type'] ) {

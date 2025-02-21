@@ -222,4 +222,13 @@ class DocumentObject {
 			'checkout' => $this->get_checkout_data(),
 		];
 	}
+
+	/**
+	 * Get the current context.
+	 *
+	 * @return null|string The context.
+	 */
+	public function get_context() {
+		return $this->context;
+	}
 }

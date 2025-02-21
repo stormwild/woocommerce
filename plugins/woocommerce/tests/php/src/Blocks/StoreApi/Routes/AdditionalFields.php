@@ -2373,6 +2373,8 @@ class AdditionalFields extends MockeryTestCase {
 		\remove_all_filters( "woocommerce_get_default_value_for_{$id}" );
 	}
 
+
+
 	/**
 	 * Ensures that we can react to saving a field.
 	 */
@@ -2612,5 +2614,153 @@ class AdditionalFields extends MockeryTestCase {
 		);
 		remove_action( 'doing_it_wrong_run', array( $doing_it_wrong_mocker, 'doing_it_wrong_run' ), 10, 2 );
 		$this->assertNotEquals( \count( $this->controller->get_additional_fields() ), count( $this->fields ) );
+	}
+
+	/**
+	 * Test registration and validation of a field with conditional hidden rules.
+	 */
+	public function test_conditional_hidden_rules() {
+		// We first unregister existing fields.
+		$this->unregister_fields();
+
+		$id = 'plugin-namespace/conditional-hidden-field';
+
+		// Register field with conditional hidden rule based on country.
+		\woocommerce_register_additional_checkout_field(
+			array(
+				'id'       => $id,
+				'label'    => 'VAT Number',
+				'location' => 'address',
+				'type'     => 'text',
+				'required' => true,
+				'rules'    => array(
+					'hidden' => array(
+						'customer' => array(
+							'properties' => array(
+								'billing_address' => array(
+									'properties' => array(
+										'country' => array(
+											'type' => 'string',
+											'enum' => array( 'US' ), // Hidden for US.
+										),
+									),
+								),
+							),
+						),
+					),
+				),
+			)
+		);
+
+		// Test 1: Field should be required and visible for GB address.
+		$request = new \WP_REST_Request( 'POST', '/wc/store/v1/checkout' );
+		$request->set_header( 'Nonce', wp_create_nonce( 'wc_store_api' ) );
+		$request->set_body_params(
+			array(
+				'billing_address'  => (object) array(
+					'first_name' => 'test',
+					'last_name'  => 'test',
+					'address_1'  => 'test',
+					'city'       => 'test',
+					'postcode'   => 'cb241ab',
+					'country'    => 'GB',
+					'email'      => 'testaccount@test.com',
+					// VAT number missing - should fail validation.
+				),
+				'shipping_address' => (object) array(
+					'first_name' => 'test',
+					'last_name'  => 'test',
+					'address_1'  => 'test',
+					'city'       => 'test',
+					'postcode'   => 'cb241ab',
+					'country'    => 'GB',
+				),
+				'payment_method'   => WC_Gateway_BACS::ID,
+			)
+		);
+
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		// Should fail because field is required and visible for GB.
+		$this->assertEquals( 400, $response->get_status(), print_r( $data, true ) );
+		$this->reset_session();
+
+		// Test 2: Field should be accepted with valid value for GB address.
+		$request = new \WP_REST_Request( 'POST', '/wc/store/v1/checkout' );
+		$request->set_header( 'Nonce', wp_create_nonce( 'wc_store_api' ) );
+		$request->set_body_params(
+			array(
+				'billing_address'  => (object) array(
+					'first_name' => 'test',
+					'last_name'  => 'test',
+					'address_1'  => 'test',
+					'city'       => 'test',
+					'postcode'   => 'cb241ab',
+					'state'      => '',
+					'country'    => 'GB',
+					'email'      => 'testaccount@test.com',
+					'plugin-namespace/conditional-hidden-field' => 'GB123456789',
+				),
+				'shipping_address' => (object) array(
+					'first_name' => 'test',
+					'last_name'  => 'test',
+					'address_1'  => 'test',
+					'city'       => 'test',
+					'state'      => '',
+					'postcode'   => 'cb241ab',
+					'country'    => 'GB',
+					'plugin-namespace/conditional-hidden-field' => 'GB123456789',
+				),
+				'payment_method'   => WC_Gateway_BACS::ID,
+			)
+		);
+
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		// Should succeed with valid value for GB.
+		$this->assertEquals( 200, $response->get_status(), print_r( $data, true ) );
+		$this->reset_session();
+
+		// Test 3: Field should be optional for US address (hidden rule applies).
+		$request = new \WP_REST_Request( 'POST', '/wc/store/v1/checkout' );
+		$request->set_header( 'Nonce', wp_create_nonce( 'wc_store_api' ) );
+		$request->set_body_params(
+			array(
+				'billing_address'  => (object) array(
+					'first_name' => 'test',
+					'last_name'  => 'test',
+					'address_1'  => 'test',
+					'city'       => 'test',
+					'state'      => 'AL',
+					'postcode'   => '12345',
+					'country'    => 'US',
+					'email'      => 'testaccount@test.com',
+					// VAT number missing - should still work for US.
+				),
+				'shipping_address' => (object) array(
+					'first_name' => 'test',
+					'last_name'  => 'test',
+					'address_1'  => 'test',
+					'city'       => 'test',
+					'state'      => 'AL',
+					'postcode'   => '12345',
+					'country'    => 'US',
+				),
+				'payment_method'   => WC_Gateway_BACS::ID,
+			)
+		);
+
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		// Should succeed without value for US.
+		$this->assertEquals( 200, $response->get_status(), print_r( $data, true ) );
+		$this->reset_session();
+
+		// Clean up.
+		\__internal_woocommerce_blocks_deregister_checkout_field( $id );
+		$this->assertFalse( $this->controller->is_field( $id ), sprintf( '%s is still registered', $id ) );
 	}
 }
