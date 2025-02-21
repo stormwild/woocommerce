@@ -2,6 +2,7 @@
  * External dependencies
  */
 import { createReduxStore, register } from '@wordpress/data';
+import { AnyAction } from 'redux';
 
 /**
  * Internal dependencies
@@ -10,22 +11,29 @@ import { createSelectors } from './selectors';
 import { createDispatchActions } from './actions';
 import defaultControls from '../controls';
 import { createResolvers } from './resolvers';
-import { createReducer } from './reducer';
-import { Item } from '../items';
+import { createReducer, ResourceState } from './reducer';
+
+// Arguments can be anything
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyArguments = any[];
 
 interface CrudStoreParams<
-	ResourceName,
-	ResourceNamePlural,
-	Actions,
+	Actions extends Record< string, ( ...args: AnyArguments ) => unknown >,
 	Selectors,
-	Resolvers,
-	Controls,
-	Reducer
+	Resolvers = Record< string, ( ...args: AnyArguments ) => unknown >,
+	Controls = Record< string, ( ...args: AnyArguments ) => unknown >,
+	Reducer extends (
+		state: ResourceState | undefined,
+		action: AnyAction
+	) => ResourceState = (
+		state: ResourceState | undefined,
+		action: AnyAction
+	) => ResourceState
 > {
 	storeName: string;
-	resourceName: ResourceName;
+	resourceName: string;
 	namespace: string;
-	pluralResourceName: ResourceNamePlural;
+	pluralResourceName: string;
 	storeConfig?: {
 		reducer?: Reducer;
 		actions?: Actions;
@@ -36,22 +44,19 @@ interface CrudStoreParams<
 }
 
 export const createCrudDataStore = <
-	ResourceType extends Item,
-	Actions extends Record< string, ( ...args: unknown[] ) => unknown >,
-	Selectors
+	Actions extends Record<
+		string,
+		( ...args: AnyArguments ) => unknown
+	> = Record< string, ( ...args: AnyArguments ) => unknown >,
+	Selectors = unknown
 >( {
 	storeName,
 	resourceName,
 	namespace,
 	pluralResourceName,
 	storeConfig,
-}: CrudStoreParams<
-	ResourceName,
-	ResourceNamePlural,
-	Actions,
-	Selectors
-> ) => {
-	const crudActions = createDispatchActions< ResourceName, ResourceType >( {
+}: CrudStoreParams< Actions, Selectors > ) => {
+	const crudActions = createDispatchActions( {
 		resourceName,
 		namespace,
 	} );
@@ -76,7 +81,7 @@ export const createCrudDataStore = <
 		controls = {},
 	} = storeConfig || {};
 
-	const crudReducer = createReducer( reducer );
+	const crudReducer = reducer ? createReducer( reducer ) : createReducer();
 
 	const store = createReduxStore< unknown, Actions, Selectors >( storeName, {
 		reducer: crudReducer,

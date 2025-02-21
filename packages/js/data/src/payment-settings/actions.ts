@@ -116,7 +116,10 @@ export function updateProviderOrdering( orderMap: OrderMap ): {
 	};
 }
 
-export function setIsWooPayEligible( isEligible: boolean ) {
+export function setIsWooPayEligible( isEligible: boolean ): {
+	type: ACTION_TYPES.SET_IS_ELIGIBLE;
+	isEligible: boolean;
+} {
 	return {
 		type: ACTION_TYPES.SET_IS_ELIGIBLE,
 		isEligible,

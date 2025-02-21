@@ -17,7 +17,6 @@ import { WPDataActions, WPDataSelectors } from '../types';
 import { PromiseifySelectors } from '../types/promiseify-selectors';
 
 export const PAYMENT_SETTINGS_STORE_NAME = STORE_KEY;
-
 registerStore( STORE_KEY, {
 	actions,
 	selectors,

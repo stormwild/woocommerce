@@ -19,10 +19,10 @@ export type IdQuery =
 	| IdType
 	| {
 			id: IdType;
-			[ key: string ]: unknown;
+			key: IdType;
 	  }
 	| {
-			[ key: string ]: unknown;
+			[ key: string ]: IdType;
 	  };
 
 export type Item = {
@@ -57,15 +57,17 @@ export type CrudActions<
 > = MapActions<
 	{
 		create: (
-			query: Partial< ItemType >,
+			query: RequiredFields extends keyof MutableProperties
+				? WithRequiredProperty<
+						Partial< MutableProperties >,
+						RequiredFields
+				  >
+				: Partial< MutableProperties >,
 			options?: CrudActionOptions
 		) => ItemType;
-		update: ( query: Partial< ItemType > ) => Item;
+		update: ( idQuery: IdQuery, query: Partial< ItemType > ) => Item;
 	},
 	ResourceName,
-	RequiredFields extends keyof MutableProperties
-		? WithRequiredProperty< Partial< MutableProperties >, RequiredFields >
-		: Partial< MutableProperties >,
 	Generator< unknown, ItemType >
 > &
 	MapActions<
@@ -73,7 +75,6 @@ export type CrudActions<
 			delete: ( id: IdQuery ) => Item;
 		},
 		ResourceName,
-		IdQuery,
 		Generator< unknown, ItemType >
 	>;
 
@@ -144,10 +145,12 @@ export type MapSelectors< Type, ResourceName, ParamType, ReturnType > = {
 	) => ReturnType;
 };
 
-export type MapActions< Type, ResourceName, ParamType, ReturnType > = {
+export type MapActions< Type, ResourceName, ReturnType > = {
 	[ Property in keyof Type as `${ Lowercase<
 		string & Property
-	> }${ Capitalize< string & ResourceName > }` ]: (
-		x: ParamType
-	) => ReturnType;
+	> }${ Capitalize< string & ResourceName > }` ]: Type[ Property ] extends (
+		...args: infer P
+	) => unknown
+		? ( ...args: P ) => ReturnType
+		: never;
 };

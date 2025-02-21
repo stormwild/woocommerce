@@ -150,10 +150,6 @@ export type CustomActions = {
 	generateProductVariations: typeof generateProductVariations;
 	batchUpdateProductVariationsError: typeof batchUpdateProductVariationsError;
 	batchUpdateProductVariations: typeof batchUpdateProductVariations;
-	updateProductVariation: (
-		id: IdQuery,
-		data: Partial< ProductVariation >
-	) => ProductVariation;
 };
 
 export type Actions = ReturnType<
@@ -161,5 +157,4 @@ export type Actions = ReturnType<
 	| typeof generateProductVariationsError
 	| typeof generateProductVariationsSuccess
 	| typeof batchUpdateProductVariationsError
-	| typeof batchUpdateProductVariations
 >;

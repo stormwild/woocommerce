@@ -11,15 +11,10 @@ import { createCrudDataStore } from '../crud';
 import * as actions from './actions';
 import * as selectors from './selectors';
 import { reducer } from './reducer';
+import { ProductVariationActions, ProductVariationSelectors } from './types';
 import { ResourceState } from '../crud/reducer';
-import {
-	ProductVariation,
-	ProductVariationActions,
-	ProductVariationSelectors,
-} from './types';
 
 export const store = createCrudDataStore<
-	ProductVariation,
 	ProductVariationActions,
 	ProductVariationSelectors
 >( {
@@ -29,8 +24,8 @@ export const store = createCrudDataStore<
 	namespace: WC_PRODUCT_VARIATIONS_NAMESPACE,
 	storeConfig: {
 		reducer: reducer as Reducer< ResourceState >,
-		actions,
-		selectors,
+		actions: actions as ProductVariationActions,
+		selectors: selectors as ProductVariationSelectors,
 	},
 } );
 

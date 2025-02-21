@@ -12,7 +12,7 @@ import {
 	getPaymentProvidersRequest,
 	setIsWooPayEligible,
 } from './actions';
-import { PaymentProvidersResponse } from './types';
+import { PaymentProvidersResponse, WooPayEligibilityResponse } from './types';
 import { WC_ADMIN_NAMESPACE } from '../constants';
 
 export function* getPaymentProviders( country?: string ) {
@@ -50,6 +50,6 @@ export function* getWooPayEligibility() {
 }
 
 export function* getIsWooPayEligible() {
-	const response = yield getWooPayEligibility();
+	const response: WooPayEligibilityResponse = yield getWooPayEligibility();
 	yield setIsWooPayEligible( response.is_eligible );
 }

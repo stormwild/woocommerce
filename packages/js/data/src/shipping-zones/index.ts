@@ -3,16 +3,11 @@
  */
 import { STORE_NAME, WC_SHIPPING_ZONES_NAMESPACE } from './constants';
 import { createCrudDataStore } from '../crud';
-import {
-	ShippingZone,
-	ShippingZoneActions,
-	ShippingZoneSelectors,
-} from './types';
+import { ShippingZonesActions, ShippingZonesSelectors } from './types';
 
 export const store = createCrudDataStore<
-	ShippingZone,
-	ShippingZoneActions,
-	ShippingZoneSelectors
+	ShippingZonesActions,
+	ShippingZonesSelectors
 >( {
 	storeName: STORE_NAME,
 	resourceName: 'ShippingZone',

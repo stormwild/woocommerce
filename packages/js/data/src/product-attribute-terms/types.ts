@@ -8,14 +8,12 @@ import { DispatchFromMap } from '@automattic/data-stores';
  */
 import { CrudActions, CrudSelectors } from '../crud/types';
 
-export type CustomActions = {
-	createProductAttributeTerm: (
-		query: ProductAttributeTermQuery,
-		options?: {
-			optimisticQueryUpdate?: ProductAttributeTermQuery;
-			optimisticUrlParameters?: IdType[];
-		}
-	) => ProductAttributeTerm;
+export type ProductAttributeTermQuery = {
+	attribute_id?: number;
+	exclude?: number[];
+	include?: number[];
+	offset?: number;
+	order?: string;
 };
 
 export type ProductAttributeTerm = {
@@ -54,8 +52,7 @@ export type ProductAttributeTermActions = CrudActions<
 	'ProductAttributeTerm',
 	ProductAttributeTerm,
 	MutableProperties
-> &
-	CustomActions;
+>;
 
 export type ProductAttributeTermsSelectors = CrudSelectors<
 	'ProductAttributeTerm',
