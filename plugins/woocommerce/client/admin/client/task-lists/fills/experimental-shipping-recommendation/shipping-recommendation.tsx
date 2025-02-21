@@ -21,7 +21,7 @@ import { TrackedLink } from '~/components/tracked-link/tracked-link';
 /**
  * Plugins required to automate shipping.
  */
-const AUTOMATION_PLUGINS = [ 'woocommerce-services' ];
+const AUTOMATION_PLUGINS = [ 'woocommerce-shipping' ];
 
 export const ShippingRecommendation: React.FC<
 	TaskProps & ShippingRecommendationProps

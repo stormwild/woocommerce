@@ -19,7 +19,7 @@ import {
 	DismissableList,
 	DismissableListHeading,
 } from '../settings-recommendations/dismissable-list';
-import WooCommerceServicesItem from './woocommerce-services-item';
+import WoocommerceShippingItem from './woocommerce-shipping-item';
 import './shipping-recommendations.scss';
 import { TrackedLink } from '~/components/tracked-link/tracked-link';
 
@@ -105,17 +105,13 @@ const ShippingRecommendations: React.FC = () => {
 		[]
 	);
 
-	if (
-		activePlugins.includes( 'woocommerce-services' ) ||
-		activePlugins.includes( 'woocommerce-shipping' ) ||
-		activePlugins.includes( 'woocommerce-tax' )
-	) {
+	if ( activePlugins.includes( 'woocommerce-shipping' ) ) {
 		return null;
 	}
 
 	return (
 		<ShippingRecommendationsList>
-			<WooCommerceServicesItem
+			<WoocommerceShippingItem
 				pluginsBeingSetup={ pluginsBeingSetup }
 				onSetupClick={ setupPlugin }
 			/>

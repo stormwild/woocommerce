@@ -56,7 +56,7 @@ jest.mock( '@wordpress/data', () => ( {
 			hasFinishedResolution: () => true,
 			getOption: ( key: string ) => {
 				return {
-					wc_connect_options: {
+					wcshipping_options: {
 						tos_accepted: true,
 					},
 					woocommerce_setup_jetpack_opted_in: 1,
@@ -83,7 +83,7 @@ const ShippingRecommendation = ( props: ShippingRecommendationProps ) => {
 };
 
 describe( 'ShippingRecommendation', () => {
-	test( 'should show plugins step when woocommerce-services is not installed and activated', () => {
+	test( 'should show plugins step when woocommerce-shipping is not installed and activated', () => {
 		const { getByText } = render(
 			<ShippingRecommendation
 				isJetpackConnected={ false }
@@ -94,12 +94,12 @@ describe( 'ShippingRecommendation', () => {
 		expect( getByText( 'MockedPlugins' ) ).toBeInTheDocument();
 	} );
 
-	test( 'should show connect step when WCS&T is activated but not yet connected', () => {
+	test( 'should show connect step when WooCommerce Shipping is activated but not yet connected', () => {
 		const { getByRole } = render(
 			<ShippingRecommendation
 				isJetpackConnected={ false }
 				isResolving={ false }
-				activePlugins={ [ 'woocommerce-services' ] }
+				activePlugins={ [ 'woocommerce-shipping' ] }
 			/>
 		);
 		expect(
@@ -107,12 +107,12 @@ describe( 'ShippingRecommendation', () => {
 		).toBeInTheDocument();
 	} );
 
-	test( 'should show "complete task" button when WCS&T is activated and Jetpack is connected', () => {
+	test( 'should show "complete task" button when WooCommerce Shipping is activated and Jetpack is connected', () => {
 		const { getByRole } = render(
 			<ShippingRecommendation
 				isJetpackConnected={ true }
 				isResolving={ false }
-				activePlugins={ [ 'woocommerce-services' ] }
+				activePlugins={ [ 'woocommerce-shipping' ] }
 			/>
 		);
 		expect(
@@ -125,7 +125,7 @@ describe( 'ShippingRecommendation', () => {
 			<ShippingRecommendation
 				isJetpackConnected={ true }
 				isResolving={ false }
-				activePlugins={ [ 'woocommerce-services' ] }
+				activePlugins={ [ 'woocommerce-shipping' ] }
 			/>
 		);
 
