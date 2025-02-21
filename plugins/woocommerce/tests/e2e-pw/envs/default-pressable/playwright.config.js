@@ -19,7 +19,17 @@ config = {
 		},
 		{
 			name: 'e2e-pressable',
-			testMatch: [ '**/basic/basic.spec.js' ],
+			testIgnore: [
+				'**/api-tests/**',
+				'**/customize-store/**',
+				'**/js-file-monitor/**',
+			],
+			grepInvert,
+			dependencies: [ 'reset', 'site setup' ],
+		},
+		{
+			name: 'api-pressable',
+			testMatch: [ '**/api-tests/**' ],
 			grepInvert,
 			dependencies: [ 'reset', 'site setup' ],
 		},
