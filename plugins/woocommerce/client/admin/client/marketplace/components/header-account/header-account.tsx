@@ -36,6 +36,8 @@ export default function HeaderAccount( {
 	page = 'wc-admin',
 }: HeaderAccountProps ): JSX.Element {
 	const [ isModalOpen, setIsModalOpen ] = useState( false );
+	const [ useDefaultAvatar, setUseDefaultAvatar ] = useState( false );
+
 	const openModal = () => setIsModalOpen( true );
 
 	const wccomSettings = getAdminSetting( 'wccomHelper', {} );
@@ -48,7 +50,7 @@ export default function HeaderAccount( {
 	const accountOrConnect = isConnected ? accountURL : connectionURL;
 
 	const avatar = () => {
-		if ( ! isConnected ) {
+		if ( ! isConnected || useDefaultAvatar ) {
 			return commentAuthorAvatar;
 		}
 
@@ -57,6 +59,7 @@ export default function HeaderAccount( {
 				src={ avatarURL }
 				alt=""
 				className="woocommerce-marketplace__menu-avatar-image"
+				onError={ () => setUseDefaultAvatar( true ) }
 			/>
 		);
 	};
