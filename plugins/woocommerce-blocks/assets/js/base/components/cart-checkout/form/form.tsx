@@ -24,6 +24,7 @@ import { AddressFormValues, ContactFormValues } from '@woocommerce/settings';
 import { objectHasProp } from '@woocommerce/types';
 import { useCheckoutAddress } from '@woocommerce/base-context';
 import fastDeepEqual from 'fast-deep-equal/es6';
+import { decodeEntities } from '@wordpress/html-entities';
 
 /**
  * Internal dependencies
@@ -356,7 +357,9 @@ const Form = < T extends AddressFormValues | ContactFormValues >( {
 						type={ field.type }
 						ariaDescribedBy={ ariaDescribedBy }
 						value={
-							( values[ field.key as keyof T ] as string ) || ''
+							decodeEntities(
+								values[ field.key as keyof T ] as string
+							) || ''
 						}
 						onChange={ ( newValue: string ) =>
 							onChange( {
