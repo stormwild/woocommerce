@@ -48,7 +48,7 @@ jobs:
         with:
           filters: |
             needs-code-validation:
-              - '!((**/*.md)|(**/changelog/*)|(.cursor/**)|(.gitignore))'
+              - '!((**/*.md)|(**/changelog/*)|(.github/**)|(.husky/**)|(.cursor/**)|(.gitignore))'
             needs-changelog-validation:
               - '{packages,plugins}/*/!(changelog/**)/**'
             needs-markdown-validation:
@@ -128,7 +128,7 @@ jobs:
     if: ${{ !cancelled() && github.event_name == 'pull_request' && needs.identify-jobs-to-run.outputs.needs-code-validation == 'true' && needs.project-jobs.outputs.lint-jobs != '[]' }}
     strategy:
       fail-fast: false
-      max-parallel: 2
+      max-parallel: 4
       matrix:
         include: ${{ fromJSON( needs.project-jobs.outputs.lint-jobs ) }}
     steps:
@@ -156,7 +156,7 @@ jobs:
     env: ${{ matrix.testEnv.envVars }}
     strategy:
       fail-fast: false
-      max-parallel: 32
+      max-parallel: 30
       matrix:
         include: ${{ fromJSON( needs.project-jobs.outputs.test-jobs ) }}
     steps:
@@ -325,7 +325,7 @@ jobs:
   alert-on-failure:
     name: 'Report results on Slack'
     runs-on: ubuntu-latest
-    needs: ['project-jobs', 'project-lint-jobs', 'project-test-jobs']
+    needs: ['project-jobs', 'project-lint-jobs', 'project-test-jobs', 'evaluate-project-jobs']
     if: ${{ !cancelled() && github.event_name != 'pull_request' && github.repository == 'woocommerce/woocommerce'  }}
     steps:
       - uses: 'actions/checkout@v4'
@@ -360,7 +360,7 @@ jobs:
 
   test-reports:
     name: 'Test reports - ${{ matrix.report }}'
-    needs: ['project-jobs', 'project-test-jobs']
+    needs: ['project-jobs', 'project-test-jobs', 'evaluate-project-jobs', 'report-flaky-tests']
     if: ${{ !cancelled() && github.repository == 'woocommerce/woocommerce' && ( github.event_name != 'pull_request' || ( needs.identify-jobs-to-run.outputs.needs-code-validation == 'true' && ! github.event.pull_request.head.repo.fork ) ) && needs.project-jobs.outputs.report-jobs != '[]' }}
     strategy:
       fail-fast: false
@@ -418,7 +418,7 @@ jobs:
   report-flaky-tests:
     name: 'Create issues for flaky tests'
     if: ${{ !cancelled() && github.repository == 'woocommerce/woocommerce' && ( github.event_name != 'pull_request' || needs.identify-jobs-to-run.outputs.needs-code-validation == 'true' ) && needs.project-jobs.outputs.test-jobs != '[]' }}
-    needs: ['project-jobs', 'project-test-jobs']
+    needs: ['project-jobs', 'project-test-jobs', 'evaluate-project-jobs', 'alert-on-failure']
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -483,7 +483,7 @@ jobs:
 
   validate-changelog:
     name: 'Validate changelog'
-    if: ${{ !cancelled() && github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'trunk' && needs.identify-jobs-to-run.outputs.needs-changelog-validation == 'true' }}
+    if: ${{ !cancelled() && github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'trunk' && needs.identify-jobs-to-run.outputs.needs-changelog-validation == 'true' && ! contains( github.event.pull_request.body, '[x] This Pull Request does not require a changelog' ) }}
     needs: [ 'identify-jobs-to-run' ]
     runs-on: ubuntu-latest
     permissions:
