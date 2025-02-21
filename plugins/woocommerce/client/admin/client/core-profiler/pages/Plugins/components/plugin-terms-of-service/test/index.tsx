@@ -68,7 +68,7 @@ describe( 'PluginsTermsOfService', () => {
 						is_visible: false,
 					},
 					{
-						key: 'woocommerce-services:shipping',
+						key: 'woocommerce-shipping',
 						name: 'WooCommerce Shipping',
 						description: '',
 						image_url: '',
