@@ -23,6 +23,10 @@ on:
         required: true
         default: 'default'
         type: string
+      wc-version:
+        description: 'Specific WooCommerce version to install by the test jobs supporting it'
+        required: false
+        type: string
 
 concurrency:
   # Cancel concurrent jobs but not for push event. For push use the run_id to have a unique group.
@@ -227,6 +231,7 @@ jobs:
           CODEVITALS_PROJECT_TOKEN: ${{ secrets.CODEVITALS_PROJECT_TOKEN }} # required by Metrics tests
           LAST_FAILED_RUN: ${{ vars.LAST_FAILED_RUN }}
           GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          WC_VERSION: ${{ inputs.wc-version }}
         run: |
           lastRunFile="${{ steps.download-last-run-info.outputs.download-path }}/last-run__${{ strategy.job-index }}/.last-run.json"
           lastRunFileDest="$ARTIFACTS_PATH/.last-run.json"
