@@ -1635,6 +1635,10 @@ if ( ! function_exists( 'woocommerce_catalog_ordering' ) ) {
 			unset( $catalog_orderby_options['rating'] );
 		}
 
+		if ( is_array( $orderby ) ) {
+			$orderby = current( array_intersect( $orderby, array_keys( $catalog_orderby_options ) ) );
+		}
+
 		if ( ! array_key_exists( $orderby, $catalog_orderby_options ) ) {
 			$orderby = current( array_keys( $catalog_orderby_options ) );
 		}
