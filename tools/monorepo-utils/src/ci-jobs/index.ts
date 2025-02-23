@@ -25,7 +25,7 @@ const program = new Command( 'ci-jobs' )
 	)
 	.option(
 		'-p --pr-number <prNumber>',
-		'Base ref to compare the current ref against for change detection. If not specified, all projects will be considered changed.',
+		'PR number for change detection. If specified, fetches the changes list via GitHub client.',
 		''
 	)
 	.option(
