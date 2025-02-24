@@ -8,6 +8,7 @@
 
 use Automattic\WooCommerce\Internal\Admin\EmailPreview\EmailPreview;
 use Automattic\WooCommerce\Internal\Email\EmailFont;
+use Automattic\WooCommerce\Internal\Features\FeaturesController;
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 
 defined( 'ABSPATH' ) || exit;
@@ -37,6 +38,8 @@ class WC_Settings_Emails extends WC_Settings_Page {
 			add_action( 'woocommerce_email_settings_after', array( $this, 'email_preview_single' ) );
 			add_filter( 'woocommerce_admin_settings_sanitize_option_woocommerce_email_header_image', array( $this, 'sanitize_email_header_image' ), 10, 3 );
 		}
+		add_filter( 'woocommerce_tracks_event_properties', array( $this, 'append_feature_email_improvements_to_tracks' ), 10, 2 );
+		add_action( FeaturesController::FEATURE_ENABLED_CHANGED_ACTION, array( $this, 'track_email_improvements_feature_change' ), 10, 2 );
 		parent::__construct();
 	}
 
@@ -852,6 +855,44 @@ class WC_Settings_Emails extends WC_Settings_Page {
 		></div>
 		<table class="form-table">
 		<?php
+	}
+
+	/**
+	 * Append email improvements prop to Tracks globally.
+	 *
+	 * @param array $event_properties Event properties array.
+	 *
+	 * @return array
+	 */
+	public function append_feature_email_improvements_to_tracks( $event_properties ) {
+		if ( is_array( $event_properties ) ) {
+			$is_email_improvements_enabled                  = FeaturesUtil::feature_is_enabled( 'email_improvements' );
+			$event_properties['feature_email_improvements'] = $is_email_improvements_enabled ? 'enabled' : 'disabled';
+		}
+		return $event_properties;
+	}
+
+	/**
+	 * Track email improvements feature change.
+	 *
+	 * @param string $feature_id The feature ID.
+	 * @param bool   $enabled True if the feature is enabled, false if it is disabled.
+	 */
+	public function track_email_improvements_feature_change( $feature_id, $enabled ) {
+		if ( 'email_improvements' === $feature_id ) {
+			$current_date = gmdate( 'Y-m-d H:i:s' );
+			if ( $enabled ) {
+				$enabled_count = get_option( 'woocommerce_email_improvements_enabled_count', 0 );
+				update_option( 'woocommerce_email_improvements_enabled_count', $enabled_count + 1 );
+				add_option( 'woocommerce_email_improvements_first_enabled_at', $current_date );
+				update_option( 'woocommerce_email_improvements_last_enabled_at', $current_date );
+			} else {
+				$disabled_count = get_option( 'woocommerce_email_improvements_disabled_count', 0 );
+				update_option( 'woocommerce_email_improvements_disabled_count', $disabled_count + 1 );
+				add_option( 'woocommerce_email_improvements_first_disabled_at', $current_date );
+				update_option( 'woocommerce_email_improvements_last_disabled_at', $current_date );
+			}
+		}
 	}
 }
 

@@ -34,6 +34,7 @@ const disableEmailImprovementsFeature = async () => {
 
 test.describe( 'Settings API tests: CRUD', () => {
 	test.describe( 'List all settings groups', () => {
+		test.beforeAll( disableEmailImprovementsFeature );
 		test( 'can retrieve all settings groups', async ( { request } ) => {
 			// call API to retrieve all settings groups
 			const response = await request.get( './wp-json/wc/v3/settings' );
@@ -1477,6 +1478,7 @@ test.describe( 'Settings API tests: CRUD', () => {
 	} );
 
 	test.describe( 'List all Email settings options', () => {
+		test.beforeAll( disableEmailImprovementsFeature );
 		test( 'can retrieve all email settings', async ( { request } ) => {
 			// call API to retrieve all settings options
 			const response = await request.get(

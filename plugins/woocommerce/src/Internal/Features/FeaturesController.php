@@ -5,6 +5,7 @@
 
 namespace Automattic\WooCommerce\Internal\Features;
 
+use WC_Tracks;
 use WC_Site_Tracking;
 use Automattic\Jetpack\Constants;
 use Automattic\WooCommerce\Internal\Admin\Analytics;
@@ -856,6 +857,14 @@ class FeaturesController {
 		if ( ! $feature_id ) {
 			return;
 		}
+
+		WC_Tracks::record_event(
+			self::FEATURE_ENABLED_CHANGED_ACTION,
+			array(
+				'feature_id' => $feature_id,
+				'enabled'    => $value,
+			)
+		);
 
 		/**
 		 * Action triggered when a feature is enabled or disabled (the value of the corresponding setting option is changed).

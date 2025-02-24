@@ -305,6 +305,7 @@ class WC_Install {
 		add_action( 'init', array( __CLASS__, 'manual_database_update' ), 20 );
 		add_action( 'woocommerce_newly_installed', array( __CLASS__, 'maybe_enable_hpos' ), 20 );
 		add_action( 'woocommerce_newly_installed', array( __CLASS__, 'add_coming_soon_option' ), 20 );
+		add_action( 'woocommerce_newly_installed', array( __CLASS__, 'enable_email_improvements' ), 20 );
 		add_action( 'admin_init', array( __CLASS__, 'wc_admin_db_update_notice' ) );
 		add_action( 'admin_init', array( __CLASS__, 'add_admin_note_after_page_created' ) );
 		add_action( 'woocommerce_run_update_callback', array( __CLASS__, 'run_update_callback' ) );
@@ -1011,6 +1012,19 @@ class WC_Install {
 	public static function add_coming_soon_option() {
 		add_option( 'woocommerce_coming_soon', 'yes' );
 		add_option( 'woocommerce_store_pages_only', 'yes' );
+	}
+
+	/**
+	 * Enable email improvements by default for new shops.
+	 *
+	 * @since 9.8.0
+	 */
+	public static function enable_email_improvements() {
+		update_option( 'woocommerce_feature_email_improvements_enabled', 'yes' );
+		update_option( 'woocommerce_email_improvements_default_enabled', 'yes' );
+		update_option( 'woocommerce_email_improvements_first_enabled_at', gmdate( 'Y-m-d H:i:s' ) );
+		update_option( 'woocommerce_email_improvements_last_enabled_at', gmdate( 'Y-m-d H:i:s' ) );
+		update_option( 'woocommerce_email_improvements_enabled_count', 1 );
 	}
 
 	/**
