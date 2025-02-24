@@ -170,7 +170,6 @@ export type CoreProfilerStep =
 	| 'user-profile'
 	| 'business-info'
 	| 'plugins'
-	| 'intro-builder'
 	| 'skip-guided-setup';
 
 export type CoreProfilerCompletedSteps = Record<
