@@ -54,7 +54,7 @@ class PaymentsController {
 		}
 
 		// If the feature flag is enabled, but the user is NOT in the experiment treatment group, disable the feature.
-		if ( ! Experimental_Abtest::in_treatment_handled_exception( 'woocommerce_payment_settings_2025_v1' ) ) {
+		if ( ! Experimental_Abtest::in_treatment_handled_exception( 'woocommerce_payment_settings_2025_v2' ) ) {
 			return array_merge(
 				$features,
 				array(
