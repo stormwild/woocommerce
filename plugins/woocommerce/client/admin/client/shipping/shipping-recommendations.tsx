@@ -6,6 +6,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import { useState, Children } from '@wordpress/element';
 import { Text } from '@woocommerce/experimental';
 import { pluginsStore } from '@woocommerce/data';
+import { getAdminLink } from '@woocommerce/settings';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore VisuallyHidden is present, it's just not typed
 // eslint-disable-next-line @woocommerce/dependency-group
@@ -90,7 +91,9 @@ export const ShippingRecommendationsList = ( {
 					'Visit the {{Link}}Official WooCommerce Marketplace{{/Link}} to find more shipping, delivery, and fulfillment solutions.',
 					'woocommerce'
 				) }
-				targetUrl="admin.php?page=wc-admin&tab=extensions&path=/extensions&category=shipping-delivery-and-fulfillment"
+				targetUrl={ getAdminLink(
+					'admin.php?page=wc-admin&tab=extensions&path=/extensions&category=shipping-delivery-and-fulfillment'
+				) }
 				eventName="settings_shipping_recommendation_visit_marketplace_click"
 			/>
 		</CardFooter>

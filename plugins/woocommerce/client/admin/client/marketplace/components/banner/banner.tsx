@@ -23,17 +23,17 @@ import getHelp from '../../assets/images/get-help.svg';
 const SLIDES = [
 	{
 		imageUrl: moneyBack,
-		title: refundPolicyTitle,
+		title: refundPolicyTitle( 'banner' ),
 		textTitle: __( '30-day money-back guarantee', 'woocommerce' ),
 	},
 	{
 		imageUrl: getHelp,
-		title: supportTitle,
+		title: supportTitle( 'banner' ),
 		textTitle: __( 'Get help when you need it', 'woocommerce' ),
 	},
 	{
 		imageUrl: trustProducts,
-		title: paymentTitle,
+		title: paymentTitle( 'banner' ),
 		textTitle: __( 'Products you can trust', 'woocommerce' ),
 	},
 	{

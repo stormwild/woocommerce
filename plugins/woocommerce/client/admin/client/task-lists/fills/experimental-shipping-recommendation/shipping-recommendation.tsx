@@ -6,6 +6,7 @@ import { difference } from 'lodash';
 import { useEffect, useState } from '@wordpress/element';
 import { Stepper } from '@woocommerce/components';
 import { Card, CardBody, Button } from '@wordpress/components';
+import { getAdminLink } from '@woocommerce/settings';
 
 /**
  * Internal dependencies
@@ -153,7 +154,9 @@ export const ShippingRecommendation: React.FC<
 					'woocommerce'
 				) }
 				eventName="tasklist_shipping_recommendation_visit_marketplace_click"
-				targetUrl="admin.php?page=wc-admin&tab=extensions&path=/extensions&category=shipping-delivery-and-fulfillment"
+				targetUrl={ getAdminLink(
+					'admin.php?page=wc-admin&tab=extensions&path=/extensions&category=shipping-delivery-and-fulfillment'
+				) }
 			/>
 		</div>
 	);

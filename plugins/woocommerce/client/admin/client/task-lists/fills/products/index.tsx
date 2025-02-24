@@ -183,7 +183,9 @@ export const Products = () => {
 						'woocommerce'
 					) }
 					eventName="tasklist_add_product_visit_marketplace_click"
-					targetUrl="admin.php?page=wc-admin&tab=extensions&path=/extensions&category=merchandising"
+					targetUrl={ getAdminLink(
+						'admin.php?page=wc-admin&tab=extensions&path=/extensions&category=merchandising'
+					) }
 				/>
 			</div>
 			{ isLoadingSampleProducts ? (
