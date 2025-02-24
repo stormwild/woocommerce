@@ -14,7 +14,9 @@ $wc-setting-email-width: 634px;
 	grid-gap: $wc-setting-email-preview-gap;
 	grid-template-rows: 36px 1fr;
 	height: 960px;
+	margin-bottom: 60px;
 	padding: $wc-setting-email-preview-gap;
+	position: relative;
 	width: 684px;
 
 	@include breakpoint( "<782px" ) {
@@ -31,6 +33,7 @@ $wc-setting-email-width: 634px;
 
 .wc-settings-email-preview-container-floating {
 	bottom: 0;
+	margin-bottom: 0;
 	position: absolute;
 	left: $wc-setting-email-width + $wc-setting-email-preview-gap * 2;
 }
@@ -239,6 +242,12 @@ $wc-setting-email-width: 634px;
 		font-size: 11px;
 		font-weight: 400;
 	}
+}
+
+.wc-settings-email-preview-ces-feedback {
+	bottom: -40px;
+	position: absolute;
+	right: 0;
 }
 
 .wc-settings-email-select-image {

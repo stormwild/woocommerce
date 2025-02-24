@@ -86,7 +86,7 @@ export const EmailPreviewIframe: React.FC< EmailPreviewIframeProps > = ( {
 				}
 			} );
 		};
-	}, [ nonce, setIsLoading, settingsIds, setCounter ] );
+	}, [ nonce, setIsLoading, settingsIds, setCounter, src, counter ] );
 
 	return (
 		<div>
