@@ -1,0 +1,4 @@
+Significance: patch
+Type: fix
+
+Fix missing placeholder image in email preview when file is deleted

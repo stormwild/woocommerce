@@ -475,6 +475,8 @@ class EmailPreview {
 		add_filter( 'woocommerce_is_email_preview', array( $this, 'enable_preview_mode' ) );
 		// Get shipping method without needing to save it in the order.
 		add_filter( 'woocommerce_order_shipping_method', array( $this, 'get_shipping_method' ) );
+		// Use placeholder image included in WooCommerce files.
+		add_filter( 'woocommerce_order_item_thumbnail', array( $this, 'get_placeholder_image' ) );
 	}
 
 	/**
@@ -485,6 +487,7 @@ class EmailPreview {
 		remove_filter( 'woocommerce_order_item_product', array( $this, 'get_dummy_product_when_not_set' ), 10 );
 		remove_filter( 'woocommerce_is_email_preview', array( $this, 'enable_preview_mode' ) );
 		remove_filter( 'woocommerce_order_shipping_method', array( $this, 'get_shipping_method' ) );
+		remove_filter( 'woocommerce_order_item_thumbnail', array( $this, 'get_placeholder_image' ) );
 	}
 
 	/**
@@ -514,5 +517,14 @@ class EmailPreview {
 	 */
 	public function enable_preview_mode() {
 		return true;
+	}
+
+	/**
+	 * Get the placeholder image for the preview email.
+	 *
+	 * @return string
+	 */
+	public function get_placeholder_image() {
+		return '<img src="' . WC()->plugin_url() . '/assets/images/placeholder.png" width="48" height="48" alt="" />';
 	}
 }
