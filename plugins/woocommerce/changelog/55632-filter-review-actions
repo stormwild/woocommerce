@@ -1,0 +1,4 @@
+Significance: minor
+Type: enhancement
+
+Dev - add ability to filter the `comment_row_actions` on the Products > Reviews table
