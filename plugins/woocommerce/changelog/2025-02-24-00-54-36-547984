@@ -1,0 +1,4 @@
+Significance: minor
+Type: fix
+
+Include pagination headers in shipping endpoints response.
