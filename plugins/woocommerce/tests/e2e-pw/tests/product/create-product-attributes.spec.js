@@ -29,6 +29,13 @@ const productAttributes = [
 
 const test = baseTest.extend( {
 	storageState: ADMIN_STATE_PATH,
+	page: async ( { page, wcAdminApi }, use ) => {
+		await wcAdminApi.put( 'options', {
+			woocommerce_task_list_reminder_bar_hidden: 'yes',
+		} );
+
+		await use( page );
+	},
 	product: async ( { api }, use ) => {
 		let product = getFakeProduct( { type: 'variable' } );
 
@@ -150,15 +157,24 @@ test( 'can add custom product attributes', async ( { page, product } ) => {
 	await test.step( 'Update product', async () => {
 		// "Update" triggers a lot of requests. Wait for the final one to complete before proceeding.
 		// Otherwise, succeeding steps would be flaky.
-		const finalRequestResolution = page.waitForResponse( ( response ) =>
-			response.url().includes( 'options' )
+		const finalRequestResolution = page.waitForResponse(
+			( response ) =>
+				response.url().includes( 'options' ) &&
+				response
+					.url()
+					.includes( 'woocommerce_task_list_reminder_bar_hidden' )
 		);
+
 		await page
 			.locator( '#publishing-action' )
 			.getByRole( 'button', { name: 'Update' } )
 			.click();
 
 		await finalRequestResolution;
+
+		await expect(
+			page.locator( '.notice-success', { name: 'Product updated' } )
+		).toBeVisible();
 	} );
 
 	await goToAttributesTab( page );
