@@ -457,7 +457,7 @@ class PaymentProviders {
 		$categories[] = array(
 			'id'          => self::CATEGORY_EXPRESS_CHECKOUT,
 			'_priority'   => 10,
-			'title'       => esc_html__( 'Express Checkouts', 'woocommerce' ),
+			'title'       => esc_html__( 'Wallets & Express checkouts', 'woocommerce' ),
 			'description' => esc_html__( 'Allow shoppers to fast-track the checkout process with express options like Apple Pay and Google Pay.', 'woocommerce' ),
 		);
 		$categories[] = array(

@@ -230,6 +230,7 @@ class PaymentExtensionSuggestions {
 			),
 		),
 		'AD' => array(
+			self::MONEI,
 			self::PAYPAL_WALLET => array(
 				'_append' => array(
 					'tags' => array( self::TAG_PREFERRED ),
