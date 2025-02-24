@@ -34,8 +34,8 @@ class WC_Settings_Emails extends WC_Settings_Page {
 		add_action( 'woocommerce_admin_field_email_image_url', array( $this, 'email_image_url' ) );
 		add_action( 'woocommerce_admin_field_email_font_family', array( $this, 'email_font_family' ) );
 		add_action( 'woocommerce_admin_field_email_color_palette', array( $this, 'email_color_palette' ) );
+		add_action( 'woocommerce_email_settings_after', array( $this, 'email_preview_single' ) );
 		if ( FeaturesUtil::feature_is_enabled( 'email_improvements' ) ) {
-			add_action( 'woocommerce_email_settings_after', array( $this, 'email_preview_single' ) );
 			add_filter( 'woocommerce_admin_settings_sanitize_option_woocommerce_email_header_image', array( $this, 'sanitize_email_header_image' ), 10, 3 );
 		}
 		add_filter( 'woocommerce_tracks_event_properties', array( $this, 'append_feature_email_improvements_to_tracks' ), 10, 2 );

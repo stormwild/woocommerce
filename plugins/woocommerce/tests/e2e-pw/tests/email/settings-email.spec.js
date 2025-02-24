@@ -26,10 +26,8 @@ test.describe( 'WooCommerce Email Settings', () => {
 		await setFeatureFlag( baseURL, 'no' );
 	} );
 
-	test( 'See email preview with a feature flag', async ( {
-		page,
-		baseURL,
-	} ) => {
+	test( 'See email preview', async ( { page, baseURL } ) => {
+		await setFeatureFlag( baseURL, 'no' );
 		const emailPreviewElement =
 			'#wc_settings_email_preview_slotfill iframe';
 		const emailSubjectElement = '.wc-settings-email-preview-header-subject';
@@ -44,14 +42,7 @@ test.describe( 'WooCommerce Email Settings', () => {
 			return await page.locator( emailSubjectElement ).textContent();
 		};
 
-		// Disable the email_improvements feature flag
-		await setFeatureFlag( baseURL, 'no' );
 		await page.goto( 'wp-admin/admin.php?page=wc-settings&tab=email' );
-		expect( await hasIframe() ).toBeFalsy();
-
-		// Enable the email_improvements feature flag
-		await setFeatureFlag( baseURL, 'yes' );
-		await page.reload();
 		expect( await hasIframe() ).toBeTruthy();
 
 		// Email content
@@ -73,7 +64,7 @@ test.describe( 'WooCommerce Email Settings', () => {
 		).toBeVisible();
 		// Email subject
 		await expect( await getSubject() ).toContain(
-			`Reset your password for ${ storeName }`
+			`Password Reset Request for ${ storeName }`
 		);
 	} );
 
@@ -219,9 +210,9 @@ test.describe( 'WooCommerce Email Settings', () => {
 	} );
 
 	test(
-		'See specific email preview with a feature flag',
+		'See specific email preview',
 		{ tag: [ tags.COULD_BE_LOWER_LEVEL_TEST ] },
-		async ( { page, baseURL } ) => {
+		async ( { page } ) => {
 			const emailPreviewElement =
 				'#wc_settings_email_preview_slotfill iframe';
 			const emailSubjectElement =
@@ -239,16 +230,9 @@ test.describe( 'WooCommerce Email Settings', () => {
 				return await page.locator( emailSubjectElement ).textContent();
 			};
 
-			// Disable the email_improvements feature flag
-			await setFeatureFlag( baseURL, 'no' );
 			await page.goto(
 				'wp-admin/admin.php?page=wc-settings&tab=email&section=wc_email_customer_processing_order'
 			);
-			expect( await hasIframe() ).toBeFalsy();
-
-			// Enable the email_improvements feature flag
-			await setFeatureFlag( baseURL, 'yes' );
-			await page.reload();
 			expect( await hasIframe() ).toBeTruthy();
 
 			// Email content

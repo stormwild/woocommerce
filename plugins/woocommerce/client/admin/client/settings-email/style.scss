@@ -3,6 +3,10 @@ $wc-setting-email-width: 634px;
 
 #wc_settings_email_preview_slotfill {
 	position: relative;
+
+	&.wc-settings-email-improvements-disabled {
+		padding-bottom: 120px;
+	}
 }
 
 .wc-settings-email-preview-container {

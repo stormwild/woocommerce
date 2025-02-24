@@ -208,10 +208,7 @@ class EmailPreview {
 	 * @return string
 	 */
 	public function render() {
-		if ( FeaturesUtil::feature_is_enabled( 'email_improvements' ) ) {
-			return $this->render_preview_email();
-		}
-		return $this->render_legacy_preview_email();
+		return $this->render_preview_email();
 	}
 
 	/**
@@ -260,34 +257,6 @@ class EmailPreview {
 			return $product;
 		}
 		return $this->get_dummy_product();
-	}
-
-	/**
-	 * Get HTML of the legacy preview email.
-	 *
-	 * @return string
-	 */
-	private function render_legacy_preview_email() {
-		// load the mailer class.
-		$mailer = WC()->mailer();
-
-		// get the preview email subject.
-		$email_heading = __( 'HTML email template', 'woocommerce' );
-
-		// get the preview email content.
-		ob_start();
-		include WC()->plugin_path() . '/includes/admin/views/html-email-template-preview.php';
-		$message = ob_get_clean();
-
-		// create a new email.
-		$email = new WC_Email();
-
-		/**
-		 * Wrap the content with the email template and then add styles.
-		 *
-		 * @since 2.6.0
-		 */
-		return apply_filters( 'woocommerce_mail_content', $email->style_inline( $mailer->wrap_message( $email_heading, $message ) ) );
 	}
 
 	/**
