@@ -15,4 +15,23 @@ const logIn = async ( page, username, password, assertSuccess = true ) => {
 	}
 };
 
-module.exports = { logIn };
+const logInFromMyAccount = async (
+	page,
+	username,
+	password,
+	assertSuccess = true
+) => {
+	await page.locator( '#username' ).fill( username );
+	await page.locator( '#password' ).fill( password );
+	await page.locator( 'button[name="login"]' ).click();
+
+	if ( assertSuccess ) {
+		await expect(
+			page
+				.getByLabel( 'Account pages' )
+				.getByRole( 'link', { name: 'Log out' } )
+		).toBeVisible();
+	}
+};
+
+module.exports = { logIn, logInFromMyAccount };
