@@ -46,6 +46,7 @@ export {
 	PluginData,
 } from './payment-settings/types';
 export { ShippingMethod } from './shipping-methods/types';
+export { EXPERIMENTAL_PRODUCT_FORM_STORE_NAME } from './product-form';
 
 // Export stores
 export { store as onboardingStore } from './onboarding';
@@ -183,6 +184,7 @@ import type { EXPERIMENTAL_PRODUCT_CATEGORIES_STORE_NAME } from './product-categ
 import type { EXPERIMENTAL_PRODUCT_ATTRIBUTE_TERMS_STORE_NAME } from './product-attribute-terms';
 import type { EXPERIMENTAL_PRODUCT_VARIATIONS_STORE_NAME } from './product-variations';
 import type { EXPERIMENTAL_TAX_CLASSES_STORE_NAME } from './tax-classes';
+import type { EXPERIMENTAL_PRODUCT_FORM_STORE_NAME } from './product-form';
 
 export type WCDataStoreName =
 	| typeof REVIEWS_STORE_NAME
@@ -207,7 +209,8 @@ export type WCDataStoreName =
 	| typeof EXPERIMENTAL_PRODUCT_TAGS_STORE_NAME
 	| typeof EXPERIMENTAL_PRODUCT_CATEGORIES_STORE_NAME
 	| typeof EXPERIMENTAL_PRODUCT_VARIATIONS_STORE_NAME
-	| typeof EXPERIMENTAL_TAX_CLASSES_STORE_NAME;
+	| typeof EXPERIMENTAL_TAX_CLASSES_STORE_NAME
+	| typeof EXPERIMENTAL_PRODUCT_FORM_STORE_NAME;
 
 /**
  * Internal dependencies
@@ -229,6 +232,7 @@ import { ProductCategorySelectors } from './product-categories/types';
 import { ProductAttributeTermsSelectors } from './product-attribute-terms/types';
 import { ProductVariationSelectors } from './product-variations/types';
 import { TaxClassSelectors } from './tax-classes/types';
+import { ProductFormSelectors } from './product-form/selectors';
 
 // As we add types to all the package selectors we can fill out these unknown types with real ones. See one
 // of the already typed selectors for an example of how you can do this.
@@ -278,6 +282,8 @@ export type WCSelectorType< T > = T extends typeof REVIEWS_STORE_NAME
 	? ShippingZonesSelectors
 	: T extends typeof EXPERIMENTAL_TAX_CLASSES_STORE_NAME
 	? TaxClassSelectors
+	: T extends typeof EXPERIMENTAL_PRODUCT_FORM_STORE_NAME
+	? ProductFormSelectors
 	: never;
 
 export interface WCDataSelector {
@@ -289,6 +295,7 @@ export { ActionDispatchers as PluginsStoreActions } from './plugins/actions';
 export { ActionDispatchers as ProductTagsActions } from './product-tags/types';
 export { ActionDispatchers as ProductCategoryActions } from './product-categories/types';
 export { ActionDispatchers as ProductAttributeTermsActions } from './product-attribute-terms/types';
+export { ActionDispatchers as ProductAttributesActions } from './product-attributes/types';
 export { ActionDispatchers as ProductVariationsActions } from './product-variations/types';
 export { ActionDispatchers as ProductsStoreActions } from './products/actions';
 export { ActionDispatchers as ProductShippingClassesActions } from './product-shipping-classes/types';
