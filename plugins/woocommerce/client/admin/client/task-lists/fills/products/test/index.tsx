@@ -258,7 +258,8 @@ describe( 'Products', () => {
 		userEvent.click( getByText( 'Official WooCommerce Marketplace' ) );
 
 		expect( recordEvent ).toHaveBeenCalledWith(
-			'tasklist_add_product_visit_marketplace_click'
+			'tasklist_add_product_visit_marketplace_click',
+			{}
 		);
 	} );
 

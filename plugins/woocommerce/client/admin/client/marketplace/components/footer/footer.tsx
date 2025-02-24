@@ -16,6 +16,7 @@ export const refundPolicyTitle = ( location: string ) => {
 	return (
 		<TrackedLink
 			targetUrl={ MARKETPLACE_HOST + '/refund-policy/' }
+			linkType="external"
 			eventName={ `marketplace_${ location }_link_click` }
 			eventProperties={ {
 				feature_clicked: 'money_back_guarantee',
@@ -32,6 +33,7 @@ export const supportTitle = ( location: string ) => {
 	return (
 		<TrackedLink
 			targetUrl={ MARKETPLACE_HOST + '/docs/' }
+			linkType="external"
 			eventName={ `marketplace_${ location }_link_click` }
 			eventProperties={ {
 				feature_clicked: 'get_help',
@@ -48,6 +50,7 @@ export const paymentTitle = ( location: string ) => {
 	return (
 		<TrackedLink
 			targetUrl={ MARKETPLACE_HOST + '/products/' }
+			linkType="external"
 			eventName={ `marketplace_${ location }_link_click` }
 			eventProperties={ {
 				feature_clicked: 'products_you_can_trust',

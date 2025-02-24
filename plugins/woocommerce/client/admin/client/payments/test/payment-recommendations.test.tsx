@@ -198,7 +198,8 @@ describe( 'Payment recommendations', () => {
 			screen.getByText( 'Official WooCommerce Marketplace' )
 		);
 		expect( recordEvent ).toHaveBeenCalledWith(
-			'settings_payment_recommendations_visit_marketplace_click'
+			'settings_payment_recommendations_visit_marketplace_click',
+			{}
 		);
 	} );
 
