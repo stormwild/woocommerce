@@ -12,7 +12,7 @@ import './footer.scss';
 import IconWithText from '../icon-with-text/icon-with-text';
 import { MARKETPLACE_HOST } from '../constants';
 
-const refundPolicyTitle = createInterpolateElement(
+export const refundPolicyTitle = createInterpolateElement(
 	__( '30-day <a>money-back guarantee</a>', 'woocommerce' ),
 	{
 		// eslint-disable-next-line jsx-a11y/anchor-has-content
@@ -20,7 +20,7 @@ const refundPolicyTitle = createInterpolateElement(
 	}
 );
 
-const supportTitle = createInterpolateElement(
+export const supportTitle = createInterpolateElement(
 	__( '<a>Get help</a> when you need it', 'woocommerce' ),
 	{
 		// eslint-disable-next-line jsx-a11y/anchor-has-content
@@ -28,7 +28,7 @@ const supportTitle = createInterpolateElement(
 	}
 );
 
-const paymentTitle = createInterpolateElement(
+export const paymentTitle = createInterpolateElement(
 	__( '<a>Products</a> you can trust', 'woocommerce' ),
 	{
 		// eslint-disable-next-line jsx-a11y/anchor-has-content
