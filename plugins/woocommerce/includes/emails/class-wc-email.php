@@ -1369,7 +1369,7 @@ class WC_Email extends WC_Settings_API {
 	 * @param string $key Option key.
 	 * @param mixed  $empty_value Value to use when option is empty.
 	 */
-	private function get_option_or_transient( string $key, $empty_value = null ) {
+	protected function get_option_or_transient( string $key, $empty_value = null ) {
 		$option = $this->get_option( $key, $empty_value );
 
 		/**
