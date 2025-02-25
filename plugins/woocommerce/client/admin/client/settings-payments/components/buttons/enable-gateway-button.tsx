@@ -7,7 +7,7 @@ import { useState } from '@wordpress/element';
 import { dispatch, useDispatch } from '@wordpress/data';
 import {
 	EnableGatewayResponse,
-	PAYMENT_SETTINGS_STORE_NAME,
+	paymentSettingsStore,
 	PaymentIncentive,
 	PaymentProviderState,
 } from '@woocommerce/data';
@@ -79,7 +79,7 @@ export const EnableGatewayButton = ( {
 	const [ isUpdating, setIsUpdating ] = useState( false );
 	const { createErrorNotice } = dispatch( 'core/notices' );
 	const { togglePaymentGateway, invalidateResolutionForStoreSelector } =
-		useDispatch( PAYMENT_SETTINGS_STORE_NAME );
+		useDispatch( paymentSettingsStore );
 
 	const throwError = () => {
 		createErrorNotice(

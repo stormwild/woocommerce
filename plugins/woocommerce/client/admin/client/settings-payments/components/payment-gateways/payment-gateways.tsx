@@ -6,7 +6,7 @@ import apiFetch from '@wordpress/api-fetch';
 import clsx from 'clsx';
 import {
 	PaymentProvider,
-	PAYMENT_SETTINGS_STORE_NAME,
+	paymentSettingsStore,
 	WC_ADMIN_NAMESPACE,
 } from '@woocommerce/data';
 import { useDispatch } from '@wordpress/data';
@@ -59,7 +59,7 @@ export const PaymentGateways = ( {
 	businessRegistrationCountry,
 	setBusinessRegistrationCountry,
 }: PaymentGatewaysProps ) => {
-	const { invalidateResolution } = useDispatch( PAYMENT_SETTINGS_STORE_NAME );
+	const { invalidateResolution } = useDispatch( paymentSettingsStore );
 	const [ isPopoverVisible, setIsPopoverVisible ] = useState( false );
 	const storeCountryCode = (
 		window.wcSettings?.admin?.preloadSettings?.general

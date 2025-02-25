@@ -7,8 +7,7 @@ import { useState, useEffect } from '@wordpress/element';
 import {
 	pluginsStore,
 	paymentGatewaysStore,
-	PAYMENT_SETTINGS_STORE_NAME,
-	type PaymentSettingsSelectors,
+	paymentSettingsStore,
 } from '@woocommerce/data';
 import { recordEvent } from '@woocommerce/tracks';
 import { useDispatch, useSelect } from '@wordpress/data';
@@ -76,9 +75,7 @@ export const PaymentPromotionRow: React.FC< PaymentPromotionRowProps > = ( {
 	}, [] );
 
 	const isWooPayEligible = useSelect( ( select ) => {
-		const store = select(
-			PAYMENT_SETTINGS_STORE_NAME
-		) as PaymentSettingsSelectors;
+		const store = select( paymentSettingsStore );
 		return store.getIsWooPayEligible();
 	}, [] );
 

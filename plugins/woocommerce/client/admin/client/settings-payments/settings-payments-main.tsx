@@ -5,9 +5,8 @@ import { useCallback, useRef } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import {
 	pluginsStore,
-	PAYMENT_SETTINGS_STORE_NAME,
+	paymentSettingsStore,
 	PaymentProvider,
-	type PaymentSettingsSelectors,
 } from '@woocommerce/data';
 import { resolveSelect, useDispatch, useSelect } from '@wordpress/data';
 import React, { useState, useEffect } from '@wordpress/element';
@@ -51,9 +50,7 @@ export const SettingsPaymentsMain = () => {
 		PaymentProvider[] | null
 	>( null );
 	const { installAndActivatePlugins } = useDispatch( pluginsStore );
-	const { updateProviderOrdering } = useDispatch(
-		PAYMENT_SETTINGS_STORE_NAME
-	);
+	const { updateProviderOrdering } = useDispatch( paymentSettingsStore );
 	const [ errorMessage, setErrorMessage ] = useState< string | null >( null );
 	const [
 		postSandboxAccountSetupModalVisible,
@@ -117,9 +114,8 @@ export const SettingsPaymentsMain = () => {
 	}, [] );
 
 	// Make UI refresh when plugin is installed.
-	const { invalidateResolutionForStoreSelector } = useDispatch(
-		PAYMENT_SETTINGS_STORE_NAME
-	);
+	const { invalidateResolutionForStoreSelector } =
+		useDispatch( paymentSettingsStore );
 
 	const {
 		providers,
@@ -129,9 +125,7 @@ export const SettingsPaymentsMain = () => {
 		isFetching,
 	} = useSelect(
 		( select ) => {
-			const paymentSettings = select(
-				PAYMENT_SETTINGS_STORE_NAME
-			) as PaymentSettingsSelectors;
+			const paymentSettings = select( paymentSettingsStore );
 
 			return {
 				providers: paymentSettings.getPaymentProviders( storeCountry ),
@@ -302,7 +296,7 @@ export const SettingsPaymentsMain = () => {
 
 					// Wait for the state update and fetch the latest providers.
 					const updatedProviders = await resolveSelect(
-						PAYMENT_SETTINGS_STORE_NAME
+						paymentSettingsStore
 					).getPaymentProviders( storeCountry );
 
 					// Find the matching provider the updated list.

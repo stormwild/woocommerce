@@ -5,10 +5,7 @@ import { Card, CardBody, Button, CardDivider } from '@wordpress/components';
 import { useState } from '@wordpress/element';
 import { WooPaymentsMethodsLogos } from '@woocommerce/onboarding';
 import { useSelect } from '@wordpress/data';
-import {
-	PAYMENT_SETTINGS_STORE_NAME,
-	type PaymentSettingsSelectors,
-} from '@woocommerce/data';
+import { paymentSettingsStore } from '@woocommerce/data';
 
 /**
  * Internal dependencies
@@ -34,9 +31,7 @@ const Banner: React.FC< Props > = ( { isSubmitted, handleSetup } ) => {
 	const [ isExitSurveyModalOpen, setExitSurveyModalOpen ] = useState( false );
 
 	const isWooPayEligible = useSelect( ( select ) => {
-		const store = select(
-			PAYMENT_SETTINGS_STORE_NAME
-		) as PaymentSettingsSelectors;
+		const store = select( paymentSettingsStore );
 		return store.getIsWooPayEligible();
 	}, [] );
 

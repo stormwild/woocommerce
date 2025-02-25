@@ -5,7 +5,7 @@ import { Button, CardDivider } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import {
 	pluginsStore,
-	PAYMENT_SETTINGS_STORE_NAME,
+	paymentSettingsStore,
 	PaymentGatewayLink,
 } from '@woocommerce/data';
 import { useDispatch } from '@wordpress/data';
@@ -86,7 +86,7 @@ export const EllipsisMenuContent = ( {
 		invalidateResolutionForStoreSelector,
 		togglePaymentGateway,
 		hidePaymentExtensionSuggestion,
-	} = useDispatch( PAYMENT_SETTINGS_STORE_NAME );
+	} = useDispatch( paymentSettingsStore );
 	const { createErrorNotice, createSuccessNotice } =
 		useDispatch( 'core/notices' );
 
