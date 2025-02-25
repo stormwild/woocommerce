@@ -1,0 +1,4 @@
+Significance: patch
+Type: update
+
+Added a feature that allows a deprecation warning to be added to a specific property in wcSettings.

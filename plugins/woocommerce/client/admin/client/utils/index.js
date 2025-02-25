@@ -122,3 +122,56 @@ export const useFullScreen = ( classes ) => {
 		};
 	} );
 };
+
+/**
+ * Creates a proxy object that warns when accessing deprecated properties.
+ *
+ * Example object:
+ * {
+ *   prop1: "test",
+ *   prop2: {
+ *     prop3: "test"
+ *   }
+ * }
+ *
+ * Example messages object:
+ * {
+ *   prop1: {
+ *     prop2: 'Deprecation message'
+ *   }
+ * }
+ *
+ * Accessing `obj.prop1.prop2` will trigger a warning in the console.
+ *
+ * @param {Object} obj           - The object to wrap with a proxy.
+ * @param {Object} messages      - Deprecation messages for specific properties.
+ * @param {string} [basePath=''] - Internal tracking for property paths.
+ * @return {Proxy} A proxied object with deprecation warnings.
+ */
+export function createDeprecatedObjectProxy( obj, messages, basePath = '' ) {
+	return new Proxy( obj, {
+		get( target, prop, receiver ) {
+			const nextPath = basePath ? `${ basePath }.${ prop }` : prop;
+
+			// Retrieve the deprecation message (if exists)
+			const deprecationMessage = nextPath
+				.split( '.' )
+				.reduce( ( acc, key ) => {
+					return acc && typeof acc === 'object'
+						? acc[ key ]
+						: undefined;
+				}, messages );
+
+			if ( typeof deprecationMessage === 'string' ) {
+				console.warn( deprecationMessage ); // eslint-disable-line no-console
+			}
+
+			const value = Reflect.get( target, prop, receiver );
+
+			// Recursively wrap objects to maintain deprecation checks
+			return value && typeof value === 'object'
+				? createDeprecatedObjectProxy( value, messages, nextPath )
+				: value;
+		},
+	} );
+}
