@@ -522,7 +522,7 @@ jobs:
     name: 'Validate markdown'
     if: ${{ !cancelled() && github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'trunk' && needs.identify-jobs-to-run.outputs.needs-markdown-validation == 'true' }}
     needs: [ 'identify-jobs-to-run' ]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     permissions:
       contents: read
 

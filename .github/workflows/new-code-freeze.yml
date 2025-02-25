@@ -14,7 +14,7 @@ env:
 jobs:
     verify-release:
         name: 'Verify if the release is a major version release, that ends with .0'
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-latest
         outputs:
             runCodeFreeze: ${{ steps.verify-prs.outputs.runCodeFreeze }}
             verificationFailed: ${{ steps.verify-prs.outputs.verificationFailed || 'false' }}
@@ -115,7 +115,7 @@ jobs:
         name: 'Prepare for code freeze - generate next release branch and milestone'
         if: ${{ needs.verify-release.outputs.runCodeFreeze == 'true' }}
         needs: verify-release
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-latest
         outputs:
             nextReleaseBranch: ${{ steps.extract-version.outputs.nextReleaseBranch }}
             nextReleaseVersion: ${{ steps.extract-version.outputs.nextReleaseVersion }}
@@ -164,7 +164,7 @@ jobs:
     create-code-freeze-branch-and-milestone:
         name: 'Create the code freeze branch and milestone for next release'
         needs: prep-for-code-freeze
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-latest
         permissions:
           issues: write
           contents: write
@@ -245,7 +245,7 @@ jobs:
 
     changelog-version-update-for-trunk:
         name: Update changelog and version for trunk
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-latest
         needs: verify-release
         if: ${{ needs.verify-release.outputs.verificationFailed != 'true' }}
         permissions:
