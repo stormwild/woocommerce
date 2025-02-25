@@ -703,6 +703,7 @@
 					"changes": [],
 					"events": [
 						"on-demand",
+						"release-checks",
 						"core-e2e-pressable"
 					],
 					"report": {
@@ -719,6 +720,7 @@
 					"changes": [],
 					"events": [
 						"on-demand",
+						"release-checks",
 						"core-e2e-wpcom"
 					],
 					"report": {
