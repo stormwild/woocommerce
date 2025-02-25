@@ -1,0 +1,4 @@
+Significance: patch
+Type: dev
+
+E2E tests: fix a strict mode violation in setup-checklist spec

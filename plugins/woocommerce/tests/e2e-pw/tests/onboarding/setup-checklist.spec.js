@@ -32,8 +32,6 @@ const test = baseTest.extend( {
 			value: 'AF',
 		} );
 
-		console.log( 'nonSupportedWooPaymentsCountry fixture' );
-
 		await use( page );
 
 		// Reset the default country to its initial state.
@@ -84,7 +82,8 @@ test(
 			'wp-admin/admin.php?page=wc-admin'
 		);
 		await nonSupportedWooPaymentsCountryPage
-			.getByRole( 'button', { name: 'Get paid' } )
+			.locator( '.woocommerce-task-list__item' )
+			.filter( { hasText: 'Get paid' } )
 			.click();
 
 		await expect(
