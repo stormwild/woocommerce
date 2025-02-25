@@ -453,9 +453,13 @@
           "menu_title": "Add link to logged data",
           "tags": "code-snippets",
           "edit_url": "https://github.com/woocommerce/woocommerce/edit/trunk/docs/code-snippets/link-to-logged-data.md",
-          "hash": "4e51c120a6ea7b14c0e43f11e8eb1b785e4447fbe2b997f5789f10b57c485137",
+          "hash": "4f77310efa5acad4d350d58b9e0a9b360ed4c6def69ff6d4c52c5d59965ca4b7",
           "url": "https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/docs/code-snippets/link-to-logged-data.md",
-          "id": "34da337f79be5ce857024f541a99d302174ca37d"
+          "id": "34da337f79be5ce857024f541a99d302174ca37d",
+          "links": {
+            "../extension-development/logging.md": "c684e2efba45051a4e1f98eb5e6ef6bab194f25c",
+            "../extension-development/settings-api.md": "ed56b97b9de350074a302373ebaaa5dcce727e8b"
+          }
         },
         {
           "post_title": "Advanced settings and customization for legacy Local Pickup",
@@ -1656,6 +1660,11 @@
       "categories": []
     },
     {
+      "category_slug": "utilities",
+      "category_title": "Utilities",
+      "categories": []
+    },
+    {
       "content": "\nThis section covers general guidelines, and best practices to follow in order to ensure your product experience aligns with WooCommerce for ease of use, seamless integration, and strong adoption.\n\nWe strongly recommend you review the current [WooCommerce setup experience](https://woocommerce.com/documentation/plugins/woocommerce/getting-started/) to get familiar with the user experience and taxonomy.\n\nWe also recommend you review the [WordPress core guidelines](https://developer.wordpress.org/plugins/wordpress-org/detailed-plugin-guidelines/) to ensure your product isn't breaking any rules, and review [this helpful resource](https://woocommerce.com/document/grammar-punctuation-style-guide/) on content style.\n\n## General\n\nUse existing WordPress/WooCommerce UI, built in components (text fields, checkboxes, etc) and existing menu structures.\n\nPlugins which draw on WordPress' core design aesthetic will benefit from future updates to this design as WordPress continues to evolve. If you need to make an exception for your product, be prepared to provide a valid use case.\n\n-   [WordPress Components library](https://wordpress.github.io/gutenberg/?path=/story/docs-introduction--page)\n-   [Figma for WordPress](https://make.wordpress.org/design/2018/11/19/figma-for-wordpress/) | ([WordPress Design Library Figma](https://www.figma.com/file/e4tLacmlPuZV47l7901FEs/WordPress-Design-Library))\n-   [WooCommerce Component Library](https://woocommerce.github.io/woocommerce/)\n\n## Component Library - Storybook\n\n> Storybook is an open source tool for developing UI components in isolation for React, React Native and more. It makes building stunning UIs organized and efficient.\n\nThe WooCommerce repository also includes [Storybook](https://storybook.js.org/) integration that allows testing and developing in a WooCommerce-agnostic context. This is very helpful for developing reusable components and trying generic JavaScript modules without any backend dependency.\n\nYou can launch Storybook by running `pnpm --filter=@woocommerce/storybook watch:build` locally. It will open in your browser automatically.\n\nYou can also test Storybook for the current `trunk` branch on GitHub Pages: [https://woocommerce.github.io/woocommerce](https://woocommerce.github.io/woocommerce)\n",
       "category_slug": "user-experience-extensions",
       "category_title": "Extension Guidelines",
@@ -1954,5 +1963,5 @@
       "categories": []
     }
   ],
-  "hash": "b3d613ab1d3bbc6eea01b17d9fb239892ce048f268cb8656bf805dfe700ae04b"
+  "hash": "1f6b8af0a0143be321595ae671d3f25016c344690facfe7b3225d4aacd1ce060"
 }
