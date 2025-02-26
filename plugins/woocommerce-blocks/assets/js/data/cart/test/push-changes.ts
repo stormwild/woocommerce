@@ -2,7 +2,7 @@
  * External dependencies
  */
 import * as wpDataFunctions from '@wordpress/data';
-import { CART_STORE_KEY, validationStore } from '@woocommerce/block-data';
+import { cartStore, validationStore } from '@woocommerce/block-data';
 import type { StoreDescriptor } from '@wordpress/data';
 
 /**
@@ -65,7 +65,7 @@ describe( 'pushChanges', () => {
 	beforeEach( () => {
 		wpDataFunctions.select.mockImplementation(
 			( storeNameOrDescriptor: StoreDescriptor | string ) => {
-				if ( storeNameOrDescriptor === CART_STORE_KEY ) {
+				if ( storeNameOrDescriptor === cartStore ) {
 					return {
 						...jest
 							.requireActual( '@wordpress/data' )
@@ -91,7 +91,7 @@ describe( 'pushChanges', () => {
 		);
 		wpDataFunctions.dispatch.mockImplementation(
 			( storeNameOrDescriptor: StoreDescriptor | string ) => {
-				if ( storeNameOrDescriptor === CART_STORE_KEY ) {
+				if ( storeNameOrDescriptor === cartStore ) {
 					return {
 						...jest
 							.requireActual( '@wordpress/data' )

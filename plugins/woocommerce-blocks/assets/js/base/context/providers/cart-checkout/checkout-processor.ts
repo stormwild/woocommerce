@@ -19,7 +19,7 @@ import {
 	checkoutStore,
 	paymentStore,
 	validationStore,
-	CART_STORE_KEY,
+	cartStore,
 	processErrorResponse,
 	clearCheckoutPutRequests,
 } from '@woocommerce/block-data';
@@ -88,7 +88,7 @@ const CheckoutProcessor = () => {
 	const { shippingErrorStatus } = useShippingDataContext();
 
 	const { billingAddress, shippingAddress } = useSelect( ( select ) =>
-		select( CART_STORE_KEY ).getCustomerData()
+		select( cartStore ).getCustomerData()
 	);
 
 	const { cartNeedsPayment, cartNeedsShipping, receiveCartContents } =

@@ -6,7 +6,7 @@ import lazyLoadScript from '@woocommerce/base-utils/lazy-load-script';
 import getNavigationType from '@woocommerce/base-utils/get-navigation-type';
 import { translateJQueryEventToNative } from '@woocommerce/base-utils/legacy-events';
 import { select, subscribe } from '@wordpress/data';
-import { CART_STORE_KEY } from '@woocommerce/block-data';
+import { cartStore } from '@woocommerce/block-data';
 
 /**
  * Internal dependencies
@@ -32,12 +32,12 @@ declare global {
 
 window.addEventListener( 'load', () => {
 	// Update the totals immediately on load.
-	updateTotals( select( CART_STORE_KEY ).getCartData() );
+	updateTotals( select( cartStore ).getCartData() );
 
 	// Triggers JS event whenever the cart store is updated.
 	subscribe( () => {
-		updateTotals( select( CART_STORE_KEY ).getCartData() );
-	}, CART_STORE_KEY );
+		updateTotals( select( cartStore ).getCartData() );
+	}, cartStore );
 
 	const miniCartBlocks = document.querySelectorAll( '.wc-block-mini-cart' );
 	let wasLoadScriptsCalled = false;

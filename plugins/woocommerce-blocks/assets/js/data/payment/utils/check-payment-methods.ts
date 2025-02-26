@@ -30,6 +30,7 @@ import {
 import { STORE_KEY as CART_STORE_KEY } from '../../cart/constants';
 import { STORE_KEY as PAYMENT_STORE_KEY } from '../constants';
 import type { PaymentStoreDescriptor } from '../index';
+import type { CartStoreDescriptor } from '../../cart';
 import { noticeContexts } from '../../../base/context/event-emit';
 import {
 	EMPTY_CART_ERRORS,
@@ -46,10 +47,13 @@ export const getCanMakePaymentArg = (): CanMakePaymentArgument => {
 	let canPayArgument: CanMakePaymentArgument;
 
 	if ( ! isEditor ) {
-		const store = select( CART_STORE_KEY );
+		const store = select(
+			CART_STORE_KEY
+		) as CurriedSelectorsOf< CartStoreDescriptor >;
 		const cart = store.getCartData();
 		const cartErrors = store.getCartErrors();
 		const cartTotals = store.getCartTotals();
+		// @ts-expect-error `hasFinishedResolution` is not typed in @wordpress/data yet.
 		const cartIsLoading = ! store.hasFinishedResolution( 'getCartData' );
 		const isLoadingRates = store.isCustomerDataUpdating();
 		const selectedShippingMethods = deriveSelectedShippingRates(
@@ -77,7 +81,11 @@ export const getCanMakePaymentArg = (): CanMakePaymentArgument => {
 			isLoadingRates,
 			cartHasCalculatedShipping: cart.hasCalculatedShipping,
 			paymentRequirements: cart.paymentRequirements,
-			receiveCart: dispatch( CART_STORE_KEY ).receiveCart,
+			receiveCart: (
+				dispatch( CART_STORE_KEY ) as ActionCreatorsOf<
+					ConfigOf< CartStoreDescriptor >
+				>
+			 ).receiveCart,
 		};
 		canPayArgument = {
 			cart: cartForCanPayArgument,

@@ -44,7 +44,10 @@ export const config = {
 		},
 	},
 };
+
 export const store = createReduxStore( STORE_KEY, config );
+
+export type CartStoreDescriptor = typeof store;
 
 register( store );
 

@@ -17,7 +17,7 @@ import Noninteractive from '@woocommerce/base-components/noninteractive';
 import type { BillingAddress } from '@woocommerce/settings';
 import { getSetting } from '@woocommerce/settings';
 import { useSelect } from '@wordpress/data';
-import { CART_STORE_KEY } from '@woocommerce/block-data';
+import { cartStore } from '@woocommerce/block-data';
 import { emptyAddressFields } from '@woocommerce/base-utils';
 import type { CartResponseBillingAddress } from '@woocommerce/types';
 
@@ -81,7 +81,7 @@ const Block = (): JSX.Element => {
 		: [ noticeContexts.SHIPPING_ADDRESS ];
 
 	const { cartDataLoaded } = useSelect( ( select ) => {
-		const store = select( CART_STORE_KEY );
+		const store = select( cartStore );
 		return {
 			cartDataLoaded: store.hasFinishedResolution( 'getCartData' ),
 		};

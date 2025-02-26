@@ -2,7 +2,7 @@
  * External dependencies
  */
 import { useDispatch, useSelect } from '@wordpress/data';
-import { CART_STORE_KEY, checkoutStore } from '@woocommerce/block-data';
+import { cartStore, checkoutStore } from '@woocommerce/block-data';
 import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { hasShippingRate } from '@woocommerce/base-utils';
@@ -25,7 +25,7 @@ export const useShowShippingTotalWarning = () => {
 			return {
 				prefersCollection: select( checkoutStore ).prefersCollection(),
 				isRateBeingSelected:
-					select( CART_STORE_KEY ).isShippingRateBeingSelected(),
+					select( cartStore ).isShippingRateBeingSelected(),
 				shippingNotices: select( noticesStore ).getNotices( context ),
 			};
 		}, [] );

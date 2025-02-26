@@ -4,7 +4,7 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { useDispatch, useSelect } from '@wordpress/data';
 import {
-	CART_STORE_KEY,
+	cartStore,
 	validationStore,
 	checkoutStore,
 } from '@woocommerce/block-data';
@@ -33,7 +33,7 @@ export const useStoreCartCoupons = ( context = '' ): StoreCartCoupon => {
 		isRemovingCoupon,
 	}: Pick< StoreCartCoupon, 'isApplyingCoupon' | 'isRemovingCoupon' > =
 		useSelect( ( select ) => {
-			const store = select( CART_STORE_KEY );
+			const store = select( cartStore );
 
 			return {
 				isApplyingCoupon: store.isApplyingCoupon(),
@@ -41,7 +41,7 @@ export const useStoreCartCoupons = ( context = '' ): StoreCartCoupon => {
 			};
 		} );
 
-	const { applyCoupon, removeCoupon } = useDispatch( CART_STORE_KEY );
+	const { applyCoupon, removeCoupon } = useDispatch( cartStore );
 	const orderId = useSelect( ( select ) =>
 		select( checkoutStore ).getOrderId()
 	);

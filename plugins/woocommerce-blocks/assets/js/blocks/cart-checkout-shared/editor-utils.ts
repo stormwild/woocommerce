@@ -3,7 +3,7 @@
  */
 import { getBlockTypes } from '@wordpress/blocks';
 import { applyCheckoutFilter } from '@woocommerce/blocks-checkout';
-import { CART_STORE_KEY } from '@woocommerce/block-data';
+import { cartStore } from '@woocommerce/block-data';
 import { select } from '@wordpress/data';
 
 // List of core block types to allow in inner block areas.
@@ -16,7 +16,7 @@ export const getAllowedBlocks = ( block: string ): string[] => {
 	const additionalCartCheckoutInnerBlockTypes = applyCheckoutFilter( {
 		filterName: 'additionalCartCheckoutInnerBlockTypes',
 		defaultValue: [],
-		extensions: select( CART_STORE_KEY ).getCartData().extensions,
+		extensions: select( cartStore ).getCartData().extensions,
 		arg: { block },
 		validation: ( value ) => {
 			if (

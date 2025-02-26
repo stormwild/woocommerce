@@ -1,10 +1,7 @@
 /**
  * External dependencies
  */
-import {
-	CART_STORE_KEY as storeKey,
-	processErrorResponse,
-} from '@woocommerce/block-data';
+import { cartStore, processErrorResponse } from '@woocommerce/block-data';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { isObject } from '@woocommerce/types';
 import { useEffect, useRef, useCallback } from '@wordpress/element';
@@ -34,7 +31,7 @@ export const useShippingData = (): ShippingData => {
 		isSelectingRate,
 	} = useSelect(
 		( select ) => {
-			const store = select( storeKey );
+			const store = select( cartStore );
 			const rates = isEditor
 				? previewCart.shipping_rates
 				: store.getShippingRates();
@@ -78,7 +75,7 @@ export const useShippingData = (): ShippingData => {
 	}, [ shippingRates ] );
 
 	const { selectShippingRate: dispatchSelectShippingRate } = useDispatch(
-		storeKey
+		cartStore
 	) as {
 		selectShippingRate: unknown;
 	} as {

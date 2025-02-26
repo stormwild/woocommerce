@@ -27,7 +27,7 @@ import {
 } from '../../base/context/event-emit';
 import { EMIT_TYPES } from '../../base/context/providers/cart-checkout/payment-events/event-emit';
 import type { emitProcessingEventType } from './types';
-import { CART_STORE_KEY } from '../cart';
+import { store as cartStore } from '../cart';
 import {
 	isBillingAddress,
 	isShippingAddress,
@@ -143,7 +143,7 @@ export const __internalEmitPaymentProcessingEvent: emitProcessingEventType = (
 			} );
 
 			const { setBillingAddress, setShippingAddress } =
-				registry.dispatch( CART_STORE_KEY );
+				registry.dispatch( cartStore );
 
 			// Observer returned success, we sync the payment method data and billing address.
 			if ( isObserverResponse( successResponse ) && ! errorResponse ) {

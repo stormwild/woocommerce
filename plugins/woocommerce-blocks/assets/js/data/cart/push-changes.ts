@@ -9,7 +9,7 @@ import isShallowEqual from '@wordpress/is-shallow-equal';
 /**
  * Internal dependencies
  */
-import { STORE_KEY } from './constants';
+import { store as cartStore } from './index';
 import { processErrorResponse } from '../utils';
 import { getDirtyKeys, validateDirtyProps, BaseAddressKey } from './utils';
 
@@ -35,7 +35,7 @@ const localState = {
  * Initializes the customer data cache on the first run.
  */
 const initialize = () => {
-	localState.customerData = select( STORE_KEY ).getCustomerData();
+	localState.customerData = select( cartStore ).getCustomerData();
 	localState.customerDataIsInitialized = true;
 };
 
@@ -44,7 +44,7 @@ const initialize = () => {
  */
 const updateDirtyProps = () => {
 	// Returns all current customer data from the store.
-	const newCustomerData = select( STORE_KEY ).getCustomerData();
+	const newCustomerData = select( cartStore ).getCustomerData();
 
 	localState.dirtyProps.billingAddress = [
 		...localState.dirtyProps.billingAddress,
@@ -130,7 +130,7 @@ const updateCustomerData = (): void => {
 		return;
 	}
 
-	dispatch( STORE_KEY )
+	dispatch( cartStore )
 		.updateCustomerData( {
 			billing_address: localState.customerData.billingAddress,
 			shipping_address: localState.customerData.shippingAddress,
@@ -165,7 +165,7 @@ const debouncedUpdateCustomerData = debounce( () => {
  * schedule a push.
  */
 export const pushChanges = ( debounced = true ): void => {
-	if ( ! select( STORE_KEY ).hasFinishedResolution( 'getCartData' ) ) {
+	if ( ! select( cartStore ).hasFinishedResolution( 'getCartData' ) ) {
 		return;
 	}
 
@@ -177,7 +177,7 @@ export const pushChanges = ( debounced = true ): void => {
 	if (
 		isShallowEqual(
 			localState.customerData,
-			select( STORE_KEY ).getCustomerData()
+			select( cartStore ).getCustomerData()
 		)
 	) {
 		return;

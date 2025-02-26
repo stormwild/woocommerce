@@ -8,7 +8,7 @@ import apiFetch from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import { getCartData } from '../resolvers';
-import { CART_STORE_KEY } from '..';
+import { store as cartStore } from '..';
 
 jest.mock( '@wordpress/data-controls' );
 jest.mock( '@wordpress/api-fetch' );
@@ -16,7 +16,7 @@ jest.mock( '@wordpress/api-fetch' );
 describe( 'getCartData', () => {
 	it( 'when apiFetch returns a valid response, receives the cart correctly', async () => {
 		const mockDispatch = {
-			...dispatch( CART_STORE_KEY ),
+			...dispatch( cartStore ),
 			receiveCart: jest.fn(),
 			receiveError: jest.fn(),
 		};
@@ -49,7 +49,7 @@ describe( 'getCartData', () => {
 	} );
 	it( 'when apiFetch returns an invalid response, dispatches the correct error action', async () => {
 		const mockDispatch = {
-			...dispatch( CART_STORE_KEY ),
+			...dispatch( cartStore ),
 			receiveCart: jest.fn(),
 			receiveError: jest.fn(),
 		};

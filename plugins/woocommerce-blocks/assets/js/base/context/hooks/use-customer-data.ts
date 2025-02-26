@@ -2,7 +2,7 @@
  * External dependencies
  */
 import { useDispatch, useSelect } from '@wordpress/data';
-import { CART_STORE_KEY as storeKey } from '@woocommerce/block-data';
+import { cartStore as storeKey } from '@woocommerce/block-data';
 import type { BillingAddress, ShippingAddress } from '@woocommerce/settings';
 
 export interface CustomerDataType {

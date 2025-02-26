@@ -4,7 +4,7 @@
  */
 import { getByTestId, waitFor } from '@testing-library/dom';
 import { getSettingWithCoercion } from '@woocommerce/settings';
-import { CART_STORE_KEY } from '@woocommerce/block-data';
+import { cartStore } from '@woocommerce/block-data';
 import { dispatch, select } from '@wordpress/data';
 import apiFetch from '@wordpress/api-fetch';
 
@@ -71,8 +71,8 @@ describe( 'Mini-Cart frontend script when "the display prices during cart and ch
 				json: () => Promise.resolve( responseMock ),
 			} )
 		);
-		dispatch( CART_STORE_KEY ).invalidateResolutionForStore();
-		select( CART_STORE_KEY ).getCartData();
+		dispatch( cartStore ).invalidateResolutionForStore();
+		select( cartStore ).getCartData();
 
 		// Assert that we are rendering the amount.
 		await waitFor( () =>
@@ -99,10 +99,10 @@ describe( 'Mini-Cart frontend script when "the display prices during cart and ch
 			} )
 		);
 
-		dispatch( CART_STORE_KEY ).invalidateResolutionForStoreSelector(
+		dispatch( cartStore ).invalidateResolutionForStoreSelector(
 			'getCartData'
 		);
-		select( CART_STORE_KEY ).getCartData();
+		select( cartStore ).getCartData();
 
 		await waitFor( () =>
 			expect( getByTestId( container, 'quantity' ).textContent ).toBe(
@@ -126,10 +126,10 @@ describe( 'Mini-Cart frontend script when "the display prices during cart and ch
 				json: () => Promise.resolve( responseMock ),
 			} )
 		);
-		dispatch( CART_STORE_KEY ).invalidateResolutionForStoreSelector(
+		dispatch( cartStore ).invalidateResolutionForStoreSelector(
 			'getCartData'
 		);
-		select( CART_STORE_KEY ).getCartData();
+		select( cartStore ).getCartData();
 
 		// Assert that we are rendering the amount.
 		await waitFor( () =>

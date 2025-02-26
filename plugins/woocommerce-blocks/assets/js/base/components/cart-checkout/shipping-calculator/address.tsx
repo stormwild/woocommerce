@@ -6,7 +6,7 @@ import Button from '@woocommerce/base-components/button';
 import { useState } from '@wordpress/element';
 import isShallowEqual from '@wordpress/is-shallow-equal';
 import type { ShippingAddress, FormFields } from '@woocommerce/settings';
-import { validationStore, CART_STORE_KEY } from '@woocommerce/block-data';
+import { validationStore, cartStore } from '@woocommerce/block-data';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { useFocusReturn } from '@woocommerce/base-utils';
 /**
@@ -36,7 +36,7 @@ const ShippingCalculatorAddress = ( {
 				hasValidationErrors:
 					select( validationStore ).hasValidationErrors,
 				isCustomerDataUpdating:
-					select( CART_STORE_KEY ).isCustomerDataUpdating(),
+					select( cartStore ).isCustomerDataUpdating(),
 			};
 		}
 	);

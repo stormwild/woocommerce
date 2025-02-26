@@ -3,7 +3,7 @@
  */
 import { render, screen, within } from '@testing-library/react';
 import ShippingAddress from '@woocommerce/base-components/cart-checkout/totals/shipping/shipping-address';
-import { CART_STORE_KEY, checkoutStore } from '@woocommerce/block-data';
+import { cartStore, checkoutStore } from '@woocommerce/block-data';
 import { ShippingCalculatorContext } from '@woocommerce/base-components/cart-checkout';
 import { dispatch } from '@wordpress/data';
 import { previewCart } from '@woocommerce/resource-previews';
@@ -129,7 +129,7 @@ describe( 'ShippingAddress', () => {
 			pickupRateIndex
 		].selected = true;
 
-		dispatch( CART_STORE_KEY ).receiveCart( previewCart );
+		dispatch( cartStore ).receiveCart( previewCart );
 
 		render(
 			<ShippingCalculatorContext.Provider
@@ -174,7 +174,7 @@ describe( 'ShippingAddress', () => {
 			pickupRateIndex
 		].selected = true;
 
-		dispatch( CART_STORE_KEY ).receiveCart( previewCart );
+		dispatch( cartStore ).receiveCart( previewCart );
 
 		render(
 			<ShippingCalculatorContext.Provider
@@ -228,7 +228,7 @@ describe( 'ShippingAddress', () => {
 			pickupRateIndex
 		].meta_data[ addressKeyIndex ].value = '';
 
-		dispatch( CART_STORE_KEY ).receiveCart( previewCart );
+		dispatch( cartStore ).receiveCart( previewCart );
 
 		render( <ShippingAddress /> );
 		expect(

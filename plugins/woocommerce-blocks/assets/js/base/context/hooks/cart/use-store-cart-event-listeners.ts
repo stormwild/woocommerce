@@ -2,7 +2,7 @@
  * External dependencies
  */
 import { useEffect } from '@wordpress/element';
-import { CART_STORE_KEY } from '@woocommerce/block-data';
+import { cartStore } from '@woocommerce/block-data';
 import { dispatch } from '@wordpress/data';
 import {
 	translateJQueryEventToNative,
@@ -33,7 +33,7 @@ declare global {
 const refreshData = ( event: CartDataCustomEvent ): void => {
 	const eventDetail = event?.detail;
 	if ( ! eventDetail || ! eventDetail.preserveCartData ) {
-		dispatch( CART_STORE_KEY ).invalidateResolutionForStore();
+		dispatch( cartStore ).invalidateResolutionForStore();
 	}
 };
 
@@ -45,7 +45,7 @@ const refreshData = ( event: CartDataCustomEvent ): void => {
  */
 const refreshCachedCartData = ( event: PageTransitionEvent ): void => {
 	if ( event?.persisted || getNavigationType() === 'back_forward' ) {
-		dispatch( CART_STORE_KEY ).invalidateResolutionForStore();
+		dispatch( cartStore ).invalidateResolutionForStore();
 	}
 };
 

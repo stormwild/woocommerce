@@ -1,4 +1,5 @@
 <!-- markdownlint-disable MD024 -->
+
 # Cart Store (`wc/store/cart`) <!-- omit in toc -->
 
 > 💡 What's the difference between the Cart Store and the Checkout Store?
@@ -61,10 +62,10 @@ The Cart Store provides a collection of selectors and methods to manage and retr
 
 ## Usage
 
-To utilize this store you will import the `CART_STORE_KEY` in any module referencing it. Assuming `@woocommerce/block-data` is registered as an external pointing to `wc.wcBlocksData` you can import the key via:
+To utilize this store you will import the `cartStore` `StoreDescriptor` in any module referencing it. Assuming `@woocommerce/block-data` is registered as an external pointing to `wc.wcBlocksData` you can import the `StoreDescriptor` via:
 
 ```js
-const { CART_STORE_KEY } = window.wc.wcBlocksData;
+const { cartStore } = window.wc.wcBlocksData;
 ```
 
 ## Actions
@@ -96,7 +97,7 @@ This action is used to set the cart data in the store.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const { dispatch } = useDispatch( CART_STORE_KEY );
+const { dispatch } = useDispatch( cartStore );
 dispatch( setCartData( newCartData ) );
 ```
 
@@ -107,34 +108,34 @@ This action is used to set the error data in the store.
 #### _Parameters_ <!-- omit in toc -->
 
 -   _errorData_ `object`: The error data that needs to be set in the store.
-    -  _code_ `string`: The error code.
-    -  _message_ `string`: The error message.
-    -  _data_ `object`: Additional error data. This is an optional object with the following keys:
-        -  _status_ `number`: The error status.
-        -  _params_ `string`: The error params.
-        -  _message_ `string`: The error message.
-        -  _cart_ `object`: The cart data. This is an optional object with the following keys:
-            -  _coupons_ `array`: The coupon items in the cart.
-            -  _shippingRates_ `array`: The cart shipping rates (see `getShippingRates` selector).
-            -  _shippingAddress_ `object`: The shipping address (see `getCustomerData` selector).
-            -  _billingAddress_ `object`: The billing address (see `getCustomerData` selector).
-            -  _items_ `array`: The cart items.
-            -  _itemsCount_ `number`: The total number of items in the cart
-            -  _itemsWeight_ `number`: The total weight of items in the cart.
-            -  _crossSells_ `array`: The cross sells items.
-            -  _needsPayment_ `boolean`: If the cart needs payment.
-            -  _needsShipping_ `boolean`: If the cart needs shipping.
-            -  _hasCalculatedShipping_ `boolean`: If the cart has calculated shipping.
-            -  _fees_ `array`: The cart fees.
-            -  _totals_ `object`: The cart totals (see `getCartTotals` selector).
-            -  _errors_ `array`: The cart errors (see `getCartErrors` selector).
-            -  _paymentRequirements_ `object`: The payment requirements for the cart.
-            -  _extensions_ `object`: The extensions data.
+    -   _code_ `string`: The error code.
+    -   _message_ `string`: The error message.
+    -   _data_ `object`: Additional error data. This is an optional object with the following keys:
+        -   _status_ `number`: The error status.
+        -   _params_ `string`: The error params.
+        -   _message_ `string`: The error message.
+        -   _cart_ `object`: The cart data. This is an optional object with the following keys:
+            -   _coupons_ `array`: The coupon items in the cart.
+            -   _shippingRates_ `array`: The cart shipping rates (see `getShippingRates` selector).
+            -   _shippingAddress_ `object`: The shipping address (see `getCustomerData` selector).
+            -   _billingAddress_ `object`: The billing address (see `getCustomerData` selector).
+            -   _items_ `array`: The cart items.
+            -   _itemsCount_ `number`: The total number of items in the cart
+            -   _itemsWeight_ `number`: The total weight of items in the cart.
+            -   _crossSells_ `array`: The cross sells items.
+            -   _needsPayment_ `boolean`: If the cart needs payment.
+            -   _needsShipping_ `boolean`: If the cart needs shipping.
+            -   _hasCalculatedShipping_ `boolean`: If the cart has calculated shipping.
+            -   _fees_ `array`: The cart fees.
+            -   _totals_ `object`: The cart totals (see `getCartTotals` selector).
+            -   _errors_ `array`: The cart errors (see `getCartErrors` selector).
+            -   _paymentRequirements_ `object`: The payment requirements for the cart.
+            -   _extensions_ `object`: The extensions data.
 
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const { dispatch } = useDispatch( CART_STORE_KEY );
+const { dispatch } = useDispatch( cartStore );
 dispatch( setErrorData( newErrorData ) );
 ```
 
@@ -144,23 +145,23 @@ This action returns an action object used in updating the store with the provide
 
 #### _Parameters_ <!-- omit in toc -->
 
--   _cartContents_ `object`:  A cart contents API response.
-    -  _coupons_ `array`: The coupon items in the cart.
-    -  _shippingRates_ `array`: The cart shipping rates (see `getShippingRates` selector).
-    -  _shippingAddress_ `object`: The shipping address (see `getCustomerData` selector).
-    -  _billingAddress_ `object`: The billing address (see `getCustomerData` selector).
-    -  _items_ `array`: The cart items.
-    -  _itemsCount_ `number`: The total number of items in the cart
-    -  _itemsWeight_ `number`: The total weight of items in the cart.
-    -  _crossSells_ `array`: The cross sells items.
-    -  _needsPayment_ `boolean`: If the cart needs payment.
-    -  _needsShipping_ `boolean`: If the cart needs shipping.
-    -  _hasCalculatedShipping_ `boolean`: If the cart has calculated shipping.
-    -  _fees_ `array`: The cart fees.
-    -  _totals_ `object`: The cart totals (see `getCartTotals` selector).
-    -  _errors_ `array`: The cart errors (see `getCartErrors` selector).
-    -  _paymentRequirements_ `object`: The payment requirements for the cart.
-    -  _extensions_ `object`: The extensions data.
+-   _cartContents_ `object`: A cart contents API response.
+    -   _coupons_ `array`: The coupon items in the cart.
+    -   _shippingRates_ `array`: The cart shipping rates (see `getShippingRates` selector).
+    -   _shippingAddress_ `object`: The shipping address (see `getCustomerData` selector).
+    -   _billingAddress_ `object`: The billing address (see `getCustomerData` selector).
+    -   _items_ `array`: The cart items.
+    -   _itemsCount_ `number`: The total number of items in the cart
+    -   _itemsWeight_ `number`: The total weight of items in the cart.
+    -   _crossSells_ `array`: The cross sells items.
+    -   _needsPayment_ `boolean`: If the cart needs payment.
+    -   _needsShipping_ `boolean`: If the cart needs shipping.
+    -   _hasCalculatedShipping_ `boolean`: If the cart has calculated shipping.
+    -   _fees_ `array`: The cart fees.
+    -   _totals_ `object`: The cart totals (see `getCartTotals` selector).
+    -   _errors_ `array`: The cart errors (see `getCartErrors` selector).
+    -   _paymentRequirements_ `object`: The payment requirements for the cart.
+    -   _extensions_ `object`: The extensions data.
 
 #### _Returns_ <!-- omit in toc -->
 
@@ -185,7 +186,7 @@ This action returns an action object used in updating the store with the provide
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const { dispatch } = useDispatch( CART_STORE_KEY );
+const { dispatch } = useDispatch( cartStore );
 dispatch( receiveCartContents( newCartContents ) );
 ```
 
@@ -206,7 +207,7 @@ This action returns an action object used to track when a coupon is applying.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const { dispatch } = useDispatch( CART_STORE_KEY );
+const { dispatch } = useDispatch( cartStore );
 dispatch( receiveApplyingCoupon( couponCode ) );
 ```
 
@@ -227,7 +228,7 @@ This action returns an action object used to track when a coupon is removing.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const { dispatch } = useDispatch( CART_STORE_KEY );
+const { dispatch } = useDispatch( cartStore );
 dispatch( receiveRemovingCoupon( couponCode ) );
 ```
 
@@ -249,7 +250,7 @@ This action is used to update a specific item in the cart.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const { dispatch } = useDispatch( CART_STORE_KEY );
+const { dispatch } = useDispatch( cartStore );
 dispatch( receiveCartItem( CartResponseItem ) );
 ```
 
@@ -272,7 +273,7 @@ This action returns an action object to indicate if the specified cart item quan
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const { dispatch } = useDispatch( CART_STORE_KEY );
+const { dispatch } = useDispatch( cartStore );
 dispatch( itemIsPendingQuantity( cartItemKey, isPending ) );
 ```
 
@@ -295,7 +296,7 @@ This action returns an action object to indicate if the specified cart item is b
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const { dispatch } = useDispatch( CART_STORE_KEY );
+const { dispatch } = useDispatch( cartStore );
 dispatch( itemIsPendingDelete( cartItemKey, isPending ) );
 ```
 
@@ -316,7 +317,7 @@ This action returns an action object to indicate if the cart data is stale.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const { dispatch } = useDispatch( CART_STORE_KEY );
+const { dispatch } = useDispatch( cartStore );
 dispatch( setIsCartDataStale( isCartDataStale ) );
 ```
 
@@ -337,7 +338,7 @@ This action returns an action object to indicate if the customer data is being u
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const { dispatch } = useDispatch( CART_STORE_KEY );
+const { dispatch } = useDispatch( cartStore );
 dispatch( updatingCustomerData( isResolving ) );
 ```
 
@@ -358,7 +359,7 @@ This action returns an action object to indicate if the shipping rates are being
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const { dispatch } = useDispatch( CART_STORE_KEY );
+const { dispatch } = useDispatch( cartStore );
 dispatch( shippingRatesBeingSelected( isResolving ) );
 ```
 
@@ -375,11 +376,10 @@ This action is used to send POSTs request to the /cart/extensions endpoint with 
         -   _value_ `string`: The value of the extension.
     -   _overwriteDirtyCustomerData_ `boolean`: Whether to overwrite the customer data in the client with the data returned from the server, even if it is dirty (i.e. it hasn't been pushed to the server yet).
 
-
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const { dispatch } = useDispatch( CART_STORE_KEY );
+const { dispatch } = useDispatch( cartStore );
 dispatch( applyExtensionCartUpdate( args ) );
 ```
 
@@ -394,7 +394,7 @@ This action is used to apply a coupon to the cart.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const { dispatch } = useDispatch( CART_STORE_KEY );
+const { dispatch } = useDispatch( cartStore );
 dispatch( applyCoupon( couponCode ) );
 ```
 
@@ -409,7 +409,7 @@ This action is used to remove a coupon from the cart.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const { dispatch } = useDispatch( CART_STORE_KEY );
+const { dispatch } = useDispatch( cartStore );
 dispatch( removeCoupon( couponCode ) );
 ```
 
@@ -425,7 +425,7 @@ This action is used to add an item to the cart.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const { dispatch } = useDispatch( CART_STORE_KEY );
+const { dispatch } = useDispatch( cartStore );
 dispatch( addItemToCart( productId, quantity ) );
 ```
 
@@ -440,7 +440,7 @@ This action is used to remove an item from the cart.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const { dispatch } = useDispatch( CART_STORE_KEY );
+const { dispatch } = useDispatch( cartStore );
 dispatch( removeItemFromCart( cartItemKey ) );
 ```
 
@@ -456,7 +456,7 @@ This action is used to change the quantity of an item in the cart.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const { dispatch } = useDispatch( CART_STORE_KEY );
+const { dispatch } = useDispatch( cartStore );
 dispatch( changeCartItemQuantity( cartItemKey, quantity ) );
 ```
 
@@ -472,7 +472,7 @@ This action is used to select a shipping rate for the cart.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const { dispatch } = useDispatch( CART_STORE_KEY );
+const { dispatch } = useDispatch( cartStore );
 dispatch( selectShippingRate( rateId, packageId ) );
 ```
 
@@ -496,7 +496,7 @@ This action is used to set the billing address for the cart locally, as opposed 
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const { dispatch } = useDispatch( CART_STORE_KEY );
+const { dispatch } = useDispatch( cartStore );
 dispatch( setBillingAddress( billingAddress ) );
 ```
 
@@ -520,7 +520,7 @@ This action is used to set the shipping address for the cart locally, as opposed
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const { dispatch } = useDispatch( CART_STORE_KEY );
+const { dispatch } = useDispatch( cartStore );
 dispatch( setShippingAddress( shippingAddress ) );
 ```
 
@@ -547,7 +547,7 @@ This action is used to updates the shipping and/or billing address for the custo
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const { dispatch } = useDispatch( CART_STORE_KEY );
+const { dispatch } = useDispatch( cartStore );
 dispatch( updateCustomerData( customerData, editing ) );
 ```
 
@@ -580,7 +580,7 @@ Returns the Cart data from the state.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const store = select( CART_STORE_KEY );
+const store = select( cartStore );
 const cartData = store.getCartData();
 ```
 
@@ -606,7 +606,7 @@ Returns the shipping and billing address from the state.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const store = select( CART_STORE_KEY );
+const store = select( cartStore );
 const customerData = store.getCustomerData();
 ```
 
@@ -630,7 +630,7 @@ Returns the shipping rates from the state.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const store = select( CART_STORE_KEY );
+const store = select( cartStore );
 const shippingRates = store.getShippingRates();
 ```
 
@@ -645,7 +645,7 @@ Queries whether the cart needs shipping.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const store = select( CART_STORE_KEY );
+const store = select( cartStore );
 const needsShipping = store.getNeedsShipping();
 ```
 
@@ -660,7 +660,7 @@ Queries whether the cart shipping has been calculated.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const store = select( CART_STORE_KEY );
+const store = select( cartStore );
 const hasCalculatedShipping = store.getHasCalculatedShipping();
 ```
 
@@ -693,7 +693,7 @@ Returns the cart totals from state.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const store = select( CART_STORE_KEY );
+const store = select( cartStore );
 const cartTotals = store.getCartTotals();
 ```
 
@@ -713,7 +713,7 @@ Returns the cart meta from state.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const store = select( CART_STORE_KEY );
+const store = select( cartStore );
 const cartMeta = store.getCartMeta();
 ```
 
@@ -726,13 +726,12 @@ Returns the cart errors from state if cart receives customer facing errors from 
 -   `array`: The cart errors with the following keys:
     -   _code_ `string`: The error code.
     -   _message_ `string`: The error message.
-    -	_data_ `object`: API response data.
-
+    -   _data_ `object`: API response data.
 
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const store = select( CART_STORE_KEY );
+const store = select( cartStore );
 const cartErrors = store.getCartErrors();
 ```
 
@@ -747,7 +746,7 @@ Queries whether a coupon is being applied.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const store = select( CART_STORE_KEY );
+const store = select( cartStore );
 const isApplyingCoupon = store.isApplyingCoupon();
 ```
 
@@ -762,7 +761,7 @@ Queries whether the cart data is stale.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const store = select( CART_STORE_KEY );
+const store = select( cartStore );
 const isCartDataStale = store.isCartDataStale();
 ```
 
@@ -777,7 +776,7 @@ Returns the coupon code being applied.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const store = select( CART_STORE_KEY );
+const store = select( cartStore );
 const couponBeingApplied = store.getCouponBeingApplied();
 ```
 
@@ -792,7 +791,7 @@ Queries whether a coupon is being removed.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const store = select( CART_STORE_KEY );
+const store = select( cartStore );
 const isRemovingCoupon = store.isRemovingCoupon();
 ```
 
@@ -807,7 +806,7 @@ Returns the coupon code being removed.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const store = select( CART_STORE_KEY );
+const store = select( cartStore );
 const couponBeingRemoved = store.getCouponBeingRemoved();
 ```
 
@@ -866,7 +865,7 @@ Returns a cart item from the state.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const store = select( CART_STORE_KEY );
+const store = select( cartStore );
 const cartItem = store.getCartItem( cartItemKey );
 ```
 
@@ -885,7 +884,7 @@ Queries whether a cart item is pending quantity.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const store = select( CART_STORE_KEY );
+const store = select( cartStore );
 const isItemPendingQuantity = store.isItemPendingQuantity( cartItemKey );
 ```
 
@@ -904,7 +903,7 @@ Queries whether a cart item is pending delete.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const store = select( CART_STORE_KEY );
+const store = select( cartStore );
 const isItemPendingDelete = store.isItemPendingDelete( cartItemKey );
 ```
 
@@ -919,7 +918,7 @@ Queries whether the customer data is being updated.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const store = select( CART_STORE_KEY );
+const store = select( cartStore );
 const isCustomerDataUpdating = store.isCustomerDataUpdating();
 ```
 
@@ -934,7 +933,7 @@ Queries whether a shipping rate is being selected.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const store = select( CART_STORE_KEY );
+const store = select( cartStore );
 const isShippingRateBeingSelected = store.isShippingRateBeingSelected();
 ```
 
@@ -949,7 +948,7 @@ Retrieves the item keys for items whose quantity is currently being updated.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const store = select( CART_STORE_KEY );
+const store = select( cartStore );
 const itemsPendingQuantityUpdate = store.getItemsPendingQuantityUpdate();
 ```
 
@@ -964,7 +963,7 @@ Retrieves the item keys for items that are currently being deleted.
 #### _Example_ <!-- omit in toc -->
 
 ```js
-const store = select( CART_STORE_KEY );
+const store = select( cartStore );
 const itemsPendingDelete = store.getItemsPendingDelete();
 ```
 
