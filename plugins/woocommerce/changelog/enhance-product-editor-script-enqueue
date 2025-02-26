@@ -1,0 +1,4 @@
+Significance: patch
+Type: enhancement
+
+Optimize product editor script loading by conditionally removing dependencies
