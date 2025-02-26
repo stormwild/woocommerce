@@ -3120,6 +3120,9 @@ importers:
       '@wordpress/media-utils':
         specifier: wp-6.6
         version: 5.0.1
+      '@wordpress/notices':
+        specifier: wp-6.6
+        version: 5.0.2(react@18.3.1)
       '@wordpress/plugins':
         specifier: wp-6.6
         version: 7.0.3(@emotion/is-prop-valid@1.2.1)(@types/react@18.3.16)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)

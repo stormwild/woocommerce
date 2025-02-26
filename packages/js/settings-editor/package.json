@@ -58,6 +58,7 @@
 		"@wordpress/interface": "wp-6.6",
 		"@wordpress/keyboard-shortcuts": "wp-6.6",
 		"@wordpress/keycodes": "wp-6.6",
+		"@wordpress/notices": "wp-6.6",
 		"@wordpress/media-utils": "wp-6.6",
 		"@woocommerce/navigation": "workspace:*",
 		"@wordpress/plugins": "wp-6.6",
