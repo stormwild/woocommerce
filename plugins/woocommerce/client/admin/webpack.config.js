@@ -226,26 +226,23 @@ const webpackConfig = {
 		! process.env.STORYBOOK &&
 			new WooCommerceDependencyExtractionWebpackPlugin( {
 				requestToExternal( request ) {
-					if ( request === '@wordpress/components/build/ui' ) {
-						// The external wp.components does not include ui components, so we need to skip requesting to external here.
-						return null;
-					}
-
 					if ( request.startsWith( '@wordpress/dataviews' ) ) {
 						return null;
 					}
 
+					// Skip requesting to external if the import path is from the build or build-module directory for WordPress packages.
+					// This is required for @wordpress/edit-site to work and also can reduce the bundle size when we don't need to load the entire WordPress package.
 					if (
-						request.startsWith(
-							'@wordpress/interface/build-module'
-						)
+						request.match( /^@wordpress\/.*\/build(?:-module)?/ )
 					) {
 						return null;
 					}
 
-					if ( request.startsWith( '@wordpress/edit-site' ) ) {
-						// The external wp.editSite does not include edit-site components, so we need to skip requesting to external here. We can remove this once the edit-site components are exported in the external wp.editSite.
-						// We use the edit-site components in the customize store.
+					// Skip requesting to external if the import path is from the build or build-module directory for WooCommerce packages.
+					// This can reduce the bundle size when we don't need to load the entire WooCommerce package.
+					if (
+						request.match( /^@woocommerce\/.*\/build(?:-module)?/ )
+					) {
 						return null;
 					}
 				},
