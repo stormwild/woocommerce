@@ -12,7 +12,8 @@ import { createRoot } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { EmbedLayout, PrimaryLayout as NoticeArea } from '../layout';
+import { PrimaryLayout as NoticeArea } from '../layout/shared';
+import { EmbedLayout } from '../layout/embed';
 import { EmbeddedBodyLayout } from './embedded-body-layout';
 import { isFeatureEnabled } from '~/utils/features';
 

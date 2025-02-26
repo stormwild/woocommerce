@@ -9,18 +9,37 @@ import * as navigation from '@woocommerce/navigation';
 /**
  * Internal dependencies
  */
-import { updateLinkHref, PAGES_FILTER } from '../controller';
-import { EmbedLayout, PageLayout } from '../index';
+import { PAGES_FILTER } from '../controller';
+import { _Layout as Layout } from '../index';
 
 jest.mock( '@wordpress/data', () => ( {
 	...jest.requireActual( '@wordpress/data' ),
-	useSelect: jest.fn().mockReturnValue( {} ),
+	useSelect: jest.fn().mockImplementation( ( callback ) => {
+		const selector = {
+			getActivePlugins: jest.fn().mockReturnValue( [] ),
+			isJetpackConnected: jest.fn().mockReturnValue( false ),
+			getInstalledPlugins: jest.fn().mockReturnValue( [] ),
+			isResolving: jest.fn().mockReturnValue( false ),
+			hasFinishedResolution: jest.fn().mockReturnValue( true ),
+			getCurrentUser: jest.fn().mockReturnValue( {
+				currentUserCan: jest.fn().mockReturnValue( true ),
+			} ),
+			getOption: jest.fn().mockReturnValue( 'wc-admin' ),
+			getNotices: jest.fn().mockReturnValue( [] ),
+			getNotes: jest.fn().mockReturnValue( [] ),
+			hasStartedResolution: jest.fn().mockReturnValue( true ),
+		};
+		return callback( () => selector );
+	} ),
 } ) );
 
-jest.mock( '@woocommerce/data', () => ( {
-	...jest.requireActual( '@woocommerce/data' ),
-	useUser: jest.fn().mockReturnValue( { currentUserCan: () => true } ),
-} ) );
+jest.mock( '@woocommerce/data', () => {
+	const originalModule = jest.requireActual( '@woocommerce/data' );
+	return {
+		...originalModule,
+		useUser: jest.fn().mockReturnValue( { currentUserCan: () => true } ),
+	};
+} );
 
 jest.mock( '@woocommerce/customer-effort-score', () => ( {
 	CustomerEffortScoreModalContainer: () => null,
@@ -54,92 +73,7 @@ jest.mock( '@woocommerce/navigation', () => ( {
 
 const mockedGetHistory = navigation.getHistory;
 
-describe( 'updateLinkHref', () => {
-	const timeExcludedScreens = [ 'stock', 'settings', 'customers' ];
-
-	const REPORT_URL =
-		'http://example.com/wp-admin/admin.php?page=wc-admin&path=/analytics/orders';
-	const DASHBOARD_URL = 'http://example.com/wp-admin/admin.php?page=wc-admin';
-	const REPORT_URL_TIME_EXCLUDED =
-		'http://example.com/wp-admin/admin.php?page=wc-admin&path=/analytics/settings';
-	const WOO_URL =
-		'http://example.com/wp-admin/edit.php?post_type=shop_coupon';
-	const WP_ADMIN_URL = 'http://example.com/wp-admin/edit-comments.php';
-
-	const nextQuery = {
-		fruit: 'apple',
-		dish: 'cobbler',
-	};
-
-	it( 'should update report urls', () => {
-		const item = { href: REPORT_URL };
-		updateLinkHref( item, nextQuery, timeExcludedScreens );
-		const encodedPath = encodeURIComponent( '/analytics/orders' );
-
-		expect( item.href ).toBe(
-			`admin.php?page=wc-admin&path=${ encodedPath }&fruit=apple&dish=cobbler`
-		);
-	} );
-
-	it( 'should update dashboard urls', () => {
-		const item = { href: DASHBOARD_URL };
-		updateLinkHref( item, nextQuery, timeExcludedScreens );
-
-		expect( item.href ).toBe(
-			'admin.php?page=wc-admin&fruit=apple&dish=cobbler'
-		);
-	} );
-
-	it( 'should not add the nextQuery to a time excluded screen', () => {
-		const item = { href: REPORT_URL_TIME_EXCLUDED };
-		updateLinkHref( item, nextQuery, timeExcludedScreens );
-		const encodedPath = encodeURIComponent( '/analytics/settings' );
-
-		expect( item.href ).toBe(
-			`admin.php?page=wc-admin&path=${ encodedPath }`
-		);
-	} );
-
-	it( 'should not update WooCommerce urls', () => {
-		const item = { href: WOO_URL };
-		updateLinkHref( item, nextQuery, timeExcludedScreens );
-
-		expect( item.href ).toBe( WOO_URL );
-	} );
-
-	it( 'should not update wp-admin urls', () => {
-		const item = { href: WP_ADMIN_URL };
-		updateLinkHref( item, nextQuery, timeExcludedScreens );
-
-		expect( item.href ).toBe( WP_ADMIN_URL );
-	} );
-
-	it( 'should filter out undefined query values', () => {
-		const item = { href: REPORT_URL };
-		updateLinkHref(
-			item,
-			{ ...nextQuery, test: undefined, anotherParam: undefined },
-			timeExcludedScreens
-		);
-		const encodedPath = encodeURIComponent( '/analytics/orders' );
-
-		expect( item.href ).toBe(
-			`admin.php?page=wc-admin&path=${ encodedPath }&fruit=apple&dish=cobbler`
-		);
-	} );
-} );
-
-describe( 'EmbedLayout', () => {
-	it( 'should call recordPageView with correct parameters', () => {
-		window.history.pushState( {}, 'Page Title', '/url?search' );
-		render( <EmbedLayout /> );
-		expect( recordPageView ).toHaveBeenCalledWith( '/url?search', {
-			is_embedded: true,
-		} );
-	} );
-} );
-
-describe( 'PageLayout', () => {
+describe( 'Layout', () => {
 	beforeEach( () => {
 		jest.spyOn( window, 'wpNavMenuClassChange' ).mockImplementation(
 			jest.fn()
@@ -163,7 +97,7 @@ describe( 'PageLayout', () => {
 
 	it( 'should call recordPageView with correct parameters', () => {
 		mockPath( '/analytics/overview' );
-		render( <PageLayout /> );
+		render( <Layout /> );
 		expect( recordPageView ).toHaveBeenCalledWith( 'analytics_overview', {
 			jetpack_active: false,
 			jetpack_connected: false,
@@ -176,7 +110,7 @@ describe( 'PageLayout', () => {
 
 		it( 'should render a loading spinner first and then the error message after the delay', () => {
 			mockPath( '/incorrect-path' );
-			render( <PageLayout /> );
+			render( <Layout /> );
 
 			expect( screen.getByText( 'spinner' ) ).toBeInTheDocument();
 			expect( screen.queryByText( message ) ).not.toBeInTheDocument();
@@ -194,7 +128,7 @@ describe( 'PageLayout', () => {
 			const path = '/test/greeting';
 
 			mockPath( path );
-			render( <PageLayout /> );
+			render( <Layout /> );
 
 			expect( screen.getByText( 'spinner' ) ).toBeInTheDocument();
 			expect( screen.queryByText( message ) ).not.toBeInTheDocument();

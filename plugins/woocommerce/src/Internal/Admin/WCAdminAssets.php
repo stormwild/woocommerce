@@ -284,7 +284,7 @@ class WCAdminAssets {
 		);
 
 		$scripts_map = array(
-			WC_ADMIN_APP    => 'app',
+			WC_ADMIN_APP    => PageController::is_embed_page() ? 'embed' : 'app',
 			'wc-csv'        => 'csv-export',
 			'wc-store-data' => 'data',
 		);

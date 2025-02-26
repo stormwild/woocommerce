@@ -6,7 +6,7 @@ import { render, fireEvent } from '@testing-library/react';
 /**
  * Internal dependencies
  */
-import { Header, getPageTitle } from '../index.js';
+import { Header } from '../index';
 
 jest.mock( '@woocommerce/settings', () => ( {
 	...jest.requireActual( '@woocommerce/settings' ),
@@ -14,33 +14,6 @@ jest.mock( '@woocommerce/settings', () => ( {
 		return 'Fake Site Title';
 	},
 } ) );
-
-jest.mock( '@woocommerce/tracks', () => ( {
-	...jest.requireActual( '@woocommerce/tracks' ),
-	recordEvent: jest.fn(),
-} ) );
-
-jest.mock( '@woocommerce/data', () => ( {
-	...jest.requireActual( '@woocommerce/data' ),
-	useUserPreferences: () => ( {
-		updateUserPreferences: () => {},
-		// mock to disable the mobile app banner while testing this component
-		android_app_banner_dismissed: 'yes',
-	} ),
-} ) );
-
-jest.mock( '@wordpress/data', () => {
-	// Require the original module to not be mocked...
-	const originalModule = jest.requireActual( '@wordpress/data' );
-
-	return {
-		__esModule: true, // Use it when dealing with esModules
-		...originalModule,
-		useSelect: jest.fn().mockReturnValue( {
-			menuItems: [],
-		} ),
-	};
-} );
 
 global.window.wcNavigation = {};
 
@@ -103,29 +76,5 @@ describe( 'Header', () => {
 		expect( document.title ).toBe(
 			'Accounts & Privacy ‹ Settings ‹ Fake Site Title — WooCommerce'
 		);
-	} );
-} );
-
-describe( 'getPageTitle', () => {
-	test( 'should get page title as the last item if section length is less than 3', () => {
-		const sections = [ 'Payments' ];
-		expect( getPageTitle( sections ) ).toBe( 'Payments' );
-	} );
-
-	test( "should get page title as the second item's second element if section length is 3 or more and second item has a second element", () => {
-		const sections = [
-			[ 'admin.php?page=wc-admin', 'WooCommerce' ],
-			[ 'admin.php?page=wc-settings', 'Settings' ],
-			'Payments',
-		];
-		expect( getPageTitle( sections ) ).toBe( 'Settings' );
-	} );
-
-	test( "should get page title as the last item if section length is 3 or more but second item doesn't have a second element", () => {
-		const sections = [
-			[ 'admin.php?page=wc-admin', 'WooCommerce' ],
-			'Payments',
-		];
-		expect( getPageTitle( sections ) ).toBe( 'Payments' );
 	} );
 } );

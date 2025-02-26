@@ -64,7 +64,8 @@ const wcAdminPackages = [
 
 const getEntryPoints = () => {
 	const entryPoints = {
-		app: './client/index.js',
+		app: './client/index.tsx',
+		embed: './client/embed.tsx',
 		settings: './client/settings/index.js',
 	};
 	wcAdminPackages.forEach( ( name ) => {
