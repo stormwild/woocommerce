@@ -13,7 +13,7 @@ use WP_HTML_Text_Replacement;
 /**
  * Integration test for HTML_Tag_Processor class which tests the token replacement.
  */
-class HTML_Tag_Processor_Test extends \MailPoetTest {
+class HTML_Tag_Processor_Test extends \Email_Editor_Integration_Test_Case {
 
 	/**
 	 * Test replacing a token in the HTML content.

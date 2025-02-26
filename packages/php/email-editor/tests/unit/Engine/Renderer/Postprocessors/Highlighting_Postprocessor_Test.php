@@ -24,8 +24,8 @@ class Highlighting_Postprocessor_Test extends \MailPoetUnitTest {
 	/**
 	 * Set up the test.
 	 */
-	public function _before() {
-		parent::_before();
+	protected function setUp(): void {
+		parent::setUp();
 		$this->postprocessor = new Highlighting_Postprocessor();
 	}
 

@@ -33,8 +33,8 @@ class Variables_Postprocessor_Test extends \MailPoetUnitTest {
 	/**
 	 * Set up the test
 	 */
-	public function _before() {
-		parent::_before();
+	protected function setUp(): void {
+		parent::setUp();
 		$this->theme_controller_mock = $this->createMock( Theme_Controller::class );
 		$this->postprocessor         = new Variables_Postprocessor( $this->theme_controller_mock );
 	}

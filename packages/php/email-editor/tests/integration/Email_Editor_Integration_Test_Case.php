@@ -7,8 +7,8 @@
 
 declare(strict_types = 1);
 
-use Codeception\Stub;
 use MailPoet\EmailEditor\Container;
+use MailPoet\EmailEditor\EmailCssInliner;
 use MailPoet\EmailEditor\Engine\Dependency_Check;
 use MailPoet\EmailEditor\Engine\Email_Api_Controller;
 use MailPoet\EmailEditor\Engine\Email_Editor;
@@ -32,33 +32,14 @@ use MailPoet\EmailEditor\Engine\Templates\Templates_Registry;
 use MailPoet\EmailEditor\Engine\Theme_Controller;
 use MailPoet\EmailEditor\Engine\User_Theme;
 use MailPoet\EmailEditor\Integrations\Core\Initializer;
-use MailPoet\EmailEditor\Integrations\MailPoet\Blocks\BlockTypesController;
-
-if ( (bool) getenv( 'MULTISITE' ) === true ) {
-	// REQUEST_URI needs to be set for WP to load the proper subsite where MailPoet is activated.
-	$_SERVER['REQUEST_URI'] = '/' . getenv( 'WP_TEST_MULTISITE_SLUG' );
-	$wp_load_file           = getenv( 'WP_ROOT_MULTISITE' ) . '/wp-load.php';
-} else {
-	$wp_load_file = getenv( 'WP_ROOT' ) . '/wp-load.php';
-}
-
-/**
- * Setting env from .evn file
- * Note that the following are override in the docker-compose file
- * WP_ROOT, WP_ROOT_MULTISITE, WP_TEST_MULTISITE_SLUG
- */
-$console = new \Codeception\Lib\Console\Output( array() );
-$console->writeln( 'Loading WP core... (' . $wp_load_file . ')' );
-require_once $wp_load_file;
-
-require_once __DIR__ . '/../../../../../mailpoet/lib/EmailEditor/Integrations/MailPoet/MailPoetCssInliner.php';
+use MailPoet\EmailEditor\Integrations\Utils\Default_Css_Inliner;
 
 /**
  * Base class for MailPoet tests.
  *
  * @property IntegrationTester $tester
  */
-abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
+abstract class Email_Editor_Integration_Test_Case extends \WP_UnitTestCase {
 	/**
 	 * The DI container.
 	 *
@@ -67,53 +48,11 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 	public Container $di_container;
 
 	/**
-	 * The tester.
-	 *
-	 * @var IntegrationTester
-	 */
-	public $tester;
-
-	// phpcs:disable WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
-	/**
-	 * Disable the backup of $GLOBALS and $_SERVER.
-	 *
-	 * @var bool
-	 */
-	protected $backupGlobals = false;
-	/**
-	 * Disable the backup of static attributes.
-	 *
-	 * @var bool
-	 */
-	protected $backupStaticAttributes = false;
-	/**
-	 * Disable the use of traits.
-	 *
-	 * @var bool
-	 */
-	protected $runTestInSeparateProcess = false;
-	/**
-	 * Disable the preservation of global state between tests.
-	 *
-	 * @var bool
-	 */
-	protected $preserveGlobalState = false;
-	// phpcs:enable WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
-
-	/**
 	 * Set up before each test.
 	 */
 	public function setUp(): void {
 		$this->initContainer();
 		parent::setUp();
-	}
-
-	/**
-	 * Tear down after each test.
-	 */
-	public function _after() {
-		parent::_after();
-		$this->tester->cleanup();
 	}
 
 	/**
@@ -142,7 +81,17 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 	 */
 	public function getServiceWithOverrides( $id, array $overrides ) {
 		$instance = $this->di_container->get( $id );
-		return Stub::copy( $instance, $overrides );
+
+		foreach ( $overrides as $property => $value ) {
+			$reflection = new ReflectionClass( $instance );
+			if ( $reflection->hasProperty( $property ) ) {
+				$prop = $reflection->getProperty( $property );
+				$prop->setAccessible( true );
+				$prop->setValue( $instance, $value );
+			}
+		}
+
+		return $instance;
 	}
 
 	/**
@@ -150,7 +99,12 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 	 */
 	protected function initContainer(): void {
 		$container = new Container();
-		// Start: MailPoet plugin dependencies.
+		$container->set(
+      EmailCssInliner::class,
+			function () {
+				return new EmailCssInliner();
+			}
+		);
 		$container->set(
 			Initializer::class,
 			function () {
@@ -158,14 +112,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 			}
 		);
 		$container->set(
-			BlockTypesController::class,
-			function () {
-				return $this->createMock( BlockTypesController::class );
-			}
-		);
-		// End: MailPoet plugin dependencies.
-		$container->set(
-			Theme_Controller::class,
+			\MailPoet\EmailEditor\Engine\Theme_Controller::class,
 			function () {
 				return new Theme_Controller();
 			}
@@ -268,7 +215,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 					$container->get( Process_Manager::class ),
 					$container->get( Blocks_Registry::class ),
 					$container->get( Settings_Controller::class ),
-					new \MailPoet\EmailEditor\Integrations\MailPoet\MailPoetCssInliner(),
+					$container->get( EmailCssInliner::class ),
 					$container->get( Theme_Controller::class ),
 				);
 			}
@@ -279,7 +226,7 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 				return new Renderer(
 					$container->get( Content_Renderer::class ),
 					$container->get( Templates::class ),
-					new \MailPoet\EmailEditor\Integrations\MailPoet\MailPoetCssInliner(),
+					$container->get( EmailCssInliner::class ),
 					$container->get( Theme_Controller::class ),
 				);
 			}
@@ -333,7 +280,6 @@ abstract class MailPoetTest extends \Codeception\TestCase\Test { // phpcs:ignore
 				);
 			}
 		);
-
 		$this->di_container = $container;
 	}
 }

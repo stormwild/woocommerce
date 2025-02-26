@@ -39,8 +39,8 @@ class Blocks_Width_Preprocessor_Test extends \MailPoetUnitTest {
 	/**
 	 * Set up the test
 	 */
-	public function _before() {
-		parent::_before();
+	protected function setUp(): void {
+		parent::setUp();
 		$this->preprocessor = new Blocks_Width_Preprocessor();
 		$this->layout       = array( 'contentSize' => '660px' );
 		$this->styles       = array(

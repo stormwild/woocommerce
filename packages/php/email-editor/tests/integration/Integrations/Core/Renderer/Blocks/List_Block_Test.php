@@ -14,7 +14,7 @@ use MailPoet\EmailEditor\Engine\Settings_Controller;
 /**
  * Integration test for List_Block class
  */
-class List_Block_Test extends \MailPoetTest {
+class List_Block_Test extends \Email_Editor_Integration_Test_Case {
 	/**
 	 * List_Block renderer instance
 	 *
@@ -66,7 +66,8 @@ class List_Block_Test extends \MailPoetTest {
 	/**
 	 * Set up before each test
 	 */
-	public function _before() {
+	public function setUp(): void {
+		parent::setUp();
 		$this->di_container->get( Email_Editor::class )->initialize();
 		$this->list_renderer       = new List_Block();
 		$this->settings_controller = $this->di_container->get( Settings_Controller::class );

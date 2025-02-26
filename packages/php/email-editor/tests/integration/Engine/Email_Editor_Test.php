@@ -11,7 +11,7 @@ namespace MailPoet\EmailEditor\Engine;
 /**
  * Integration test for Email_Editor class
  */
-class Email_Editor_Test extends \MailPoetTest {
+class Email_Editor_Test extends \Email_Editor_Integration_Test_Case {
 	/**
 	 * Email editor instance
 	 *
@@ -29,8 +29,8 @@ class Email_Editor_Test extends \MailPoetTest {
 	/**
 	 * Set up before each test
 	 */
-	public function _before() {
-		parent::_before();
+	public function setUp(): void {
+		parent::setUp();
 		$this->email_editor           = $this->di_container->get( Email_Editor::class );
 		$this->post_register_callback = function ( $post_types ) {
 			$post_types[] = array(
@@ -55,8 +55,8 @@ class Email_Editor_Test extends \MailPoetTest {
 	/**
 	 * Clean up after each test
 	 */
-	public function _after() {
-		parent::_after();
+	public function tearDown(): void {
+		parent::tearDown();
 		remove_filter( 'mailpoet_email_editor_post_types', $this->post_register_callback );
 	}
 }

@@ -9,8 +9,6 @@ declare(strict_types = 1);
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
-$console = new \Codeception\Lib\Console\Output( array() );
-
 if ( ! function_exists( 'register_block_template' ) ) {
 	/**
 	 * Mock register_block_template function.
@@ -95,19 +93,7 @@ if ( ! function_exists( 'apply_filters' ) ) {
 /**
  * Base class for unit tests.
  */
-abstract class MailPoetUnitTest extends \Codeception\TestCase\Test {
-	/**
-	 * Disable running tests in separate processes.
-	 *
-	 * @var bool
-	 */
-	protected $runTestInSeparateProcess = false; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
-	/**
-	 * Disable preserving global state.
-	 *
-	 * @var bool
-	 */
-	protected $preserveGlobalState = false; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+abstract class MailPoetUnitTest extends \PHPUnit\Framework\TestCase {
 }
 
-require '_stubs.php';
+require 'stubs.php';

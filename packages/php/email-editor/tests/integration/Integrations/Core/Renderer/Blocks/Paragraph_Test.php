@@ -14,7 +14,7 @@ use MailPoet\EmailEditor\Engine\Settings_Controller;
 /**
  * Integration test for Paragraph class
  */
-class Paragraph_Test extends \MailPoetTest {
+class Paragraph_Test extends \Email_Editor_Integration_Test_Case {
 	/**
 	 * Paragraph renderer instance
 	 *
@@ -53,7 +53,8 @@ class Paragraph_Test extends \MailPoetTest {
 	/**
 	 * Set up the test
 	 */
-	public function _before() {
+	public function setUp(): void {
+		parent::setUp();
 		$this->di_container->get( Email_Editor::class )->initialize();
 		$this->paragraph_renderer  = new Text();
 		$this->settings_controller = $this->di_container->get( Settings_Controller::class );

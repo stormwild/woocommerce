@@ -11,7 +11,7 @@ namespace MailPoet\EmailEditor\Engine;
 /**
  * Integration test for User Theme class
  */
-class User_Theme_Test extends \MailPoetTest {
+class User_Theme_Test extends \Email_Editor_Integration_Test_Case {
 	/**
 	 * Instance of User_Theme created before each test.
 	 *
@@ -22,8 +22,8 @@ class User_Theme_Test extends \MailPoetTest {
 	/**
 	 * Set up before each test.
 	 */
-	protected function _before(): void {
-		parent::_before();
+	public function setUp(): void {
+		parent::setUp();
 		$this->user_theme = new User_Theme();
 	}
 

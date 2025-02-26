@@ -11,7 +11,7 @@ namespace MailPoet\EmailEditor\Engine\Templates;
 /**
  * Integration test for the Templates class
  */
-class Templates_Test extends \MailPoetTest {
+class Templates_Test extends \Email_Editor_Integration_Test_Case {
 
 	/**
 	 * Templates.
@@ -23,8 +23,8 @@ class Templates_Test extends \MailPoetTest {
 	/**
 	 * Set up before each test
 	 */
-	public function _before() {
-		parent::_before();
+	public function setUp(): void {
+		parent::setUp();
 		$this->templates = $this->di_container->get( Templates::class );
 	}
 
@@ -38,10 +38,10 @@ class Templates_Test extends \MailPoetTest {
 		$template = $this->templates->get_block_template( 'email-general' );
 
 		self::assertInstanceOf( \WP_Block_Template::class, $template );
-		verify( $template->slug )->equals( 'email-general' );
-		verify( $template->id )->stringContainsString( 'email-general' );
-		verify( $template->title )->equals( 'General Email' );
-		verify( $template->description )->equals( 'A general template for emails.' );
+		$this->assertEquals( 'email-general', $template->slug );
+		$this->assertStringContainsString( 'email-general', $template->id );
+		$this->assertEquals( 'General Email', $template->title );
+		$this->assertEquals( 'A general template for emails.', $template->description );
 	}
 
 	/**
@@ -59,6 +59,6 @@ class Templates_Test extends \MailPoetTest {
 			}
 		);
 		$this->templates->initialize( array( 'mailpoet_email' ) );
-		verify( $trigger_check )->true();
+		$this->assertTrue( $trigger_check );
 	}
 }

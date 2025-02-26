@@ -40,8 +40,8 @@ class Typography_Preprocessor_Test extends \MailPoetUnitTest {
 	/**
 	 * Set up the test
 	 */
-	public function _before() {
-		parent::_before();
+	protected function setUp(): void {
+		parent::setUp();
 		$settings_mock = $this->createMock( Settings_Controller::class );
 		$theme_mock    = $this->createMock( \WP_Theme_JSON::class );
 		$theme_mock->method( 'get_data' )->willReturn(

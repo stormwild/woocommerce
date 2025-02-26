@@ -16,7 +16,7 @@ require_once __DIR__ . '/Dummy_Block_Renderer.php';
 /**
  * Integration test for Content_Renderer
  */
-class Content_Renderer_Test extends \MailPoetTest {
+class Content_Renderer_Test extends \Email_Editor_Integration_Test_Case {
 	/**
 	 * Instance of the renderer.
 	 *
@@ -33,16 +33,16 @@ class Content_Renderer_Test extends \MailPoetTest {
 	/**
 	 * Set up before each test.
 	 */
-	public function _before(): void {
-		parent::_before();
+	public function setUp(): void {
+		parent::setUp();
 		$this->di_container->get( Email_Editor::class )->initialize();
-		$this->di_container->get( BlockTypesController::class )->initialize();
 		$this->renderer   = $this->di_container->get( Content_Renderer::class );
-		$this->email_post = $this->tester->create_post(
+		$email_post_id = $this->factory->post->create(
 			array(
 				'post_content' => '<!-- wp:paragraph --><p>Hello!</p><!-- /wp:paragraph -->',
 			)
 		);
+		$this->email_post = get_post( $email_post_id );
 	}
 
 	/**
@@ -56,7 +56,7 @@ class Content_Renderer_Test extends \MailPoetTest {
 			$this->email_post,
 			$template
 		);
-		verify( $content )->stringContainsString( 'Hello!' );
+		$this->assertStringContainsString( 'Hello!', $content );
 	}
 
 	/**
@@ -68,8 +68,8 @@ class Content_Renderer_Test extends \MailPoetTest {
 		$template->content = '<!-- wp:core/post-content /-->';
 		$rendered          = $this->renderer->render( $this->email_post, $template );
 		$paragraph_styles  = $this->getStylesValueForTag( $rendered, 'p' );
-		verify( $paragraph_styles )->stringContainsString( 'margin: 0' );
-		verify( $paragraph_styles )->stringContainsString( 'display: block' );
+		$this->assertStringContainsString( 'margin: 0', $paragraph_styles );
+		$this->assertStringContainsString( 'display: block', $paragraph_styles );
 	}
 
 	/**
@@ -123,7 +123,7 @@ class Content_Renderer_Test extends \MailPoetTest {
 			)
 		);
 
-		verify( $renderer->render_block( 'content', array( 'blockName' => 'block' ) ) )->equals( 'content' );
+		$this->assertEquals( 'content', $renderer->render_block( 'content', array( 'blockName' => 'block' ) ) );
 	}
 
 	/**

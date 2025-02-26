@@ -14,7 +14,7 @@ use MailPoet\EmailEditor\Engine\Settings_Controller;
 /**
  * Integration test for Image class
  */
-class Image_Test extends \MailPoetTest {
+class Image_Test extends \Email_Editor_Integration_Test_Case {
 	/**
 	 * Image renderer instance
 	 *
@@ -63,7 +63,8 @@ class Image_Test extends \MailPoetTest {
 	/**
 	 * Set up before each test
 	 */
-	public function _before() {
+	public function setUp(): void {
+		parent::setUp();
 		$this->di_container->get( Email_Editor::class )->initialize();
 		$this->image_renderer      = new Image();
 		$this->settings_controller = $this->di_container->get( Settings_Controller::class );
