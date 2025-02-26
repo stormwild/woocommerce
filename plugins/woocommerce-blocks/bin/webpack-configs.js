@@ -102,8 +102,8 @@ const getCoreConfig = ( options = {} ) => {
 						options: {
 							presets: [ '@wordpress/babel-preset-default' ],
 							plugins: [
-								'@babel/plugin-proposal-optional-chaining',
-								'@babel/plugin-proposal-class-properties',
+								'@babel/plugin-transform-optional-chaining',
+								'@babel/plugin-transform-class-properties',
 							],
 							cacheDirectory: path.resolve(
 								__dirname,
@@ -201,8 +201,8 @@ const getMainConfig = ( options = {} ) => {
 											'babel-plugin-transform-react-remove-prop-types'
 									  )
 									: false,
-								'@babel/plugin-proposal-optional-chaining',
-								'@babel/plugin-proposal-class-properties',
+								'@babel/plugin-transform-optional-chaining',
+								'@babel/plugin-transform-class-properties',
 							].filter( Boolean ),
 							cacheDirectory: path.resolve(
 								__dirname,
@@ -337,8 +337,8 @@ const getFrontConfig = ( options = {} ) => {
 											'babel-plugin-transform-react-remove-prop-types'
 									  )
 									: false,
-								'@babel/plugin-proposal-optional-chaining',
-								'@babel/plugin-proposal-class-properties',
+								'@babel/plugin-transform-optional-chaining',
+								'@babel/plugin-transform-class-properties',
 							].filter( Boolean ),
 							cacheDirectory: path.resolve(
 								__dirname,
@@ -441,8 +441,8 @@ const getPaymentsConfig = ( options = {} ) => {
 											'babel-plugin-transform-react-remove-prop-types'
 									  )
 									: false,
-								'@babel/plugin-proposal-optional-chaining',
-								'@babel/plugin-proposal-class-properties',
+								'@babel/plugin-transform-optional-chaining',
+								'@babel/plugin-transform-class-properties',
 							].filter( Boolean ),
 							cacheDirectory: path.resolve(
 								__dirname,
@@ -534,8 +534,8 @@ const getExtensionsConfig = ( options = {} ) => {
 											'babel-plugin-transform-react-remove-prop-types'
 									  )
 									: false,
-								'@babel/plugin-proposal-optional-chaining',
-								'@babel/plugin-proposal-class-properties',
+								'@babel/plugin-transform-optional-chaining',
+								'@babel/plugin-transform-class-properties',
 							].filter( Boolean ),
 							cacheDirectory: path.resolve(
 								__dirname,
@@ -627,7 +627,7 @@ const getSiteEditorConfig = ( options = {} ) => {
 											'babel-plugin-transform-react-remove-prop-types'
 									  )
 									: false,
-								'@babel/plugin-proposal-optional-chaining',
+								'@babel/plugin-transform-optional-chaining',
 							].filter( Boolean ),
 							cacheDirectory: path.resolve(
 								__dirname,
@@ -759,8 +759,8 @@ const getStylingConfig = ( options = {} ) => {
 											'babel-plugin-transform-react-remove-prop-types'
 									  )
 									: false,
-								'@babel/plugin-proposal-optional-chaining',
-								'@babel/plugin-proposal-class-properties',
+								'@babel/plugin-transform-optional-chaining',
+								'@babel/plugin-transform-class-properties',
 							].filter( Boolean ),
 							cacheDirectory: path.resolve(
 								__dirname,
@@ -888,8 +888,8 @@ const getInteractivityAPIConfig = ( options = {} ) => {
 								],
 								// Required until Webpack is updated to ^5.0.0
 								plugins: [
-									'@babel/plugin-proposal-optional-chaining',
-									'@babel/plugin-proposal-class-properties',
+									'@babel/plugin-transform-optional-chaining',
+									'@babel/plugin-transform-class-properties',
 								],
 								cacheDirectory: path.resolve(
 									__dirname,
@@ -974,8 +974,8 @@ const getCartAndCheckoutFrontendConfig = ( options = {} ) => {
 											'babel-plugin-transform-react-remove-prop-types'
 									  )
 									: false,
-								'@babel/plugin-proposal-optional-chaining',
-								'@babel/plugin-proposal-class-properties',
+								'@babel/plugin-transform-optional-chaining',
+								'@babel/plugin-transform-class-properties',
 							].filter( Boolean ),
 							cacheDirectory: path.resolve(
 								__dirname,
