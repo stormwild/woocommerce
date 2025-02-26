@@ -149,6 +149,7 @@
 		"@woocommerce/data": "workspace:*",
 		"@woocommerce/date": "workspace:*",
 		"@woocommerce/dependency-extraction-webpack-plugin": "workspace:*",
+		"@woocommerce/email-editor": "workspace:*",
 		"@woocommerce/eslint-plugin": "workspace:*",
 		"@woocommerce/experimental": "workspace:*",
 		"@woocommerce/explat": "workspace:*",

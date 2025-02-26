@@ -25,6 +25,13 @@
 			"options": {
 				"symlink": false
 			}
+		},
+		{
+			"type": "path",
+			"url": "../../packages/php/email-editor",
+			"options": {
+				"symlink": false
+			}
 		}
 	],
 	"require": {
@@ -39,7 +46,8 @@
 		"opis/json-schema": "*",
 		"pelago/emogrifier": "^6.0",
 		"woocommerce/action-scheduler": "3.9.2",
-		"woocommerce/blueprint": "*"
+		"woocommerce/blueprint": "*",
+		"woocommerce/email-editor": "*"
 	},
 	"require-dev": {
 		"automattic/jetpack-changelogger": "^3.3.0",
@@ -140,7 +148,8 @@
 	"extra": {
 		"installer-paths": {
 			"packages/{$name}": [
-				"woocommerce/action-scheduler"
+				"woocommerce/action-scheduler",
+				"woocommerce/email-editor"
 			]
 		},
 		"scripts-description": {
