@@ -85,7 +85,11 @@ setup( 'Install WC using WC Beta Tester', async ( { wcbtApi, wpApi } ) => {
 		await deactivateWooCommerce( wcbtApi );
 
 		try {
-			const downloadUrl = `https://github.com/woocommerce/woocommerce/releases/download/${ wcVersion }/woocommerce.zip`;
+			const downloadUrl =
+				wcVersion === 'nightly'
+					? 'https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip'
+					: `https://github.com/woocommerce/woocommerce/releases/download/${ wcVersion }/woocommerce.zip`;
+
 			const installResponse = await wcbtApi.fetch(
 				'/wp-json/wc-admin-test-helper/live-branches/install/v1',
 				{
@@ -148,8 +152,14 @@ setup( 'Install WC using WC Beta Tester', async ( { wcbtApi, wpApi } ) => {
 		wpApi
 	);
 
-	if ( finalActivatedWcVersion === resolvedVersion ) {
-		console.log( 'Installing with WC Beta Tester is finished.' );
+	if (
+		wcVersion === 'nightly'
+			? finalActivatedWcVersion.endsWith( '-dev' )
+			: finalActivatedWcVersion === resolvedVersion
+	) {
+		console.log(
+			`Installing WC ${ finalActivatedWcVersion } with WC Beta Tester is finished.`
+		);
 	} else {
 		console.error(
 			`Expected WC version ${ resolvedVersion } is not installed. Instead: ${ finalActivatedWcVersion }`
