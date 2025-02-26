@@ -1,0 +1,4 @@
+Significance: patch
+Type: dev
+
+dev: clean-up ci-job config options - removed option to set HPOS state
