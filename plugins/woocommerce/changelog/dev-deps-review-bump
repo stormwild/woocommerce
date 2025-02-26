@@ -1,0 +1,4 @@
+Significance: patch
+Type: dev
+
+Monorepo: drop unused and unsupported JS-dependecies
