@@ -1,0 +1,4 @@
+Significance: patch
+Type: fix
+
+Prevent fatal error when calling wc_no_products_found() out of context.
