@@ -151,6 +151,18 @@ export const useFullScreen = ( classes ) => {
 export function createDeprecatedObjectProxy( obj, messages, basePath = '' ) {
 	return new Proxy( obj, {
 		get( target, prop, receiver ) {
+			// Handle array methods and properties
+			if ( Array.isArray( target ) ) {
+				// Support array length property
+				if ( prop === 'length' ) {
+					return target.length;
+				}
+				// Support array iterator for destructuring
+				if ( prop === Symbol.iterator ) {
+					return target[ Symbol.iterator ].bind( target );
+				}
+			}
+
 			const nextPath = basePath ? `${ basePath }.${ prop }` : prop;
 
 			// Retrieve the deprecation message (if exists)
