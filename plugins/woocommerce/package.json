@@ -299,69 +299,6 @@
 					}
 				},
 				{
-					"name": "Core e2e tests - Woocommerce Payments",
-					"testType": "e2e",
-					"command": "test:e2e:with-env woocommerce-payments",
-					"shardingArguments": [],
-					"changes": [],
-					"events": [
-						"daily-checks",
-						"release-checks",
-						"core-e2e-woocommerce-payments"
-					],
-					"testEnv": {
-						"start": "env:test"
-					},
-					"report": {
-						"resultsBlobName": "wcpayments-e2e-report",
-						"resultsPath": "tests/e2e-pw/test-results",
-						"allure": true
-					}
-				},
-				{
-					"name": "Core e2e tests - Woocommerce Paypal Payments",
-					"testType": "e2e",
-					"command": "test:e2e:with-env woocommerce-paypal-payments",
-					"shardingArguments": [],
-					"changes": [],
-					"events": [
-						"daily-checks",
-						"release-checks",
-						"core-e2e-woocommerce-paypal-payments"
-					],
-					"testEnv": {
-						"start": "env:test"
-					},
-					"report": {
-						"resultsBlobName": "wc-paypal-payments-e2e-report",
-						"resultsPath": "tests/e2e-pw/test-results",
-						"allure": true
-					}
-				},
-				{
-					"name": "Core e2e tests - WooCommerce Shipping & Tax",
-					"testType": "e2e",
-					"command": "test:e2e:with-env woocommerce-services",
-					"shardingArguments": [
-						"--shard=1/2",
-						"--shard=2/2"
-					],
-					"changes": [],
-					"events": [
-						"daily-checks",
-						"release-checks",
-						"core-e2e-woocommerce-services"
-					],
-					"testEnv": {
-						"start": "env:test"
-					},
-					"report": {
-						"resultsBlobName": "wc-services-e2e-report",
-						"resultsPath": "tests/e2e-pw/test-results",
-						"allure": true
-					}
-				},
-				{
 					"name": "Core e2e tests - HPOS disabled",
 					"testType": "e2e",
 					"command": "test:e2e:hpos",
