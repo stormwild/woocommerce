@@ -297,6 +297,15 @@ Object.defineProperty( window, 'matchMedia', {
 } );
 
 /**
+ * The following mock is for block integration tests that might render
+ * components leveraging DOMRect. For example, the Cover block which now renders
+ * its ResizableBox control via the BlockPopover component.
+ */
+if ( ! window.DOMRect ) {
+	window.DOMRect = class DOMRect {};
+}
+
+/**
  * client-zip is meant to be used in a browser and is therefore released as an
  * ES6 module only, in order to use it in node environment, we need to mock it.
  * See: https://github.com/Touffy/client-zip/issues/28

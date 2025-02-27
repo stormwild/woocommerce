@@ -23,3 +23,18 @@ const consoleErrorSpy = jest
 		// Otherwise, call the original console.error
 		consoleErrorSpy.mock.calls.push( [ message, ...args ] );
 	} );
+
+const consoleWarnSpy = jest
+	.spyOn( console, 'warn' )
+	.mockImplementation( ( message, ...args ) => {
+		if (
+			typeof message === 'string' &&
+			message.match(
+				/The block ".*" is registered with an invalid category "woocommerce"./
+			)
+		) {
+			return;
+		}
+		// Otherwise, call the original console.warn
+		consoleWarnSpy.mock.calls.push( [ message, ...args ] );
+	} );
