@@ -210,7 +210,7 @@ const ValidatedCheckboxControl = forwardRef<
 					},
 					[ onChange, validateInput ]
 				) }
-				ariaDescribedBy={ ariaDescribedBy }
+				aria-describedby={ ariaDescribedBy }
 				checked={ checked }
 				title="" // This prevents the same error being shown on hover.
 				label={ label }
