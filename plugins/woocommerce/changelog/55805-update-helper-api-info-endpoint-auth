@@ -1,0 +1,4 @@
+Significance: patch
+Type: fix
+Comment: Show details of WooCommerce.com extensions, even if stores are not connected to WooCommerce.com
+
