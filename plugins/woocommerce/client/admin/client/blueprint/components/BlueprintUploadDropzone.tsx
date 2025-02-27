@@ -91,17 +91,42 @@ const importBlueprint = async ( file: File ) => {
 			throw new Error( 'Invalid JSON format: Expected an array.' );
 		}
 
+		const MAX_STEP_SIZE_BYTES =
+			window?.wcSettings?.admin?.blueprint_max_step_size_bytes ||
+			50 * 1024 * 1024; // defaults to 50MB
+
 		// Loop through each step and send it to the endpoint
 		for ( const step of steps ) {
+			const stepJson = JSON.stringify( {
+				step_definition: step,
+			} );
+			const stepSize = new Blob( [ stepJson ] ).size;
+			if ( stepSize > MAX_STEP_SIZE_BYTES ) {
+				errors.push( {
+					step: step.step,
+					messages: [
+						{
+							step: step.step,
+							type: 'error',
+							message: `Step exceeds maximum size limit of ${ (
+								MAX_STEP_SIZE_BYTES /
+								( 1024 * 1024 )
+							).toFixed( 2 ) }MB (Current: ${ (
+								stepSize /
+								( 1024 * 1024 )
+							).toFixed( 2 ) }MB)`,
+						},
+					],
+				} );
+				continue; // Skip this step
+			}
 			const response = await apiFetch< BlueprintImportStepResponse >( {
 				path: 'wc-admin/blueprint/import-step',
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify( {
-					step_definition: step,
-				} ),
+				body: stepJson,
 			} );
 
 			if ( ! response.success ) {

@@ -191,6 +191,7 @@ class Init {
 			// Used on the settings page.
 			// wcSettings.admin.blueprint_step_groups.
 			$settings['blueprint_step_groups'] = $this->get_step_groups_for_js();
+			$settings['blueprint_max_step_size_bytes'] = RestApi::MAX_FILE_SIZE;
 		}
 
 		return $settings;
