@@ -1,11 +1,31 @@
 {
 	"name": "@woocommerce/email-editor",
+	"version": "0.1.0",
+	"description": "Gutenberg based email editor that is used in WooCommerce emails.",
+	"author": "Automattic",
+	"license": "GPL-2.0-or-later",
+	"keywords": [
+		"wordpress",
+		"woocommerce",
+		"email"
+	],
 	"private": true,
+	"homepage": "https://github.com/woocommerce/woocommerce/tree/trunk/packages/js/email-editor",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/woocommerce/woocommerce.git"
+	},
+	"bugs": {
+		"url": "https://github.com/woocommerce/woocommerce/issues"
+	},
+	"main": "build/index.js",
+	"publishConfig": {
+		"access": "public"
+	},
 	"sideEffects": [
 		"build-style/**",
 		"src/**/*.scss"
 	],
-	"version": "0.1.0",
 	"scripts": {
 		"build:editor": "wp-scripts build",
 		"start": "wp-scripts start",
@@ -21,7 +41,9 @@
 		"lint": "pnpm --if-present '/^lint:lang:.*$/'",
 		"lint:fix": "pnpm --if-present '/^lint:fix:lang:.*$/'",
 		"lint:fix:lang:js": "pnpm lint:js-fix",
+		"lint:fix:lang:css": "pnpm lint:css-fix",
 		"lint:lang:js": "pnpm lint:js",
+		"lint:lang:css": "pnpm lint:css",
 		"prepack": "pnpm build",
 		"watch:build": "pnpm --if-present --workspace-concurrency=Infinity --filter=\"$npm_package_name...\" --parallel '/^watch:build:project:.*$/'",
 		"watch:build:project": "pnpm --if-present run '/^watch:build:project:.*$/'",
@@ -44,7 +66,6 @@
 		"@wordpress/core-data": "wp-6.6",
 		"@wordpress/data": "wp-6.6",
 		"@wordpress/data-controls": "wp-6.6",
-		"@wordpress/edit-post": "wp-6.6",
 		"@wordpress/editor": "wp-6.6",
 		"@wordpress/element": "wp-6.6",
 		"@wordpress/format-library": "wp-6.6",
@@ -84,8 +105,7 @@
 		"@woocommerce/eslint-plugin": "workspace:*",
 		"@wordpress/prettier-config": "2.17.0",
 		"@wordpress/scripts": "wp-6.6",
-		"core-js": "^3.37.1",
-		"eslint-import-resolver-typescript": "^3.7.0",
+		"@wordpress/stylelint-config": "^21.36.0",
 		"prettier": "npm:wp-prettier@^3.0.3",
 		"wp-types": "^3.65.0"
 	},
@@ -94,6 +114,10 @@
 			"lint": {
 				"command": "lint",
 				"changes": "src/**/*.{js,ts,tsx}"
+			},
+			"lint:css": {
+				"command": "lint:css",
+				"changes": "src/**/*.{scss,css}"
 			}
 		}
 	}

@@ -1,4 +1,5 @@
-// Document actions - Component in header for displaying email/campaign title edit popup
+// Document actions
+// Component in header for displaying email/campaign title edit popup
 .mailpoet-email-editor-campaign-name {
 	align-items: center;
 	display: flex;
@@ -15,7 +16,7 @@
 		padding: 0;
 	}
 
-	.mailpoet-email-campaign-name__link {
+	.mailpoet-email-campaign-name-link {
 		display: inline-flex;
 		height: fit-content;
 		margin-right: 10px;
@@ -24,7 +25,7 @@
 }
 
 // Document actions - Popup for editing email/campaign title
-.mailpoet-email-editor-campaign-name__dropdown {
+.mailpoet-email-editor-campaign-name-dropdown {
 	.components-popover__content {
 		min-width: 280px;
 		padding: 0;
@@ -34,7 +35,8 @@
 		padding: 16px;
 	}
 }
-.mailpoet-email-editor-save-button__dropdown {
+
+.mailpoet-email-editor-save-button-dropdown {
 	.components-popover__content {
 		min-width: 280px;
 	}
@@ -45,7 +47,8 @@
 	display: none !important;
 }
 
-// Temporarily hide text about amount of changes to save. The wording is not great for email context.
+// Temporarily hide text about amount of changes to save.
+// The wording is not great for email context.
 .entities-saved-states__text-prompt {
 	p {
 		display: none;
@@ -53,7 +56,7 @@
 }
 
 // Ensure checkbox controls in save panel dropdown to span the full width
-.mailpoet-email-editor-save-button__dropdown
+.mailpoet-email-editor-save-button-dropdown
 	.components-panel__row
 	.components-checkbox-control {
 	width: 100%;

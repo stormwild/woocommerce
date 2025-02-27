@@ -1,4 +1,4 @@
-.mailpoet-email-editor__styles-panel {
+.mailpoet-email-editor-styles-panel {
 	display: flex;
 	flex-direction: column;
 	height: 100%;
@@ -18,11 +18,11 @@
 		width: 100%;
 	}
 
-	.mailpoet-email-editor__styles-header {
+	.mailpoet-email-editor-styles-header {
 		margin-bottom: 0;
 	}
 
-	.mailpoet-email-editor__styles-header-description {
+	.mailpoet-email-editor-styles-header-description {
 		padding: 0 16px;
 	}
 
@@ -37,7 +37,7 @@
 	.edit-site-global-styles-screen-typography__indicator {
 		border-radius: 3px;
 		height: 2em;
-		line-height: 2em;
+		line-height: 2;
 		padding: 0;
 		width: 2em;
 	}

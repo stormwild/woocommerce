@@ -79,7 +79,7 @@ export function RichTextWithButton( {
 		<>
 			<span>{ label }</span>
 			<Button
-				className="mailpoet-settings-panel__personalization-tags-button"
+				className="mailpoet-settings-panel-personalization-tags-button"
 				icon="shortcode"
 				title={ __( 'Personalization Tags', 'mailpoet' ) }
 				onClick={ () => {
@@ -105,7 +105,7 @@ export function RichTextWithButton( {
 		<BaseControl
 			id="" // See https://github.com/mailpoet/mailpoet/pull/6089#discussion_r1952126850 to understand why the ID is empty
 			label={ finalLabel }
-			className={ `mailpoet-settings-panel__${ attributeName }-text` }
+			className={ `mailpoet-settings-panel-${ attributeName }-text` }
 			help={ help }
 			__nextHasNoMarginBottom // To avoid warning about deprecation in console
 		>
@@ -143,7 +143,7 @@ export function RichTextWithButton( {
 			/>
 			<RichText
 				ref={ richTextRef }
-				className="mailpoet-settings-panel__richtext"
+				className="mailpoet-settings-panel-richtext"
 				placeholder={ placeholder }
 				onFocus={ () => {
 					setSelectionRange(

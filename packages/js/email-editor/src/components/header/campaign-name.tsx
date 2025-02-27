@@ -46,7 +46,7 @@ export function CampaignName() {
 					placement: 'bottom',
 					anchor: titleRef.current,
 				} }
-				contentClassName="mailpoet-email-editor-campaign-name__dropdown"
+				contentClassName="mailpoet-email-editor-campaign-name-dropdown"
 				renderToggle={ ( { isOpen, onToggle } ) => (
 					<>
 						<Button
@@ -57,7 +57,7 @@ export function CampaignName() {
 									{ isOpen }
 								);
 							} }
-							className="mailpoet-email-campaign-name__link"
+							className="mailpoet-email-campaign-name-link"
 						>
 							<Text size="body" as="h1">
 								<VisuallyHidden as="span">

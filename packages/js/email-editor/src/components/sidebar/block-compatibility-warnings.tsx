@@ -43,7 +43,7 @@ export function BlockCompatibilityWarnings(): JSX.Element {
 			{ hasBorderSupport && (
 				<Fill name="InspectorControlsBorder">
 					<Notice
-						className="mailpoet__grid-full-width"
+						className="mailpoet-grid-full-width"
 						status="warning"
 						isDismissible={ false }
 					>
@@ -57,7 +57,7 @@ export function BlockCompatibilityWarnings(): JSX.Element {
 			{ hasBackgroundImageSupport( selectedBlock?.name ) && (
 				<Fill name="InspectorControlsBackground">
 					<Notice
-						className="mailpoet__grid-full-width"
+						className="mailpoet-grid-full-width"
 						status="warning"
 						isDismissible={ false }
 					>

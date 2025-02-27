@@ -8,7 +8,28 @@
 	width: 100%;
 }
 
-// Fix editor width. We don't use resizable editor wrapper so we need to set the width manually here
+// Temporary styles for Rich Text HTML comments from the PR: https://github.com/WordPress/gutenberg/pull/62128/files
+[data-rich-text-comment],
+[data-rich-text-format-boundary] {
+	border-radius: 2px;
+}
+
+[data-rich-text-comment] {
+	background-color: var(
+		--wp-components-color-accent,
+		var(--wp-admin-theme-color, #3858e9)
+	);
+
+	span {
+		color: var(--wp-components-color-accent-inverted, #fff);
+		filter: none;
+		padding: 0 2px;
+	}
+}
+
+// Fix editor width.
+// We don't use resizable editor wrapper
+// so we need to set the width manually here
 .editor-visual-editor > div {
 	width: 100%;
 }
@@ -17,25 +38,47 @@
 	.editor-header__toolbar {
 		flex-grow: 1;
 	}
+
 	.editor-header__center {
 		flex-grow: 3;
 	}
 }
 
+.visual-editor__email_content_wrapper {
+	display: flex;
+	height: 100%;
+	width: 100%;
+
+	> div {
+		width: 100%;
+	}
+
+	// Fix for mobile preview height
+	&.is-mobile-preview {
+		> div {
+			display: block !important;
+		}
+
+		.editor-styles-wrapper {
+			height: auto !important;
+		}
+	}
+}
+
 // Specific styles for the component EmailTypeInfo
 // Styles are based on the Block Card component from Gutenberg block editor
-.mailpoet-email-sidebar__email-type-info {
+.mailpoet-email-sidebar-email-type-info {
 	.components-panel__row {
 		align-items: flex-start;
 	}
 
-	.mailpoet-email-type-info__icon {
+	.mailpoet-email-type-info-icon {
 		flex: 0 0 24px;
 		margin-left: 0;
 		margin-right: 12px;
 	}
 
-	.mailpoet-email-type-info__content {
+	.mailpoet-email-type-info-content {
 		flex-grow: 1;
 		margin-bottom: 4px;
 
@@ -54,7 +97,7 @@
 		}
 	}
 
-	.mailpoet-email-type-info__content_heading {
+	.mailpoet-email-type-info-content-heading {
 		display: flex;
 
 		div:last-child {
@@ -65,12 +108,12 @@
 	}
 }
 
-.mailpoet-settings-panel__preheader-text {
+.mailpoet-settings-panel-preheader-text {
 	margin-top: 9px;
 }
 
-.mailpoet-email-editor__settings-panel {
-	.mailpoet-settings-panel__richtext {
+.mailpoet-email-editor-settings-panel {
+	.mailpoet-settings-panel-richtext {
 		border: 1px solid var(--wp-components-color-gray-600, #949494);
 		border-radius: 2px;
 		box-shadow: transparent 0 0 0;
@@ -80,17 +123,18 @@
 		width: 100%;
 	}
 
-	.mailpoet-settings-panel__personalization-tags-button.components-button.has-icon {
+	.mailpoet-settings-panel-personalization-tags-button.components-button.has-icon {
 		display: inline-block;
 		height: 14px;
 		line-height: 14px;
 		padding: 0 5px;
+
 		span {
 			height: 11px;
 		}
 	}
 
-	.mailpoet-settings-panel__subject .components-base-control__label {
+	.mailpoet-settings-panel-subject .components-base-control__label {
 		width: 100%;
 
 		.components-external-link {
@@ -98,7 +142,7 @@
 		}
 	}
 
-	.mailpoet-settings-panel__help {
+	.mailpoet-settings-panel-help {
 		margin-bottom: 20px;
 
 		.components-text {
@@ -106,22 +150,22 @@
 		}
 	}
 
-	.mailpoet-settings-panel__preview-text .components-base-control__label {
+	.mailpoet-settings-panel-preview-text .components-base-control__label {
 		width: 100%;
 	}
 
-	.mailpoet-settings-panel__preview-text-length {
+	.mailpoet-settings-panel-preview-text-length {
 		color: $black;
 		display: inline-block;
 		float: right;
 		padding: 3px;
 	}
 
-	.mailpoet-settings-panel__preview-text-length-warning {
+	.mailpoet-settings-panel-preview-text-length-warning {
 		color: $alert-yellow;
 	}
 
-	.mailpoet-settings-panel__preview-text-length-error {
+	.mailpoet-settings-panel-preview-text-length-error {
 		color: $alert-red;
 	}
 }
@@ -143,46 +187,8 @@
 	width: 100%;
 }
 
-.visual-editor__email_content_wrapper {
-	display: flex;
-	height: 100%;
-	width: 100%;
-
-	> div {
-		width: 100%;
-	}
-
-	// Fix for mobile preview height
-	&.is-mobile-preview {
-		> div {
-			display: block !important;
-		}
-		.editor-styles-wrapper {
-			height: auto !important;
-		}
-	}
-}
-
-// Hide the advanced settings in the sidebar. This panel is not used in the email editor at this moment.
+// Hide the advanced settings in the sidebar.
+// This panel is not used in the email editor at this moment.
 .block-editor-block-inspector__advanced {
 	display: none;
-}
-
-// Temporary styles for Rich Text HTML comments from the PR: https://github.com/WordPress/gutenberg/pull/62128/files
-[data-rich-text-comment],
-[data-rich-text-format-boundary] {
-	border-radius: 2px;
-}
-
-[data-rich-text-comment] {
-	background-color: var(
-		--wp-components-color-accent,
-		var(--wp-admin-theme-color, #3858e9)
-	);
-
-	span {
-		color: var(--wp-components-color-accent-inverted, #fff);
-		filter: none;
-		padding: 0 2px;
-	}
 }

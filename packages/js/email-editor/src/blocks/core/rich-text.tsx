@@ -202,7 +202,7 @@ function extendRichTextFormats() {
 	registerFormatType( 'mailpoet-email-editor/link-shortcode', {
 		name: 'mailpoet-email-editor/link-shortcode',
 		title: __( 'Personalization Tags Link', 'mailpoet' ),
-		className: 'mailpoet-email-editor__personalization-tags-link',
+		className: 'mailpoet-email-editor-personalization-tags-link',
 		tagName: 'a',
 		// @ts-expect-error attributes property is missing in build type for WPFormat type
 		attributes: {

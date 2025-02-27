@@ -3,6 +3,7 @@
   "include": ["src/**/*"],
   "compilerOptions": {
     "rootDir": "src",
+	"jsx": "preserve",
     "noEmit": true
   }
 }

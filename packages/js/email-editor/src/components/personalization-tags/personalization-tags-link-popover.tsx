@@ -81,7 +81,7 @@ const PersonalizationTagsLinkPopover = ( {
 					anchor={ linkElement } // Directly use commentSpan as the anchor
 					className="mailpoet-personalization-tag-popover"
 				>
-					<div className="mailpoet-personalization-tag-popover__content">
+					<div className="mailpoet-personalization-tag-popover-content">
 						<TextControl
 							label={ __( 'Link Text', 'mailpoet' ) }
 							value={ linkText }
@@ -112,7 +112,7 @@ const PersonalizationTagsLinkPopover = ( {
 									};
 								} ) }
 						/>
-						<div className="mailpoet-personalization-tag-popover__content-buttons">
+						<div className="mailpoet-personalization-tag-popover-content-buttons">
 							<Button
 								isTertiary
 								onClick={ () => {

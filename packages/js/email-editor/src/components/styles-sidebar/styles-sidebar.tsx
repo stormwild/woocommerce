@@ -29,7 +29,7 @@ export function RawStylesSidebar( props: Props ): JSX.Element {
 	return (
 		<ComplementaryArea
 			identifier={ stylesSidebarId }
-			className="mailpoet-email-editor__styles-panel"
+			className="mailpoet-email-editor-styles-panel"
 			header={ __( 'Styles', 'mailpoet' ) }
 			closeLabel={ __( 'Close styles sidebar', 'mailpoet' ) }
 			icon={ styles }

@@ -31,14 +31,14 @@ export function TemplateInfo() {
 
 	return (
 		<>
-			<Panel className="mailpoet-email-sidebar__email-type-info">
+			<Panel className="mailpoet-email-sidebar-email-type-info">
 				<PanelBody>
 					<PanelRow>
-						<span className="mailpoet-email-type-info__icon">
+						<span className="mailpoet-email-type-info-icon">
 							<Icon icon={ layout } />
 						</span>
-						<div className="mailpoet-email-type-info__content">
-							<div className="mailpoet-email-type-info__content_heading">
+						<div className="mailpoet-email-type-info-content">
+							<div className="mailpoet-email-type-info-content-heading">
 								<h2>
 									{ template?.title ||
 										__( 'Template', 'mailpoet' ) }

@@ -34,16 +34,16 @@ const CategorySection = ( {
 			{ categoriesToRender.map(
 				( [ category, items ]: [ string, PersonalizationTag[] ] ) => (
 					<div key={ category }>
-						<div className="mailpoet-personalization-tags-modal__category">
+						<div className="mailpoet-personalization-tags-modal-category">
 							{ category }
 						</div>
-						<div className="mailpoet-personalization-tags-modal__category-group">
+						<div className="mailpoet-personalization-tags-modal-category-group">
 							{ items.map( ( item ) => (
 								<div
-									className="mailpoet-personalization-tags-modal__category-group-item"
+									className="mailpoet-personalization-tags-modal-category-group-item"
 									key={ item.token }
 								>
-									<div className="mailpoet-personalization-tags-modal__item-text">
+									<div className="mailpoet-personalization-tags-modal-item-text">
 										<strong>{ item.name }</strong>
 										{ item.valueToInsert }
 									</div>
