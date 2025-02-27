@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import { FieldValidationStatus, isObject } from '@woocommerce/types';
+import { isObject } from '@woocommerce/types';
 
 /**
  * Internal dependencies
@@ -19,12 +19,6 @@ export const getObserversByPriority = (
 		: [];
 };
 
-export enum responseTypes {
-	SUCCESS = 'success',
-	FAIL = 'failure',
-	ERROR = 'error',
-}
-
 export enum noticeContexts {
 	CART = 'wc/cart',
 	CHECKOUT = 'wc/checkout',
@@ -37,54 +31,6 @@ export enum noticeContexts {
 	CHECKOUT_ACTIONS = 'wc/checkout/checkout-actions',
 	ORDER_INFORMATION = 'wc/checkout/additional-information',
 }
-
-export interface ResponseType extends Record< string, unknown > {
-	type: responseTypes;
-	retry?: boolean;
-}
-
-/**
- * Observers of checkout/cart events can return a response object to indicate success/error/failure. They may also
- * optionally pass metadata.
- */
-export interface ObserverResponse {
-	type: responseTypes;
-	meta?: Record< string, unknown > | undefined;
-	validationErrors?: Record< string, FieldValidationStatus > | undefined;
-}
-
-const isResponseOf = (
-	response: unknown,
-	type: string
-): response is ResponseType => {
-	return isObject( response ) && 'type' in response && response.type === type;
-};
-
-export const isSuccessResponse = (
-	response: unknown
-): response is ObserverFailResponse => {
-	return isResponseOf( response, responseTypes.SUCCESS );
-};
-interface ObserverSuccessResponse extends ObserverResponse {
-	type: responseTypes.SUCCESS;
-}
-export const isErrorResponse = (
-	response: unknown
-): response is ObserverSuccessResponse => {
-	return isResponseOf( response, responseTypes.ERROR );
-};
-interface ObserverErrorResponse extends ObserverResponse {
-	type: responseTypes.ERROR;
-}
-
-interface ObserverFailResponse extends ObserverResponse {
-	type: responseTypes.FAIL;
-}
-export const isFailResponse = (
-	response: unknown
-): response is ObserverErrorResponse => {
-	return isResponseOf( response, responseTypes.FAIL );
-};
 
 export const shouldRetry = ( response: unknown ): boolean => {
 	return (

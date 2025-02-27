@@ -124,6 +124,7 @@ const restrictedImports = [
 const coreModules = [
 	'@woocommerce/block-data',
 	'@woocommerce/blocks-checkout',
+	'@woocommerce/blocks-checkout-events',
 	'@woocommerce/blocks-components',
 	'@woocommerce/price-format',
 	'@woocommerce/settings',

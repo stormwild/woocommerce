@@ -4,7 +4,15 @@
 import { store as noticesStore } from '@wordpress/notices';
 import deprecated from '@wordpress/deprecated';
 import type { BillingAddress, ShippingAddress } from '@woocommerce/settings';
-import { isObject, isString, objectHasProp } from '@woocommerce/types';
+import {
+	isObject,
+	isString,
+	objectHasProp,
+	ObserverResponse,
+	isErrorResponse,
+	isFailResponse,
+	isSuccessResponse,
+} from '@woocommerce/types';
 import type {
 	ActionCreatorsOf,
 	ConfigOf,
@@ -19,11 +27,7 @@ import { paymentStore } from '@woocommerce/block-data';
  */
 import {
 	emitEventWithAbort,
-	isErrorResponse,
-	isFailResponse,
-	isSuccessResponse,
 	noticeContexts,
-	ObserverResponse,
 } from '../../base/context/event-emit';
 import { EMIT_TYPES } from '../../base/context/providers/cart-checkout/payment-events/event-emit';
 import type { emitProcessingEventType } from './types';

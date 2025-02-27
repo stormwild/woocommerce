@@ -1,5 +1,5 @@
 /**
- * External dependencies
+ * Internal dependencies
  */
 import {
 	FieldValidationStatus,
@@ -7,7 +7,7 @@ import {
 	isObject,
 	isString,
 	objectHasProp,
-} from '@woocommerce/types';
+} from '../';
 
 /**
  * Whether the given status is a valid FieldValidationStatus.

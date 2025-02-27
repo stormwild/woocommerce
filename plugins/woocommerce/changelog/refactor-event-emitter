@@ -1,0 +1,4 @@
+Significance: minor
+Type: add
+
+Adds a new event emitter system that allows extensions to subscribe to checkout events without being in a payment method context

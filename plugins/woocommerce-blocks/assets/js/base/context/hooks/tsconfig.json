@@ -3,6 +3,7 @@
 	"compilerOptions": {},
 	"include": [
 		".",
+		"../../../../../assets/js/events/*",
 		"../../../../../packages/checkout/index.js",
 		"../../../../../packages/prices/index.js",
 		"../providers/cart-checkout/checkout-events/index.tsx",

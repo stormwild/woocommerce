@@ -21,11 +21,12 @@ import {
 } from '@woocommerce/block-data';
 import { store as noticesStore } from '@wordpress/notices';
 import type { WPNotice } from '@wordpress/notices/build-types/store/selectors';
+import { checkoutEvents } from '@woocommerce/blocks-checkout-events';
 
 /**
  * Internal dependencies
  */
-import { useEventEmitters, reducer as emitReducer } from './event-emit';
+import { reducer as emitReducer } from './event-emit';
 import { emitterCallback, noticeContexts } from '../../../event-emit';
 import { useStoreEvents } from '../../../hooks/use-store-events';
 import {
@@ -33,6 +34,7 @@ import {
 	getPaymentMethods,
 } from '../../../../../blocks-registry/payment-methods/registry';
 import { useEditorContext } from '../../editor-context';
+import { EventListenerRegistrationFunction } from '../../../../../events/event-emitter';
 
 type CheckoutEventsContextType = {
 	// Submits the checkout and begins processing.
@@ -46,11 +48,11 @@ type CheckoutEventsContextType = {
 	// Deprecated in favour of onCheckoutValidation.
 	onCheckoutValidationBeforeProcessing: ReturnType< typeof emitterCallback >;
 	// Used to register a callback that will fire if the api call to /checkout is successful
-	onCheckoutSuccess: ReturnType< typeof emitterCallback >;
+	onCheckoutSuccess: EventListenerRegistrationFunction;
 	// Used to register a callback that will fire if the api call to /checkout fails
-	onCheckoutFail: ReturnType< typeof emitterCallback >;
+	onCheckoutFail: EventListenerRegistrationFunction;
 	// Used to register a callback that will fire when the checkout performs validation on the form
-	onCheckoutValidation: ReturnType< typeof emitterCallback >;
+	onCheckoutValidation: EventListenerRegistrationFunction;
 };
 
 const CheckoutEventsContext = createContext< CheckoutEventsContextType >( {
@@ -172,10 +174,10 @@ export const CheckoutEventsProvider = ( {
 		};
 	}, [] );
 
-	const [ observers, observerDispatch ] = useReducer( emitReducer, {} );
+	const [ observers ] = useReducer( emitReducer, {} );
 	const currentObservers = useRef( observers );
 	const { onCheckoutValidation, onCheckoutSuccess, onCheckoutFail } =
-		useEventEmitters( observerDispatch );
+		checkoutEvents;
 
 	// set observers on ref so it's always current.
 	useEffect( () => {
@@ -251,7 +253,6 @@ export const CheckoutEventsProvider = ( {
 	useEffect( () => {
 		if ( isCheckoutBeforeProcessing ) {
 			__internalEmitValidateEvent( {
-				observers: currentObservers.current,
 				setValidationErrors,
 			} );
 		}
@@ -276,7 +277,6 @@ export const CheckoutEventsProvider = ( {
 
 		if ( isCheckoutAfterProcessing ) {
 			__internalEmitAfterProcessingEvents( {
-				observers: currentObservers.current,
 				notices: {
 					checkoutNotices,
 					paymentNotices,

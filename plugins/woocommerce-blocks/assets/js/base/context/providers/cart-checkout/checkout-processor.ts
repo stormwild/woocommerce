@@ -33,12 +33,12 @@ import {
 	CheckoutResponseError,
 	assertResponseIsValid,
 } from '@woocommerce/types';
+import { checkoutEvents } from '@woocommerce/blocks-checkout-events';
 
 /**
  * Internal dependencies
  */
 import { preparePaymentData, processCheckoutResponseHeaders } from './utils';
-import { useCheckoutEventsContext } from './checkout-events';
 import { useShippingDataContext } from './shipping';
 import { useStoreCart } from '../../hooks/cart/use-store-cart';
 
@@ -48,7 +48,7 @@ import { useStoreCart } from '../../hooks/cart/use-store-cart';
  * Subscribes to checkout context and triggers processing via the API.
  */
 const CheckoutProcessor = () => {
-	const { onCheckoutValidation } = useCheckoutEventsContext();
+	const { onCheckoutValidation } = checkoutEvents;
 
 	const {
 		additionalFields,

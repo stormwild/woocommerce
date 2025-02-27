@@ -1,15 +1,20 @@
 /**
- * Internal dependencies
+ * External dependencies
  */
+
 import {
-	getObserversByPriority,
 	isErrorResponse,
 	isFailResponse,
-	ObserverResponse,
+	isObserverResponse,
+	type ObserverResponse,
 	responseTypes,
-} from './utils';
+} from '@woocommerce/types';
+
+/**
+ * Internal dependencies
+ */
+import { getObserversByPriority } from './utils';
 import type { EventObserversType } from './types';
-import { isObserverResponse } from '../../../types/type-guards/observers';
 
 /**
  * Emits events on registered observers for the provided type and passes along

@@ -5,10 +5,8 @@ import { CHECKOUT_URL } from '@woocommerce/block-settings';
 import Button from '@woocommerce/base-components/button';
 import clsx from 'clsx';
 import { useStyleProps } from '@woocommerce/base-hooks';
-import {
-	isErrorResponse,
-	useCartEventsContext,
-} from '@woocommerce/base-context';
+import { useCartEventsContext } from '@woocommerce/base-context';
+import { isErrorResponse } from '@woocommerce/types';
 
 /**
  * Internal dependencies

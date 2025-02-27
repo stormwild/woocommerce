@@ -21,6 +21,7 @@ export const config = {
 
 export const store = createReduxStore( STORE_KEY, config );
 register( store );
+export type CheckoutStoreDescriptor = typeof store;
 
 subscribe( pushChanges, store );
 

@@ -54,6 +54,7 @@
 			"@woocommerce/block-hocs": [ "assets/js/hocs" ],
 			"@woocommerce/blocks-registry": [ "assets/js/blocks-registry" ],
 			"@woocommerce/blocks-checkout": [ "packages/checkout" ],
+			"@woocommerce/blocks-checkout-events": [ "assets/js/events" ],
 			"@woocommerce/blocks-components": [ "packages/components" ],
 			"@woocommerce/interactivity-components/*": [
 				"packages/interactivity-components/*"

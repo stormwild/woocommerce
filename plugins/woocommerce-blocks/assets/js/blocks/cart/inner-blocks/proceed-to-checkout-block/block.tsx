@@ -10,7 +10,7 @@ import { getSetting } from '@woocommerce/settings';
 import { useSelect } from '@wordpress/data';
 import { cartStore, checkoutStore } from '@woocommerce/block-data';
 import { applyCheckoutFilter } from '@woocommerce/blocks-checkout';
-import { isErrorResponse } from '@woocommerce/base-context';
+import { isErrorResponse } from '@woocommerce/types';
 import { useCartEventsContext } from '@woocommerce/base-context/providers';
 
 /**

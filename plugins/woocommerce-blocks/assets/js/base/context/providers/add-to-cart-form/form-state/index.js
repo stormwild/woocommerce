@@ -16,6 +16,7 @@ import {
 } from '@woocommerce/base-utils';
 import { useDispatch } from '@wordpress/data';
 import { VALIDATION_STORE_KEY } from '@woocommerce/block-data';
+import { isErrorResponse, isFailResponse } from '@woocommerce/types';
 
 /**
  * Internal dependencies
@@ -30,7 +31,6 @@ import {
 	emitEventWithAbort,
 	reducer as emitReducer,
 } from './event-emit';
-import { isErrorResponse, isFailResponse } from '../../../event-emit';
 import { removeNoticesByStatus } from '../../../../../utils/notices';
 
 /**
