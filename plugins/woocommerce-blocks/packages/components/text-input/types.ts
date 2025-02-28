@@ -25,7 +25,7 @@ export interface ValidatedTextInputProps
 	// If true, validation errors will be shown.
 	showError?: boolean;
 	// Error message to display alongside the field regardless of validation.
-	errorMessage?: string;
+	errorMessage?: string | undefined;
 	// Custom validation function that is run on change. Use setCustomValidity to set an error message.
 	customValidation?: ( inputObject: HTMLInputElement ) => boolean;
 	// Custom validation message to display when validity is false. Given the input element. Expected to use inputObject.validity.

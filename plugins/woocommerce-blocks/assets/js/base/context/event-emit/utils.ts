@@ -29,7 +29,7 @@ export enum noticeContexts {
 	BILLING_ADDRESS = 'wc/checkout/billing-address',
 	SHIPPING_METHODS = 'wc/checkout/shipping-methods',
 	CHECKOUT_ACTIONS = 'wc/checkout/checkout-actions',
-	ORDER_INFORMATION = 'wc/checkout/additional-information',
+	ORDER_INFORMATION = 'wc/checkout/order-information',
 }
 
 export const shouldRetry = ( response: unknown ): boolean => {

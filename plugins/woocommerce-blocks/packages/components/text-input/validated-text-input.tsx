@@ -28,6 +28,8 @@ import { ValidatedTextInputProps } from './types';
 export type ValidatedTextInputHandle = {
 	focus?: () => void;
 	revalidate: () => void;
+	isFocused: () => boolean;
+	setErrorMessage: ( errorMessage: string ) => void;
 };
 
 /**
@@ -82,6 +84,7 @@ const ValidatedTextInput = forwardRef<
 			setValidationErrors,
 			hideValidationError,
 			clearValidationError,
+			showValidationError,
 		} = useDispatch( validationStore );
 
 		// Ref for validation callback.
@@ -100,7 +103,8 @@ const ValidatedTextInput = forwardRef<
 					validationErrorId:
 						store.getValidationErrorId( errorIdString ),
 				};
-			}
+			},
+			[ errorIdString ]
 		);
 
 		const validateInput = useCallback(
@@ -117,22 +121,31 @@ const ValidatedTextInput = forwardRef<
 
 				if (
 					inputObject.checkValidity() &&
-					customValidationRef.current( inputObject )
+					customValidationRef.current( inputObject ) &&
+					errorsHidden
 				) {
 					clearValidationError( errorIdString );
 					return;
 				}
 
-				setValidationErrors( {
-					[ errorIdString ]: {
-						message: getValidityMessageForInput(
-							label,
-							inputObject,
-							customValidityMessage
-						),
-						hidden: errorsHidden,
-					},
-				} );
+				if ( ! errorsHidden ) {
+					showValidationError( errorIdString );
+				}
+
+				const validityMessage = getValidityMessageForInput(
+					label,
+					inputObject,
+					customValidityMessage
+				);
+
+				if ( validityMessage ) {
+					setValidationErrors( {
+						[ errorIdString ]: {
+							message: validityMessage,
+							hidden: errorsHidden,
+						},
+					} );
+				}
 			},
 			[
 				clearValidationError,
@@ -140,6 +153,7 @@ const ValidatedTextInput = forwardRef<
 				setValidationErrors,
 				label,
 				customValidityMessage,
+				showValidationError,
 			]
 		);
 
@@ -153,6 +167,15 @@ const ValidatedTextInput = forwardRef<
 					},
 					revalidate() {
 						validateInput( ! value );
+					},
+					isFocused() {
+						return (
+							inputRef.current?.ownerDocument?.activeElement ===
+							inputRef.current
+						);
+					},
+					setErrorMessage( errorMessage: string ) {
+						inputRef.current?.setCustomValidity( errorMessage );
 					},
 				};
 			},
@@ -275,7 +298,7 @@ const ValidatedTextInput = forwardRef<
 					}
 				} }
 				onBlur={ () => validateInput( false ) }
-				ariaDescribedBy={ ariaDescribedBy }
+				aria-describedby={ ariaDescribedBy }
 				value={ value }
 				title="" // This prevents the same error being shown on hover.
 				label={ label }

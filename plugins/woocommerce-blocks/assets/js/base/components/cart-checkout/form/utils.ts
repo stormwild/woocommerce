@@ -1,17 +1,15 @@
 /**
  * External dependencies
  */
+import { DocumentObject } from '@woocommerce/base-hooks';
 import {
+	AddressForm,
 	AddressFormValues,
-	ContactFormValues,
-	KeyedFormField,
+	Field,
+	KeyedFormFields,
 } from '@woocommerce/settings';
-import { objectHasProp } from '@woocommerce/types';
-
-/**
- * Internal dependencies
- */
-import { AddressFormFields } from './types';
+import { isObject, objectHasProp } from '@woocommerce/types';
+import { JSONSchemaType } from 'ajv';
 
 export interface FieldProps {
 	id: string;
@@ -26,7 +24,7 @@ export interface FieldProps {
 }
 
 export const createFieldProps = (
-	field: KeyedFormField,
+	field: KeyedFormFields[ number ],
 	formId: string,
 	fieldAddressType: string
 ): FieldProps => ( {
@@ -56,15 +54,40 @@ export const createCheckboxFieldProps = ( fieldProps: FieldProps ) => {
 	} = fieldProps;
 	return rest;
 };
-export const getFieldData = < T extends AddressFormValues | ContactFormValues >(
-	key: 'address_1' | 'address_2',
-	fields: AddressFormFields[ 'fields' ],
-	values: T
-) => {
-	const addressField = fields.find( ( field ) => field.key === key );
-	const addressValue = objectHasProp( values, key )
-		? values[ key ]
-		: undefined;
+export const getFieldData = < T extends keyof AddressForm >(
+	key: T,
+	fields: KeyedFormFields,
+	values: AddressFormValues
+): {
+	field: AddressForm[ typeof key ] & {
+		key: typeof key;
+		errorMessage?: string;
+	};
+	value: string;
+} | null => {
+	const addressField = fields.find( ( _field ) => _field.key === key );
+	const addressValue = objectHasProp( values, key ) ? values[ key ] : '';
+	if ( ! addressField ) {
+		return null;
+	}
 
-	return { field: addressField, value: addressValue };
+	return {
+		field: { ...addressField, key }, // TS won't infer the key type correctly.
+		value: addressValue,
+	};
+};
+
+export const hasSchemaRules = (
+	field: Field,
+	key: keyof Field[ 'rules' ]
+): field is Field & {
+	rules: {
+		[ k in typeof key ]: JSONSchemaType< DocumentObject< 'global' > >;
+	};
+} => {
+	return (
+		isObject( field.rules ) &&
+		isObject( field.rules[ key ] ) &&
+		Object.keys( field.rules[ key ] ).length > 0
+	);
 };

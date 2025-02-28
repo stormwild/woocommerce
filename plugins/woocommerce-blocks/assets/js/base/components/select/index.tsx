@@ -3,11 +3,12 @@
  */
 import { Icon, chevronDown } from '@wordpress/icons';
 import { useCallback, useId, useMemo, useEffect } from '@wordpress/element';
-import { sprintf, __, getLocaleData } from '@wordpress/i18n';
+import { sprintf, __ } from '@wordpress/i18n';
 import { useSelect, useDispatch } from '@wordpress/data';
 import clsx from 'clsx';
 import { validationStore } from '@woocommerce/block-data';
 import { ValidationInputError } from '@woocommerce/blocks-components';
+import { getFieldLabel } from '@woocommerce/blocks-checkout';
 
 /**
  * Internal dependencies
@@ -30,6 +31,7 @@ export type SelectProps = Omit<
 	errorId?: string;
 	required?: boolean | undefined;
 	errorMessage?: string | undefined;
+	placeholder?: string | undefined;
 };
 
 export const Select = ( props: SelectProps ) => {
@@ -52,10 +54,7 @@ export const Select = ( props: SelectProps ) => {
 		},
 		[ onChange ]
 	);
-	const localeData = getLocaleData();
-	const shouldKeepOriginalCase = [ 'de', 'de_AT', 'de_CH' ].includes(
-		localeData?.[ '' ]?.lang ?? 'en'
-	);
+	const fieldLabel = getFieldLabel( label );
 	const emptyOption: SelectOption = useMemo(
 		() => ( {
 			value: '',
@@ -64,11 +63,11 @@ export const Select = ( props: SelectProps ) => {
 				sprintf(
 					// translators: %s will be label of the field. For example "country/region".
 					__( 'Select a %s', 'woocommerce' ),
-					shouldKeepOriginalCase ? label : label?.toLowerCase()
+					fieldLabel
 				),
 			disabled: !! required,
 		} ),
-		[ label, placeholder, required, shouldKeepOriginalCase ]
+		[ placeholder, required, fieldLabel ]
 	);
 
 	const generatedId = useId();
@@ -86,13 +85,16 @@ export const Select = ( props: SelectProps ) => {
 	const { setValidationErrors, clearValidationError } =
 		useDispatch( validationStore );
 
-	const { error, validationErrorId } = useSelect( ( select ) => {
-		const store = select( validationStore );
-		return {
-			error: store.getValidationError( errorId ),
-			validationErrorId: store.getValidationErrorId( errorId ),
-		};
-	} );
+	const { error, validationErrorId } = useSelect(
+		( select ) => {
+			const store = select( validationStore );
+			return {
+				error: store.getValidationError( errorId ),
+				validationErrorId: store.getValidationErrorId( errorId ),
+			};
+		},
+		[ errorId ]
+	);
 
 	useEffect( () => {
 		if ( ! required || value ) {
@@ -117,14 +119,17 @@ export const Select = ( props: SelectProps ) => {
 		setValidationErrors,
 	] );
 
-	const validationError = useSelect( ( select ) => {
-		const store = select( validationStore );
-		return (
-			store.getValidationError( errorId || '' ) || {
-				hidden: true,
-			}
-		);
-	} );
+	const validationError = useSelect(
+		( select ) => {
+			const store = select( validationStore );
+			return (
+				store.getValidationError( errorId || '' ) || {
+					hidden: true,
+				}
+			);
+		},
+		[ errorId ]
+	);
 
 	return (
 		<div

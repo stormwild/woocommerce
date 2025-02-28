@@ -8,7 +8,8 @@ import type {
 	CartShippingAddress,
 	CartBillingAddress,
 } from '@woocommerce/types';
-import { FormField, defaultFields } from '@woocommerce/settings';
+import { AddressFormValues } from '@woocommerce/settings';
+import { ADDRESS_FORM_KEYS } from '@woocommerce/block-settings';
 
 /**
  * Internal dependencies
@@ -40,21 +41,16 @@ export interface CartState {
 	errors: ApiErrorResponse[];
 }
 
-const shippingAddress: Partial< CartShippingAddress & { email: FormField } > =
-	{};
-Object.keys( defaultFields ).forEach( ( key ) => {
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore the default fields contain keys for each field.
+const shippingAddress: Partial< AddressFormValues > = {};
+ADDRESS_FORM_KEYS.forEach( ( key ) => {
 	shippingAddress[ key ] = '';
 } );
-delete shippingAddress.email;
 
-const billingAddress: Partial< CartBillingAddress & { email: FormField } > = {};
-Object.keys( defaultFields ).forEach( ( key ) => {
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore the default fields contain keys for each field.
+const billingAddress: Partial< AddressFormValues & { email: string } > = {};
+ADDRESS_FORM_KEYS.forEach( ( key ) => {
 	billingAddress[ key ] = '';
 } );
+billingAddress.email = '';
 
 export const defaultCartState: CartState = {
 	cartItemsPendingQuantity: EMPTY_PENDING_QUANTITY,

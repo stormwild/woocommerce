@@ -3,7 +3,7 @@
  */
 import type { AllHTMLAttributes, AriaAttributes } from 'react';
 import type { JSONSchemaType } from 'ajv';
-import type { DocumentSchema } from '@woocommerce/base-hooks';
+import type { DocumentObject } from '@woocommerce/base-hooks';
 
 /**
  * Internal dependencies
@@ -23,7 +23,10 @@ type CustomFieldAttributes = Pick<
 > &
 	AriaAttributes;
 
-export interface FormField {
+/**
+ * A field definition, on its raw form, passed to us from the store settings.
+ */
+export interface Field {
 	// The label for the field.
 	label: string;
 	// The label for the field if made optional.
@@ -47,78 +50,85 @@ export interface FormField {
 	// Additional attributes added when registering a field. String in key is required for data attributes.
 	attributes?: Record< keyof CustomFieldAttributes, string >;
 	// The rules for the field.
-	rules?: {
-		required?: JSONSchemaType< DocumentSchema >;
-		validation?: JSONSchemaType< DocumentSchema >;
-		hidden?: JSONSchemaType< DocumentSchema >;
+	rules: {
+		required?: JSONSchemaType< DocumentObject< 'global' > > | []; // Empty array because server returns an empty array when no rules are set.
+		validation?: JSONSchemaType< DocumentObject< 'global' > > | [];
+		hidden?: JSONSchemaType< DocumentObject< 'global' > > | [];
 	};
 }
 
-export interface LocaleSpecificFormField extends Partial< FormField > {
-	priority?: number | undefined;
+/**
+ * Countries can override fields props depending on the country, a fieldLocaleOverrides contains those overrides.
+ */
+export type FieldLocaleOverrides = Partial< Field >;
+
+/**
+ * Shipping and billing address form fields.
+ */
+export interface AddressForm {
+	first_name: Field;
+	last_name: Field;
+	company: Field;
+	address_1: Field;
+	address_2: Field;
+	country: Field;
+	city: Field;
+	state: Field;
+	postcode: Field;
+	phone: Field;
+	[ x: `${ string }/${ string }` ]: Field; // Additional fields are named like: namespace/field_name
 }
 
-export interface CoreAddressForm {
-	first_name: FormField;
-	last_name: FormField;
-	company: FormField;
-	address_1: FormField;
-	address_2: FormField;
-	country: FormField;
-	city: FormField;
-	state: FormField;
-	postcode: FormField;
-	phone: FormField;
-	[ x: `${ string }/${ string }` ]: FormField; // Additional fields are named like: namespace/field_name
+/**
+ * Contact form fields.
+ */
+export interface ContactForm {
+	email: Field;
+	[ x: `${ string }/${ string }` ]: Field;
 }
 
-export interface CoreContactForm {
-	email: FormField;
-	[ x: `${ string }/${ string }` ]: FormField; // Additional fields are named like: namespace/field_name
+/**
+ * Order form fields.
+ */
+export interface OrderForm {
+	[ x: `${ string }/${ string }` ]: Field;
 }
 
-export type AddressForm = CoreAddressForm;
-export type ContactForm = CoreContactForm;
-export type FormFields = AddressForm & ContactForm;
-export type AddressFormValues = Omit< ShippingAddress, 'email' >;
-export type ContactFormValues = { email: string };
-export type AdditionalInformationFormValues = Record< string, string >;
-export type FormType =
-	| 'billing'
-	| 'shipping'
-	| 'contact'
-	| 'additional-information';
+/**
+ * All possible fields for all forms.
+ */
+export type FormFields = AddressForm & ContactForm & OrderForm;
 
-export interface CoreAddress {
-	first_name: string;
-	last_name: string;
-	company: string;
-	address_1: string;
-	address_2: string;
-	country: string;
-	city: string;
-	state: string;
-	postcode: string;
-	phone: string;
-	[ x: `${ string }/${ string }` ]: string | boolean; // Additional fields are named like: namespace/field_name
-}
-
-export type AdditionalValues = Record<
-	`${ string }/${ string }`,
-	string | boolean
+/**
+ * KeyedFormFields is the array shape of FormFields object with the key added to each field.
+ */
+export type KeyedFormFields = Array<
+	{
+		key: keyof FormFields;
+		errorMessage?: string;
+	} & FormFields[ keyof FormFields ]
 >;
+/**
+ * All possible values for a form.
+ */
+export type FormValues = Record< keyof FormFields, string > & {
+	[ x: `${ string }/${ string }` ]: string | boolean;
+};
 
-export type ShippingAddress = CoreAddress;
-export interface BillingAddress extends ShippingAddress {
+export type AddressFormValues = Pick< FormValues, keyof AddressForm >;
+export type ContactFormValues = Pick< FormValues, keyof ContactForm >;
+export type OrderFormValues = Pick< FormValues, keyof OrderForm >;
+
+export type FormType = 'billing' | 'shipping' | 'contact' | 'order';
+
+export type ShippingAddress = AddressFormValues;
+export interface BillingAddress extends AddressFormValues {
 	email: string;
 }
 
-export type KeyedFormField = FormField & {
-	key: keyof FormFields;
-	errorMessage?: string;
-};
-
-export type CountryAddressFields = Record< string, FormFields >;
+export type CountryAddressFields =
+	| Record< string, Record< keyof FormFields, FieldLocaleOverrides > >
+	| Record< string, never >;
 
 /**
  * Default field properties.

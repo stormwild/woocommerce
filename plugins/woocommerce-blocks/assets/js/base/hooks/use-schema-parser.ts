@@ -4,7 +4,11 @@
 import { useRef } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import { snakeCaseKeys } from '@woocommerce/base-utils';
-import type { CoreAddress, AdditionalValues } from '@woocommerce/settings';
+import type {
+	OrderFormValues,
+	AddressFormValues,
+	FormType,
+} from '@woocommerce/settings';
 import fastDeepEqual from 'fast-deep-equal/es6';
 import {
 	cartStore,
@@ -13,14 +17,16 @@ import {
 } from '@woocommerce/block-data';
 import type Ajv from 'ajv';
 
-const useDocumentObject = ( formType: string ): DocumentObject => {
-	const currentResults = useRef< DocumentObject >( {
+const useDocumentObject = < T extends FormType | 'global' >(
+	formType: T
+): DocumentObject< T > => {
+	const currentResults = useRef< DocumentObject< T > >( {
 		cart: {},
 		checkout: {},
 		customer: {},
 	} );
 
-	const data: DocumentObject = useSelect(
+	const data: DocumentObject< T > = useSelect(
 		( select ) => {
 			const cartDataStore = select( cartStore );
 			const checkoutDataStore = select( checkoutStore );
@@ -97,15 +103,15 @@ const useDocumentObject = ( formType: string ): DocumentObject => {
 			};
 
 			return {
-				cart: snakeCaseKeys(
-					documentObject.cart
-				) as DocumentObject[ 'cart' ],
+				cart: snakeCaseKeys( documentObject.cart ) as DocumentObject<
+					typeof formType
+				>[ 'cart' ],
 				checkout: snakeCaseKeys(
 					documentObject.checkout
-				) as DocumentObject[ 'checkout' ],
+				) as DocumentObject< typeof formType >[ 'checkout' ],
 				customer: snakeCaseKeys(
 					documentObject.customer
-				) as DocumentObject[ 'customer' ],
+				) as DocumentObject< typeof formType >[ 'customer' ],
 			};
 		},
 		[ formType ]
@@ -121,13 +127,13 @@ const useDocumentObject = ( formType: string ): DocumentObject => {
 	return currentResults.current;
 };
 
-export const useSchemaParser = (
-	formType: string
+export const useSchemaParser = < T extends FormType | 'global' >(
+	formType: T
 ): {
 	parser: Ajv | null;
-	data: DocumentObject | null;
+	data: DocumentObject< T > | null;
 } => {
-	const data = useDocumentObject( formType );
+	const data = useDocumentObject< T >( formType );
 	if ( window.schemaParser ) {
 		return {
 			parser: window.schemaParser,
@@ -140,7 +146,7 @@ export const useSchemaParser = (
 	};
 };
 
-export interface DocumentObject {
+export interface DocumentObject< T extends FormType | 'global' > {
 	cart:
 		| {
 				coupons: string[];
@@ -163,15 +169,19 @@ export interface DocumentObject {
 				create_account: boolean;
 				customer_note: string;
 				payment_method: string;
-				additional_fields: AdditionalValues;
+				additional_fields: OrderFormValues;
 		  }
 		| Record< string, never >;
 	customer:
 		| {
 				id: number;
-				billing_address: CoreAddress;
-				shipping_address: CoreAddress;
-				address: CoreAddress;
+				billing_address: AddressFormValues;
+				shipping_address: AddressFormValues;
+				address: T extends 'billing'
+					? AddressFormValues
+					: T extends 'shipping'
+					? AddressFormValues
+					: null;
 		  }
 		| Record< string, never >;
 }

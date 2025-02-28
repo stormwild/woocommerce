@@ -27,8 +27,9 @@ const FrontendBlock = ( {
 	className?: string;
 } ) => {
 	const { showFormStepNumbers } = useCheckoutBlockContext();
-	const checkoutIsProcessing = useSelect( ( select ) =>
-		select( checkoutStore ).isProcessing()
+	const checkoutIsProcessing = useSelect(
+		( select ) => select( checkoutStore ).isProcessing(),
+		[]
 	);
 
 	if ( ORDER_FORM_KEYS.length === 0 ) {
@@ -37,12 +38,9 @@ const FrontendBlock = ( {
 
 	return (
 		<FormStep
-			id="additional-information-fields"
+			id="order-fields"
 			disabled={ checkoutIsProcessing }
-			className={ clsx(
-				'wc-block-checkout__additional-information-fields',
-				className
-			) }
+			className={ clsx( 'wc-block-checkout__order-fields', className ) }
 			title={ title }
 			description={ description }
 			showStepNumber={ showFormStepNumbers }

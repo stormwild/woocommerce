@@ -2,26 +2,22 @@
  * External dependencies
  */
 import type {
-	AddressFormValues,
-	ContactFormValues,
 	FormFields,
+	AddressFormValues,
 	FormType,
-	KeyedFormField,
+	AddressForm,
+	ContactFormValues,
+	OrderFormValues,
 } from '@woocommerce/settings';
-
-export type AddressFormFields = {
-	fields: KeyedFormField[];
-	addressType: FormType;
-	required: KeyedFormField[];
-	hidden: KeyedFormField[];
-};
 
 /**
  * Internal dependencies
  */
 import { FieldProps } from './utils';
 
-export interface AddressFormProps< T > {
+export interface FormProps<
+	T extends AddressFormValues | ContactFormValues | OrderFormValues
+> {
 	// Id for component.
 	id?: string;
 	// Type of form (billing or shipping).
@@ -31,7 +27,7 @@ export interface AddressFormProps< T > {
 	// Array of fields in form.
 	fields: ( keyof FormFields )[];
 	// Called with the new address data when the address form changes. This is only called when all required fields are filled and there are no validation errors.
-	onChange: ( newValue: AddressFormValues | ContactFormValues ) => void;
+	onChange: ( newValue: T ) => void;
 	// Values for fields.
 	values: T;
 	// support inserting children at end of form
@@ -40,34 +36,45 @@ export interface AddressFormProps< T > {
 	isEditing?: boolean;
 }
 
-interface AddressFieldData {
-	// Form fields.
-	field?: KeyedFormField | undefined;
-	// Field value.
-	value?: string | undefined;
-}
-
-export interface AddressLineFieldsProps< T >
-	extends Omit< AddressFormProps< T >, 'fields' | 'values' | 'onChange' > {
+export interface AddressLineFieldsProps
+	extends Omit<
+		FormProps< AddressFormValues >,
+		'fields' | 'values' | 'onChange'
+	> {
 	// Overwriting the id for the fields.
 	formId: string;
 	// Address 1 fields and value.
-	address1: AddressFieldData;
+	address1: {
+		field: AddressForm[ 'address_1' ] & {
+			key: 'address_1';
+			errorMessage?: string;
+		};
+		value: AddressFormValues[ 'address_1' ];
+	};
 	// Address 2 fields and value.
-	address2: AddressFieldData;
+	address2: {
+		field: AddressForm[ 'address_2' ] & {
+			key: 'address_2';
+			errorMessage?: string;
+		};
+		value: AddressFormValues[ 'address_2' ];
+	};
 	// Overwriting the address type for the fields.
 	addressType: FormType;
 	// Called with the new address data when the address form changes. This is only called when all required fields are filled and there are no validation errors.
-	onChange: ( key: keyof T, value: string ) => void;
+	onChange: ( key: 'address_1' | 'address_2', value: string ) => void;
 }
 
-export interface AddressLineFieldProps< T > {
+export interface AddressLineFieldProps {
 	// Form fields.
-	field: KeyedFormField;
+	field: AddressForm[ 'address_2' ] & {
+		key: 'address_2';
+		errorMessage?: string;
+	};
 	// Props for the form field.
 	props?: FieldProps | undefined;
 	// Called with the new address data when the address form changes. This is only called when all required fields are filled and there are no validation errors.
-	onChange: ( key: keyof T, value: string ) => void;
+	onChange: ( value: string ) => void;
 	// Value for field.
 	value?: string | undefined;
 }

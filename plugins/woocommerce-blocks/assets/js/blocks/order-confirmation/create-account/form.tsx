@@ -92,8 +92,10 @@ const Form = ( {
 } ) => {
 	const [ isLoading, setIsLoading ] = useState( false );
 	const [ password, setPassword ] = useState( '' );
-	const hasValidationError = useSelect( ( select ) =>
-		select( validationStore ).getValidationError( 'account-password' )
+	const hasValidationError = useSelect(
+		( select ) =>
+			select( validationStore ).getValidationError( 'account-password' ),
+		[]
 	);
 	const customerEmail =
 		blockAttributes?.customerEmail ||

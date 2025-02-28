@@ -8,10 +8,11 @@ import addErrors from 'ajv-errors';
 const ajv = new Ajv( {
 	allErrors: true,
 	$data: true,
-	validateSchema: false,
+	validateSchema: true,
 	validateFormats: false,
 	strictSchema: false,
 	strict: false,
+	messages: true,
 } );
 
 addFormats( ajv );

@@ -37,8 +37,8 @@ const Block: FunctionComponent = () => {
 				context={ noticeContexts.ORDER_INFORMATION }
 			/>
 			<Form
-				id="additional-information"
-				addressType="additional-information"
+				id="order"
+				addressType="order"
 				onChange={ onChangeForm }
 				values={ additionalFieldValues }
 				fields={ ORDER_FORM_KEYS }

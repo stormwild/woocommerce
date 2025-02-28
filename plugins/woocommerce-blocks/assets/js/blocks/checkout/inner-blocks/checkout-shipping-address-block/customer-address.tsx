@@ -4,7 +4,7 @@
 import { useCallback, useEffect } from '@wordpress/element';
 import { Form } from '@woocommerce/base-components/cart-checkout';
 import { useCheckoutAddress, useStoreEvents } from '@woocommerce/base-context';
-import type { AddressFormValues } from '@woocommerce/settings';
+import type { ShippingAddress } from '@woocommerce/settings';
 import { useSelect } from '@wordpress/data';
 import { validationStore } from '@woocommerce/block-data';
 import { ADDRESS_FORM_KEYS } from '@woocommerce/block-settings';
@@ -27,20 +27,23 @@ const CustomerAddress = () => {
 	const { dispatchCheckoutEvent } = useStoreEvents();
 
 	// Forces editing state if store has errors.
-	const { hasValidationErrors, invalidProps } = useSelect( ( select ) => {
-		const store = select( validationStore );
-		return {
-			hasValidationErrors: store.hasValidationErrors(),
-			invalidProps: Object.keys( shippingAddress )
-				.filter( ( key ) => {
-					return (
-						store.getValidationError( 'shipping_' + key ) !==
-						undefined
-					);
-				} )
-				.filter( Boolean ),
-		};
-	} );
+	const { hasValidationErrors, invalidProps } = useSelect(
+		( select ) => {
+			const store = select( validationStore );
+			return {
+				hasValidationErrors: store.hasValidationErrors(),
+				invalidProps: Object.keys( shippingAddress )
+					.filter( ( key ) => {
+						return (
+							store.getValidationError( 'shipping_' + key ) !==
+							undefined
+						);
+					} )
+					.filter( Boolean ),
+			};
+		},
+		[ shippingAddress ]
+	);
 
 	useEffect( () => {
 		if ( invalidProps.length > 0 && editing === false ) {
@@ -49,7 +52,7 @@ const CustomerAddress = () => {
 	}, [ editing, hasValidationErrors, invalidProps.length, setEditing ] );
 
 	const onChangeAddress = useCallback(
-		( values: AddressFormValues ) => {
+		( values: ShippingAddress ) => {
 			setShippingAddress( values );
 			if ( useShippingAsBilling ) {
 				setBillingAddress( values );
@@ -81,7 +84,7 @@ const CustomerAddress = () => {
 
 	const renderAddressFormComponent = useCallback(
 		() => (
-			<Form< AddressFormValues >
+			<Form< ShippingAddress >
 				id="shipping"
 				addressType="shipping"
 				onChange={ onChangeAddress }

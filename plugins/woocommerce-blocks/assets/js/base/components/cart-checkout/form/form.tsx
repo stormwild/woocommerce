@@ -2,12 +2,6 @@
  * External dependencies
  */
 import {
-	ValidatedTextInput,
-	type ValidatedTextInputHandle,
-	CheckboxControl,
-	ValidatedCheckboxControl,
-} from '@woocommerce/blocks-components';
-import {
 	BillingCountryInput,
 	ShippingCountryInput,
 } from '@woocommerce/base-components/country-input';
@@ -15,37 +9,50 @@ import {
 	BillingStateInput,
 	ShippingStateInput,
 } from '@woocommerce/base-components/state-input';
-import { useEffect, useRef } from '@wordpress/element';
+import { useCheckoutAddress } from '@woocommerce/base-context';
+import { usePrevious, useShallowEqual } from '@woocommerce/base-hooks';
+import { validationStore } from '@woocommerce/block-data';
+import {
+	CheckboxControl,
+	ValidatedCheckboxControl,
+	ValidatedTextInput,
+	type ValidatedTextInputHandle,
+} from '@woocommerce/blocks-components';
+import {
+	AddressFormValues,
+	ContactFormValues,
+	OrderFormValues,
+} from '@woocommerce/settings';
+import { isNull } from '@woocommerce/types';
 import { useInstanceId } from '@wordpress/compose';
-import { useShallowEqual, usePrevious } from '@woocommerce/base-hooks';
+import { dispatch } from '@wordpress/data';
+import { useEffect, useRef } from '@wordpress/element';
+import { decodeEntities } from '@wordpress/html-entities';
 import isShallowEqual from '@wordpress/is-shallow-equal';
 import clsx from 'clsx';
-import { AddressFormValues, ContactFormValues } from '@woocommerce/settings';
-import { objectHasProp } from '@woocommerce/types';
-import { useCheckoutAddress } from '@woocommerce/base-context';
 import fastDeepEqual from 'fast-deep-equal/es6';
-import { decodeEntities } from '@wordpress/html-entities';
 
 /**
  * Internal dependencies
  */
-import { AddressFormProps } from './types';
-import { useFormFields } from './use-form-fields';
-import validateCountry from './validate-country';
-import customValidationHandler from './custom-validation-handler';
+import { Select } from '../../select';
 import AddressLineFields from './address-line-fields';
+import { FormProps } from './types';
+import { useFormFields } from './use-form-fields';
+import { useFormValidation } from './use-form-validation';
 import {
-	createFieldProps,
 	createCheckboxFieldProps,
+	createFieldProps,
 	getFieldData,
 } from './utils';
-import { Select } from '../../select';
+import validateCountry from './validate-country';
 import { validateState } from './validate-state';
-
 /**
  * Checkout form.
  */
-const Form = < T extends AddressFormValues | ContactFormValues >( {
+const Form = <
+	T extends AddressFormValues | ContactFormValues | OrderFormValues
+>( {
 	id = '',
 	fields,
 	onChange,
@@ -54,14 +61,14 @@ const Form = < T extends AddressFormValues | ContactFormValues >( {
 	children,
 	isEditing,
 	ariaDescribedBy = '',
-}: AddressFormProps< T > ): JSX.Element => {
+}: FormProps< T > ): JSX.Element => {
 	const instanceId = useInstanceId( Form );
 	const isFirstRender = useRef( true );
 	const { defaultFields } = useCheckoutAddress(); // We read from here because `useCheckoutAddress` can adapt to being in the editor or frontend.
 	// Track incoming props.
 	const currentFields = useShallowEqual( fields );
-	const currentCountry = useShallowEqual(
-		objectHasProp( values, 'country' ) ? values.country : ''
+	const currentCountry = useShallowEqual< string >(
+		'country' in values ? values.country : ''
 	);
 
 	// Prepare address form fields by combining fields from the locale and default fields.
@@ -81,6 +88,43 @@ const Form = < T extends AddressFormValues | ContactFormValues >( {
 	const inputsRef = useRef<
 		Record< string, ValidatedTextInputHandle | null >
 	>( {} );
+
+	const { errors, previousErrors } = useFormValidation(
+		formFields,
+		addressType
+	);
+
+	useEffect( () => {
+		Object.entries( errors ).forEach( ( [ key, error ] ) => {
+			const inputRef = inputsRef.current[ key ];
+			if ( ! error ) {
+				return;
+			}
+			inputRef?.setErrorMessage( error );
+			dispatch( validationStore ).setValidationErrors( {
+				[ `${ addressType }_${ key }` ]: {
+					message: error,
+					hidden: !! inputRef?.isFocused(),
+				},
+			} );
+			if ( ! inputRef?.isFocused() ) {
+				inputRef?.revalidate();
+			}
+		} );
+
+		if ( previousErrors ) {
+			Object.entries( previousErrors ).forEach( ( [ key ] ) => {
+				const inputRef = inputsRef.current[ key ];
+				// If error was previously set but is now cleared
+				if ( ! ( key in errors ) ) {
+					dispatch( validationStore ).clearValidationError(
+						`${ addressType }_${ key }`
+					);
+					inputRef?.setErrorMessage( '' );
+				}
+			} );
+		}
+	}, [ errors, previousErrors, addressType, values ] );
 
 	// Changing country may change format for postcodes.
 	useEffect( () => {
@@ -160,10 +204,10 @@ const Form = < T extends AddressFormValues | ContactFormValues >( {
 		) {
 			return;
 		}
-		if ( objectHasProp( values, 'country' ) ) {
+		if ( 'country' in values ) {
 			validateCountry( addressType, values );
 		}
-		if ( objectHasProp( values, 'state' ) ) {
+		if ( 'state' in values ) {
 			const stateField = formFields.find( ( f ) => f.key === 'state' );
 
 			if ( stateField ) {
@@ -197,8 +241,12 @@ const Form = < T extends AddressFormValues | ContactFormValues >( {
 				}
 
 				if ( field.type === 'checkbox' ) {
+					const value =
+						field.key in values
+							? values[ field.key as keyof T ]
+							: false;
 					const checkboxProps = {
-						checked: Boolean( values[ field.key as keyof T ] ),
+						checked: Boolean( value ),
 						onChange: ( checked: boolean ) => {
 							onChange( {
 								...values,
@@ -228,17 +276,21 @@ const Form = < T extends AddressFormValues | ContactFormValues >( {
 				}
 
 				// If the current field is 'address_1', we handle both 'address_1' and 'address_2' fields together.
-				if ( field.key === 'address_1' ) {
-					const address1 = getFieldData(
+				if ( field.key === 'address_1' && 'address_1' in values ) {
+					const address1 = getFieldData< 'address_1' >(
 						'address_1',
 						formFields,
 						values
 					);
-					const address2 = getFieldData(
+					const address2 = getFieldData< 'address_2' >(
 						'address_2',
 						formFields,
 						values
 					);
+
+					if ( isNull( address1 ) || isNull( address2 ) ) {
+						return null;
+					}
 
 					return (
 						<AddressLineFields
@@ -262,10 +314,7 @@ const Form = < T extends AddressFormValues | ContactFormValues >( {
 					return null;
 				}
 
-				if (
-					field.key === 'country' &&
-					objectHasProp( values, 'country' )
-				) {
+				if ( field.key === 'country' && 'country' in values ) {
 					const Tag =
 						addressType === 'shipping'
 							? ShippingCountryInput
@@ -289,7 +338,8 @@ const Form = < T extends AddressFormValues | ContactFormValues >( {
 
 				if (
 					field.key === 'state' &&
-					objectHasProp( values, 'state' )
+					'state' in values &&
+					'country' in values
 				) {
 					const Tag =
 						addressType === 'shipping'
@@ -311,7 +361,7 @@ const Form = < T extends AddressFormValues | ContactFormValues >( {
 					);
 				}
 
-				if ( field.type === 'select' ) {
+				if ( field.type === 'select' && 'options' in field ) {
 					if ( typeof field.options === 'undefined' ) {
 						return null;
 					}
@@ -329,8 +379,11 @@ const Form = < T extends AddressFormValues | ContactFormValues >( {
 								)
 							) }
 							value={
-								( values[ field.key as keyof T ] as string ) ||
-								''
+								field.key in values
+									? ( values[
+											field.key as keyof T
+									  ] as string )
+									: ''
 							}
 							onChange={ ( newValue: string ) => {
 								onChange( {
@@ -359,7 +412,7 @@ const Form = < T extends AddressFormValues | ContactFormValues >( {
 						value={
 							decodeEntities(
 								values[ field.key as keyof T ] as string
-							) || ''
+							) ?? ''
 						}
 						onChange={ ( newValue: string ) =>
 							onChange( {
@@ -373,15 +426,6 @@ const Form = < T extends AddressFormValues | ContactFormValues >( {
 							}
 							return value;
 						} }
-						customValidation={ ( inputObject: HTMLInputElement ) =>
-							customValidationHandler(
-								inputObject,
-								field.key,
-								objectHasProp( values, 'country' )
-									? values.country
-									: ''
-							)
-						}
 					/>
 				);
 			} ) }

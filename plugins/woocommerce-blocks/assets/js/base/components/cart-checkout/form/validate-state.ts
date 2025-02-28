@@ -2,7 +2,7 @@
  * External dependencies
  */
 import { dispatch, select } from '@wordpress/data';
-import { KeyedFormField, ShippingAddress } from '@woocommerce/settings';
+import { KeyedFormFields, ShippingAddress } from '@woocommerce/settings';
 import { validationStore } from '@woocommerce/block-data';
 import { __, sprintf } from '@wordpress/i18n';
 import isShallowEqual from '@wordpress/is-shallow-equal';
@@ -28,7 +28,7 @@ const lastBillingAddress = previousAddress();
 export const validateState = (
 	addressType: string,
 	values: ShippingAddress,
-	stateField: KeyedFormField
+	stateField: KeyedFormFields[ number ]
 ) => {
 	const validationErrorId = `${ addressType }_state`;
 	const hasValidationError =

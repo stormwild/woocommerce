@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import { AdditionalValues } from '@woocommerce/settings';
+import { OrderFormValues } from '@woocommerce/settings';
 
 /**
  * Internal dependencies
@@ -156,7 +156,7 @@ export const __internalSetShouldCreateAccount = (
 /**
  * Sets shipping address locally, as opposed to updateCustomerData which sends it to the server.
  */
-export const setAdditionalFields = ( additionalFields: AdditionalValues ) =>
+export const setAdditionalFields = ( additionalFields: OrderFormValues ) =>
 	( { type: types.SET_ADDITIONAL_FIELDS, additionalFields } as const );
 
 /**

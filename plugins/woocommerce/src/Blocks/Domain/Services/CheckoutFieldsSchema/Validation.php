@@ -64,20 +64,24 @@ class Validation {
 	 * @return bool|WP_Error
 	 */
 	public static function validate_document_object( DocumentObject $document_object, $rules ) {
-		$validator = new Validator();
-		$result    = $validator->validate(
-			Helper::toJSON( $document_object->get_data() ),
-			Helper::toJSON(
-				[
-					'$schema'    => 'http://json-schema.org/draft-07/schema#',
-					'type'       => 'object',
-					'properties' => $rules,
-				]
-			)
-		);
+		try {
+			$validator = new Validator();
+			$result    = $validator->validate(
+				Helper::toJSON( $document_object->get_data() ),
+				Helper::toJSON(
+					[
+						'$schema'    => 'http://json-schema.org/draft-07/schema#',
+						'type'       => 'object',
+						'properties' => $rules,
+					]
+				)
+			);
 
-		if ( ! $result->hasError() ) {
-			return true;
+			if ( ! $result->hasError() ) {
+				return true;
+			}
+		} catch ( \Exception $e ) {
+			return new WP_Error( 'woocommerce_rest_checkout_validation_failed', __( 'Validation failed.', 'woocommerce' ) );
 		}
 
 		// Return generic error message.

@@ -23,7 +23,7 @@ describe( 'Address Line 2 Component', () => {
 						autocomplete: 'address-line2',
 					} }
 					value={ value }
-					onChange={ ( _: string, newValue: string ) => {
+					onChange={ ( newValue: string ) => {
 						setValue( newValue );
 					} }
 				/>

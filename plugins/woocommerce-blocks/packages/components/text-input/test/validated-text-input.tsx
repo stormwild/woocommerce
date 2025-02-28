@@ -186,7 +186,13 @@ describe( 'ValidatedTextInput', () => {
 					value={ inputValue }
 					label={ 'Test Input' }
 					customValidation={ ( inputObject ) => {
-						return inputObject.value === 'Valid Value';
+						if ( inputObject.value !== 'Valid Value' ) {
+							inputObject.setCustomValidity(
+								'Please enter a valid test input'
+							);
+							return false;
+						}
+						return true;
 					} }
 				/>
 			);
@@ -200,8 +206,8 @@ describe( 'ValidatedTextInput', () => {
 
 		await expect(
 			select( validationStore ).getValidationError( 'test-input' )
-		).not.toBe( undefined );
-
+				?.message
+		).toBe( 'Please enter a valid test input' );
 		await act( async () => {
 			await user.clear( textInputElement );
 			await user.type( textInputElement, 'Valid Value' );

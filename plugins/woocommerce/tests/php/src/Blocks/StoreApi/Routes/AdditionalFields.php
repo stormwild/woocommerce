@@ -2637,7 +2637,7 @@ class AdditionalFields extends MockeryTestCase {
 					'hidden' => array(
 						'customer' => array(
 							'properties' => array(
-								'billing_address' => array(
+								'address' => array(
 									'properties' => array(
 										'country' => array(
 											'type' => 'string',

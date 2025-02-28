@@ -2,7 +2,7 @@
  * External dependencies
  */
 import { isSameAddress } from '@woocommerce/base-utils';
-import { AdditionalValues } from '@woocommerce/settings';
+import { OrderFormValues } from '@woocommerce/settings';
 
 /**
  * Internal dependencies
@@ -10,7 +10,7 @@ import { AdditionalValues } from '@woocommerce/settings';
 import { STATUS, checkoutData } from './constants';
 
 export type CheckoutState = {
-	additionalFields: AdditionalValues; // Additional fields values that are collected on Checkout.
+	additionalFields: OrderFormValues; // Additional fields values that are collected on Checkout.
 	calculatingCount: number; // If any of the totals, taxes, shipping, etc need to be calculated, the count will be increased here
 	customerId: number; // This is the ID of the customer the draft order belongs to.
 	customerPassword: string; // Customer password for account creation, if applicable.

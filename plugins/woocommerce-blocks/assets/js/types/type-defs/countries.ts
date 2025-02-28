@@ -1,12 +1,12 @@
 /**
  * External dependencies
  */
-import { LocaleSpecificFormField } from '@woocommerce/settings';
+import { FieldLocaleOverrides, FormFields } from '@woocommerce/settings';
 
 export type CountryData = {
 	allowBilling: boolean;
 	allowShipping: boolean;
 	states: Record< string, string >;
-	locale: Record< string, LocaleSpecificFormField >;
+	locale: Record< keyof FormFields, FieldLocaleOverrides >;
 	format?: string;
 };

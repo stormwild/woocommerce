@@ -1,5 +1,5 @@
 /**
- * @typedef {Object} FormField
+ * @typedef {Object} Field
  *
  * @property {string}  label         The label for the field.
  * @property {string}  optionalLabel The label for the field if made optional.
@@ -21,7 +21,7 @@
  */
 
 /**
- * @typedef {Object <CountryCode, Object <AddressFieldKey, FormField>>} CountryAddressFields
+ * @typedef {Object <CountryCode, Object <AddressFieldKey, Field>>} CountryAddressFields
  */
 
 export {};

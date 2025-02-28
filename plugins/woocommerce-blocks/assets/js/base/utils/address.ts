@@ -12,9 +12,8 @@ import {
 import {
 	ShippingAddress,
 	BillingAddress,
-	CoreAddress,
-	KeyedFormField,
 	defaultFields,
+	AddressForm,
 } from '@woocommerce/settings';
 import { decodeEntities } from '@wordpress/html-entities';
 import {
@@ -30,8 +29,8 @@ export const isSameAddress = < T extends ShippingAddress | BillingAddress >(
 	address1: T,
 	address2: T
 ): boolean => {
-	return ADDRESS_FORM_KEYS.every( ( field: string ) => {
-		return address1[ field as keyof T ] === address2[ field as keyof T ];
+	return ADDRESS_FORM_KEYS.every( ( field ) => {
+		return address1[ field ] === address2[ field ];
 	} );
 };
 
@@ -80,7 +79,7 @@ export const pluckEmail = ( {
  * Type-guard.
  */
 const isValidAddressKey = (
-	key: string,
+	key: keyof AddressForm,
 	address: CartResponseBillingAddress | CartResponseShippingAddress
 ): key is keyof typeof address => {
 	return key in address;
@@ -102,9 +101,9 @@ export const emptyHiddenAddressFields = <
 		defaultFields,
 		address.country
 	);
-	const newAddress = Object.assign( {}, address ) as T;
+	const newAddress = Object.assign( {}, address );
 
-	addressForm.forEach( ( { key = '', hidden = false } ) => {
+	addressForm.forEach( ( { key, hidden } ) => {
 		if ( hidden && isValidAddressKey( key, address ) ) {
 			newAddress[ key ] = '';
 		}
@@ -129,9 +128,9 @@ export const emptyAddressFields = <
 		defaultFields,
 		address.country
 	);
-	const newAddress = Object.assign( {}, address ) as T;
+	const newAddress = Object.assign( {}, address );
 
-	addressForm.forEach( ( { key = '' } ) => {
+	addressForm.forEach( ( { key } ) => {
 		// Clear address fields except country and state to keep consistency with shortcode Checkout.
 		if (
 			key !== 'country' &&
@@ -195,7 +194,7 @@ export const formatShippingAddress = (
  */
 export const isAddressComplete = (
 	address: CartResponseBillingAddress | CartResponseShippingAddress,
-	keysToCheck: ( keyof CoreAddress )[] = []
+	keysToCheck: ( keyof Partial< AddressForm > )[] = []
 ): boolean => {
 	if ( ! address.country ) {
 		return false;
@@ -210,18 +209,13 @@ export const isAddressComplete = (
 	// full address form.
 	const filteredAddressForm =
 		keysToCheck.length > 0
-			? ( Object.values( addressForm ) as KeyedFormField[] ).filter(
-					( { key } ) =>
-						keysToCheck.includes( key as keyof CoreAddress )
-			  )
+			? addressForm.filter( ( { key } ) => keysToCheck.includes( key ) )
 			: addressForm;
 
-	return filteredAddressForm.every(
-		( { key = '', hidden = false, required = false } ) => {
-			if ( hidden || ! required ) {
-				return true;
-			}
-			return isValidAddressKey( key, address ) && address[ key ] !== '';
+	return filteredAddressForm.every( ( { key, hidden, required } ) => {
+		if ( hidden || ! required ) {
+			return true;
 		}
-	);
+		return isValidAddressKey( key, address ) && address[ key ] !== '';
+	} );
 };

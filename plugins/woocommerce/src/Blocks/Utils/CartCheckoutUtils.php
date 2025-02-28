@@ -288,9 +288,23 @@ class CartCheckoutUtils {
 	public static function get_country_data() {
 		$billing_countries  = WC()->countries->get_allowed_countries();
 		$shipping_countries = WC()->countries->get_shipping_countries();
-		$country_locales    = wc()->countries->get_country_locale();
 		$country_states     = wc()->countries->get_states();
 		$all_countries      = self::deep_sort_with_accents( array_unique( array_merge( $billing_countries, $shipping_countries ) ) );
+		$country_locales    = array_map(
+			function ( $locale ) {
+				foreach ( $locale as $field => $field_data ) {
+					if ( isset( $field_data['priority'] ) ) {
+						$locale[ $field ]['index'] = $field_data['priority'];
+						unset( $locale[ $field ]['priority'] );
+					}
+					if ( isset( $field_data['class'] ) ) {
+						unset( $locale[ $field ]['class'] );
+					}
+				}
+				return $locale;
+			},
+			WC()->countries->get_country_locale()
+		);
 
 		$country_data = [];
 
