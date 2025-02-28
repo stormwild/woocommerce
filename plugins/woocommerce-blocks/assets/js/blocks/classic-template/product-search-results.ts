@@ -1,7 +1,6 @@
 /**
  * External dependencies
  */
-import { isWpVersion } from '@woocommerce/settings';
 import { __, sprintf } from '@wordpress/i18n';
 import {
 	INNER_BLOCKS_TEMPLATE as productCollectionInnerBlocksTemplate,
@@ -117,9 +116,7 @@ const getBlockifiedTemplate = ( inheritedAttributes: InheritedAttributes ) =>
 	].filter( Boolean ) as BlockInstance[];
 
 const isConversionPossible = () => {
-	// Blockification is possible for the WP version 6.1 and above,
-	// which are the versions the Products block supports.
-	return isWpVersion( '6.1', '>=' );
+	return true;
 };
 
 const getDescriptionAllowingConversion = ( templateTitle: string ) =>

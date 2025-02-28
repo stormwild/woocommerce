@@ -5,7 +5,6 @@ import { store as blockEditorStore } from '@wordpress/block-editor';
 import { addFilter } from '@wordpress/hooks';
 import { select, useSelect } from '@wordpress/data';
 import { store as coreDataStore } from '@wordpress/core-data';
-import { isWpVersion } from '@woocommerce/settings';
 import type { BlockEditProps, Block } from '@wordpress/blocks';
 import {
 	useEffect,
@@ -138,35 +137,33 @@ export function getDefaultValueOfFilterable() {
  * This enhancement allows the Core Pagination block to be available for the Product Collection block.
  */
 export const addProductCollectionToQueryPaginationParentOrAncestor = () => {
-	if ( isWpVersion( '6.1', '>=' ) ) {
-		addFilter(
-			'blocks.registerBlockType',
-			'woocommerce/add-product-collection-block-to-parent-array-of-pagination-block',
-			( blockSettings: Block, blockName: string ) => {
-				if ( blockName !== coreQueryPaginationBlockName ) {
-					return blockSettings;
-				}
-
-				if ( blockSettings?.ancestor ) {
-					return {
-						...blockSettings,
-						ancestor: [ ...blockSettings.ancestor, blockJson.name ],
-					};
-				}
-
-				// Below condition is to support WP >=6.4 where Pagination specifies the parent.
-				// Can be removed when minimum WP version is set to 6.5 and higher.
-				if ( blockSettings?.parent ) {
-					return {
-						...blockSettings,
-						parent: [ ...blockSettings.parent, blockJson.name ],
-					};
-				}
-
+	addFilter(
+		'blocks.registerBlockType',
+		'woocommerce/add-product-collection-block-to-parent-array-of-pagination-block',
+		( blockSettings: Block, blockName: string ) => {
+			if ( blockName !== coreQueryPaginationBlockName ) {
 				return blockSettings;
 			}
-		);
-	}
+
+			if ( blockSettings?.ancestor ) {
+				return {
+					...blockSettings,
+					ancestor: [ ...blockSettings.ancestor, blockJson.name ],
+				};
+			}
+
+			// Below condition is to support WP >=6.4 where Pagination specifies the parent.
+			// Can be removed when minimum WP version is set to 6.5 and higher.
+			if ( blockSettings?.parent ) {
+				return {
+					...blockSettings,
+					parent: [ ...blockSettings.parent, blockJson.name ],
+				};
+			}
+
+			return blockSettings;
+		}
+	);
 };
 
 /**

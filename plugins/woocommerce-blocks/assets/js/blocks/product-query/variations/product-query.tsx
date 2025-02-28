@@ -8,7 +8,7 @@ import {
 import { Icon } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { stacks } from '@woocommerce/icons';
-import { isWpVersion, getSettingWithCoercion } from '@woocommerce/settings';
+import { getSettingWithCoercion } from '@woocommerce/settings';
 import { select, subscribe } from '@wordpress/data';
 import {
 	QueryBlockAttributes,
@@ -43,7 +43,7 @@ const registerProductsBlock = ( attributes: QueryBlockAttributes ) => {
 			'woocommerce'
 		),
 		name: PRODUCT_QUERY_VARIATION_NAME,
-		/* translators: “Products“ is the name of the block. */
+		/* translators: "Products" is the name of the block. */
 		title: __( 'Products (Beta)', 'woocommerce' ),
 		isActive: ( blockAttributes ) =>
 			blockAttributes.namespace === PRODUCT_QUERY_VARIATION_NAME,
@@ -67,54 +67,48 @@ const registerProductsBlock = ( attributes: QueryBlockAttributes ) => {
 	} );
 };
 
-if ( isWpVersion( '6.1', '>=' ) ) {
-	let currentTemplateId: string | undefined;
-	subscribe( () => {
-		const previousTemplateId = currentTemplateId;
-		const store = select( 'core/edit-site' );
-		currentTemplateId = store?.getEditedPostId();
-		if ( previousTemplateId === currentTemplateId ) {
-			return;
-		}
+let currentTemplateId: string | undefined;
+subscribe( () => {
+	const previousTemplateId = currentTemplateId;
+	const store = select( 'core/edit-site' );
+	currentTemplateId = store?.getEditedPostId();
+	if ( previousTemplateId === currentTemplateId ) {
+		return;
+	}
 
-		if ( isSiteEditorPage( store ) ) {
-			const inherit =
-				ARCHIVE_PRODUCT_TEMPLATES.includes( currentTemplateId );
+	if ( isSiteEditorPage( store ) ) {
+		const inherit = ARCHIVE_PRODUCT_TEMPLATES.includes( currentTemplateId );
 
-			const inheritQuery: Partial< ProductQueryBlockQuery > = {
-				inherit,
-			};
+		const inheritQuery: Partial< ProductQueryBlockQuery > = {
+			inherit,
+		};
 
-			if ( inherit ) {
-				inheritQuery.perPage = getSettingWithCoercion(
-					'loopShopPerPage',
-					12,
-					isNumber
-				);
-			}
-
-			const queryAttributes = {
-				...QUERY_DEFAULT_ATTRIBUTES,
-				query: {
-					...QUERY_DEFAULT_ATTRIBUTES.query,
-					...inheritQuery,
-				},
-			};
-
-			unregisterBlockVariation(
-				QUERY_LOOP_ID,
-				PRODUCT_QUERY_VARIATION_NAME
+		if ( inherit ) {
+			inheritQuery.perPage = getSettingWithCoercion(
+				'loopShopPerPage',
+				12,
+				isNumber
 			);
-
-			registerProductsBlock( queryAttributes );
 		}
-	}, 'core/edit-site' );
 
-	let isBlockRegistered = false;
-	subscribe( () => {
-		if ( ! isBlockRegistered ) {
-			isBlockRegistered = true;
-			registerProductsBlock( QUERY_DEFAULT_ATTRIBUTES );
-		}
-	}, 'core/edit-post' );
-}
+		const queryAttributes = {
+			...QUERY_DEFAULT_ATTRIBUTES,
+			query: {
+				...QUERY_DEFAULT_ATTRIBUTES.query,
+				...inheritQuery,
+			},
+		};
+
+		unregisterBlockVariation( QUERY_LOOP_ID, PRODUCT_QUERY_VARIATION_NAME );
+
+		registerProductsBlock( queryAttributes );
+	}
+}, 'core/edit-site' );
+
+let isBlockRegistered = false;
+subscribe( () => {
+	if ( ! isBlockRegistered ) {
+		isBlockRegistered = true;
+		registerProductsBlock( QUERY_DEFAULT_ATTRIBUTES );
+	}
+}, 'core/edit-post' );
