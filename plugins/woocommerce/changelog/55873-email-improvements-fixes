@@ -1,0 +1,4 @@
+Significance: patch
+Type: fix
+
+Prevent partial render when email preview rendering fails
