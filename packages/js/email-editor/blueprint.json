@@ -1,4 +1,5 @@
 {
+	"landingPage": "/wp-admin/edit.php?post_type=woo_email",
 	"preferredVersions": {
 		"php": "8.2",
 		"wp": "latest"
@@ -20,7 +21,7 @@
 		},
 		{
 			"step": "runPHP",
-			"code": "<?php include 'wordpress/wp-load.php'; delete_transient( '_wc_activation_redirect' );"
+			"code": "<?php include 'wordpress/wp-load.php'; delete_transient( '_wc_activation_redirect' ); update_option( 'woocommerce_feature_block_email_editor_enabled', 'yes' );"
 		}
 	]
 }

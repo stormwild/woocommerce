@@ -33,7 +33,7 @@
 		"env:test": "pnpm env:dev",
 		"env:perf": "pnpm env:dev && pnpm env:performance-init",
 		"preinstall": "npx only-allow pnpm",
-		"postinstall": "rimraf -g vendor/woocommerce && XDEBUG_MODE=off composer install --quiet",
+		"postinstall": "rimraf -g vendor/woocommerce packages/email-editor && XDEBUG_MODE=off composer install --quiet",
 		"lint": "pnpm --if-present '/^lint:lang:.*$/'",
 		"lint:changes:branch": "pnpm '/^lint:changes:branch:.*$/'",
 		"lint:fix": "pnpm --if-present '/^lint:fix:lang:.*$/'",
