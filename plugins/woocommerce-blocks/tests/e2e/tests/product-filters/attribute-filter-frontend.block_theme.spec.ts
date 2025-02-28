@@ -23,12 +23,25 @@ const test = base.extend< { templateCompiler: TemplateCompiler } >( {
 
 test.describe( 'woocommerce/product-filter-attribute - Frontend', () => {
 	test.describe( 'With default display style', () => {
-		test.beforeEach( async ( { requestUtils, templateCompiler } ) => {
+		test.beforeEach( async ( { requestUtils, templateCompiler, page } ) => {
 			await requestUtils.setFeatureFlag( 'experimental-blocks', true );
 			await templateCompiler.compile( {
 				attributes: {
 					attributeId: 1,
 				},
+			} );
+
+			await page.addInitScript( () => {
+				// Mock the wc global variable.
+				if ( typeof window.wc === 'undefined' ) {
+					window.wc = {
+						wcSettings: {
+							getSetting() {
+								return true;
+							},
+						},
+					};
+				}
 			} );
 		} );
 
@@ -62,6 +75,7 @@ test.describe( 'woocommerce/product-filter-attribute - Frontend', () => {
 			}
 		} );
 
+		// Skipping these tests until we can move this block to @wordpress/interactivity.
 		test( 'filters the list of products by selecting an attribute', async ( {
 			page,
 		} ) => {

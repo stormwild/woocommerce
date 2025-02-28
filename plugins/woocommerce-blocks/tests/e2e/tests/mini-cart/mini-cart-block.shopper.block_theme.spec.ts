@@ -56,7 +56,11 @@ test.describe( 'Shopper → Notices', () => {
 
 		await expect( page.getByText( 'Your cart' ) ).toBeVisible();
 		await expect( page.getByText( '(1 item)' ) ).toBeVisible();
+
 		await page.getByLabel( 'Close', { exact: true } ).click();
+		// Mini cart gets out of sync if triggered to open and close very quickly. PW interacts too quickly
+		// and this isn't something that you'll see often in real use. This waits for the mini cart to close.
+		await expect( page.getByRole( 'dialog' ) ).toBeHidden();
 		await page
 			.getByLabel( `Add to cart: “${ SIMPLE_PHYSICAL_PRODUCT_NAME }”` )
 			.click();

@@ -33,9 +33,13 @@ export class FrontendUtils {
 			await this.page.click( 'text=Add to cart' );
 		}
 
-		await this.page.waitForResponse( ( request ) => {
-			const url = request.url();
-			return url.includes( 'add_to_cart' ) || url.includes( 'batch' );
+		await this.page.waitForResponse( ( response ) => {
+			const url = response.url();
+			return (
+				url.includes( 'cart/items' ) ||
+				url.includes( 'add_to_cart' ) ||
+				url.includes( 'batch' )
+			);
 		} );
 	}
 

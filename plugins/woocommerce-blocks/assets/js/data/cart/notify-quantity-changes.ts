@@ -16,13 +16,16 @@ import { __unstableStripHTML as stripHTML } from '@wordpress/dom';
 import { STORE_KEY as CART_STORE_KEY } from './constants';
 import type { CartStoreDescriptor } from '../../data/cart';
 
-interface NotifyQuantityChangesArgs {
-	oldCart: Cart;
-	newCart: Cart;
+export type QuantityChanges = {
 	cartItemsPendingQuantity?: string[] | undefined;
 	cartItemsPendingDelete?: string[] | undefined;
 	productsPendingAdd?: number[] | undefined;
-}
+};
+
+type NotifyQuantityChangesArgs = {
+	oldCart: Cart;
+	newCart: Cart;
+} & QuantityChanges;
 
 const isWithinQuantityLimits = ( cartItem: CartItem ) => {
 	return (

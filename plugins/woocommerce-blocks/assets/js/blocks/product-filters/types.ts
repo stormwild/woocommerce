@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import { BlockEditProps } from '@wordpress/blocks';
+import type { BlockEditProps } from '@wordpress/blocks';
 
 export type BlockAttributes = {
 	productId?: string;

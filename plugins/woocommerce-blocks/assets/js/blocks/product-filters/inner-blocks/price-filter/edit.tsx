@@ -13,7 +13,7 @@ import { TemplateArray } from '@wordpress/blocks';
 /**
  * Internal dependencies
  */
-import { getAllowedBlocks } from '../../utils';
+import { getAllowedBlocks } from '../../utils/get-allowed-blocks';
 import { getPriceFilterData } from './utils';
 import { InitialDisabled } from '../../components/initial-disabled';
 

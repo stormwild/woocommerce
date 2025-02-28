@@ -103,18 +103,14 @@ class ProductTemplate extends AbstractBlock {
 				)
 			)->render( array( 'dynamic' => false ) );
 
-			$interactive = array(
-				'namespace' => 'woocommerce/product-collection',
-			);
-
 			$context = array(
 				'productId' => $product_id,
 			);
 
 			$li_directives = '
-				data-wc-interactive=\'' . wp_json_encode( $interactive, JSON_NUMERIC_CHECK | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP ) . '\'
-				data-wc-context=\'' . wp_json_encode( $context, JSON_NUMERIC_CHECK | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP ) . '\'
-				data-wc-key="product-item-' . $product_id . '"
+				data-wp-interactive="woocommerce/product-collection"
+				data-wp-context=\'' . wp_json_encode( $context, JSON_NUMERIC_CHECK | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP ) . '\'
+				data-wp-key="product-item-' . $product_id . '"
 			';
 
 			// Wrap the render inner blocks in a `li` element with the appropriate post classes.

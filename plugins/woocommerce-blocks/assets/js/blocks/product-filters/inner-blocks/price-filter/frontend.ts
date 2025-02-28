@@ -1,14 +1,14 @@
 /**
  * External dependencies
  */
-import { store, getContext } from '@woocommerce/interactivity';
-import { HTMLElementEvent } from '@woocommerce/types';
-import { formatPrice, getCurrency } from '@woocommerce/price-format';
+import { store, getContext } from '@wordpress/interactivity';
+import type { HTMLElementEvent } from '@woocommerce/types';
 
 /**
  * Internal dependencies
  */
 import { ActiveFilter, ProductFiltersStore } from '../../frontend';
+import { formatPrice, getCurrency } from '../../utils';
 
 export type ProductFilterPriceContext = {
 	minRange: number;

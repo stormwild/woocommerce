@@ -14,7 +14,7 @@ import clsx from 'clsx';
  */
 import './editor.scss';
 import { type BlockAttributes } from './types';
-import { getProductFiltersCss } from './utils';
+import { getProductFiltersCss } from './utils/get-product-filters-css';
 
 const TEMPLATE: InnerBlockTemplate[] = [
 	[

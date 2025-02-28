@@ -5,8 +5,8 @@ import {
 	store,
 	getContext as getContextFn,
 	getElement,
-} from '@woocommerce/interactivity';
-import { StorePart } from '@woocommerce/utils';
+} from '@wordpress/interactivity';
+import type { StorePart } from '@woocommerce/utils';
 
 /**
  * Internal dependencies

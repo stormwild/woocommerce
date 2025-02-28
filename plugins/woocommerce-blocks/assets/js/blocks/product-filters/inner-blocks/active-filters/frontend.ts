@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import { store, getContext, getElement } from '@woocommerce/interactivity';
+import { store, getContext, getElement } from '@wordpress/interactivity';
 
 /**
  * Internal dependencies
@@ -37,8 +37,8 @@ const productFilterActiveStore = store( 'woocommerce/product-filter-active', {
 	},
 	actions: {
 		removeFilter: () => {
-			const { props } = getElement();
-			let filterItem = props[ 'data-filter-item' ];
+			const { attributes } = getElement();
+			let filterItem = attributes[ 'data-filter-item' ];
 
 			if ( typeof filterItem === 'string' )
 				filterItem = JSON.parse( filterItem );

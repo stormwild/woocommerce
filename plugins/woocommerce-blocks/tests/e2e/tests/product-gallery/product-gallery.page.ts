@@ -75,7 +75,7 @@ export class ProductGalleryPage {
 			if ( ! element ) {
 				return null;
 			}
-			const context = element.getAttribute( 'data-wc-context' );
+			const context = element.getAttribute( 'data-wp-context' );
 			if ( ! context ) {
 				return null;
 			}

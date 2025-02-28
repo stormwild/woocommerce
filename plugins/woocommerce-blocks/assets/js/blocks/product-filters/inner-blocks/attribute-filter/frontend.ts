@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import { store, getContext, getElement } from '@woocommerce/interactivity';
+import { store, getContext, getElement } from '@wordpress/interactivity';
 
 /**
  * Internal dependencies
@@ -36,11 +36,11 @@ const { state, actions } = store( 'woocommerce/product-filter-attribute', {
 			return state.selectedFilters.length > 0;
 		},
 		get isItemSelected(): boolean {
-			const { props } = getElement();
+			const { attributes } = getElement();
 
-			if ( ! props.value ) return false;
+			if ( ! attributes.value ) return false;
 
-			return state.selectedFilters.includes( props.value );
+			return state.selectedFilters.includes( attributes.value );
 		},
 	},
 	actions: {
@@ -50,8 +50,8 @@ const { state, actions } = store( 'woocommerce/product-filter-attribute', {
 			return activeLabelTemplate.replace( '{{label}}', label );
 		},
 		toggleFilter: () => {
-			const { props } = getElement();
-			let filterItem = props[ 'data-filter-item' ];
+			const { attributes } = getElement();
+			let filterItem = attributes[ 'data-filter-item' ];
 
 			if ( typeof filterItem === 'string' )
 				filterItem = JSON.parse( filterItem );

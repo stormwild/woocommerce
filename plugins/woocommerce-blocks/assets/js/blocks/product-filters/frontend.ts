@@ -1,19 +1,12 @@
 /**
  * External dependencies
  */
-import {
-	getContext,
-	store,
-	navigate as navigateFn,
-} from '@woocommerce/interactivity';
-import { getSetting } from '@woocommerce/settings';
+import { getContext, store, getServerContext } from '@wordpress/interactivity';
 
-const isBlockTheme = getSetting< boolean >( 'isBlockTheme' );
-const isProductArchive = getSetting< boolean >( 'isProductArchive' );
-const needsRefresh = getSetting< boolean >(
-	'needsRefreshForInteractivityAPI',
-	false
-);
+const getSetting = window.wc.wcSettings.getSetting;
+const isBlockTheme = getSetting( 'isBlockTheme' );
+const isProductArchive = getSetting( 'isProductArchive' );
+const needsRefresh = getSetting( 'needsRefreshForInteractivityAPI', false );
 
 function isParamsEqual(
 	obj1: Record< string, string >,
@@ -37,7 +30,7 @@ function isParamsEqual(
 	return true;
 }
 
-function navigate( href: string, options = {} ) {
+async function navigate( href: string, options = {} ) {
 	/**
 	 * We may need to reset the current page when changing filters.
 	 * This is because the current page may not exist for this set
@@ -64,7 +57,9 @@ function navigate( href: string, options = {} ) {
 	if ( needsRefresh || ( ! isBlockTheme && isProductArchive ) ) {
 		return ( window.location.href = href );
 	}
-	return navigateFn( href, options );
+
+	const { actions } = await import( '@wordpress/interactivity-router' );
+	return actions.navigate( href, options );
 }
 
 export type ActiveFilter = {
@@ -201,8 +196,9 @@ const productFiltersStore = store( 'woocommerce/product-filters', {
 				( item ) => item.type === type && item.value === value
 			);
 		},
-		navigate: () => {
-			const { originalParams } = getContext< ProductFiltersContext >();
+		*navigate() {
+			const { originalParams } =
+				getServerContext< ProductFiltersContext >();
 
 			if (
 				isParamsEqual(
@@ -217,7 +213,7 @@ const productFiltersStore = store( 'woocommerce/product-filters', {
 			const { searchParams } = url;
 
 			for ( const key in originalParams ) {
-				searchParams.delete( key, originalParams[ key ] );
+				searchParams.delete( key );
 			}
 
 			for ( const key in productFiltersStore.state.params ) {
@@ -227,7 +223,7 @@ const productFiltersStore = store( 'woocommerce/product-filters', {
 				);
 			}
 
-			navigate( url.href );
+			yield navigate( url.href );
 		},
 	},
 	callbacks: {

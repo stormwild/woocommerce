@@ -120,6 +120,11 @@ test.describe( `${ blockData.name } Block`, () => {
 		).toBeVisible();
 
 		await page.getByRole( 'button', { name: 'Close' } ).click();
+
+		// Mini cart gets out of sync if triggered to open and close very quickly. PW interacts too quickly
+		// and this isn't something that you'll see often in real use. This waits for the mini cart to close.
+		await expect( page.getByRole( 'dialog' ) ).toBeHidden();
+
 		await frontendUtils.addToCart( REGULAR_PRICED_PRODUCT_NAME );
 		await miniCartUtils.openMiniCart();
 

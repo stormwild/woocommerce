@@ -6,6 +6,7 @@ import {
 	subscribe,
 	createReduxStore,
 	dispatch as wpDispatch,
+	select,
 } from '@wordpress/data';
 import { controls as dataControls } from '@wordpress/data-controls';
 
@@ -28,6 +29,8 @@ import {
 	isAddingToCart,
 } from './persistence-layer';
 import { defaultCartState } from './default-state';
+import { getTriggerStoreSyncEvent } from './utils';
+import type { QuantityChanges } from './notify-quantity-changes';
 
 export const config = {
 	reducer,
@@ -65,6 +68,37 @@ window.addEventListener( 'load', () => {
 
 // Pushes changes whenever the store is updated.
 subscribe( pushChanges, store );
+
+// Emmits event to sync iAPI store.
+let previousCart: object | null = null;
+subscribe( () => {
+	const cartData = select( STORE_KEY ).getCartData();
+	if (
+		getTriggerStoreSyncEvent() === true &&
+		previousCart !== null &&
+		previousCart !== cartData
+	) {
+		window.dispatchEvent(
+			// Question: What are the usual names for WooCommerce events?
+			new CustomEvent( 'wc-blocks_store_sync_required', {
+				detail: { type: 'from_@wordpress/data' },
+			} )
+		);
+	}
+	previousCart = cartData;
+}, store );
+
+// Listens to cart sync events from the iAPI store.
+window.addEventListener( 'wc-blocks_store_sync_required', ( event: Event ) => {
+	const customEvent = event as CustomEvent< {
+		type: string;
+		quantityChanges: QuantityChanges;
+	} >;
+	const { type, quantityChanges } = customEvent.detail;
+	if ( type === 'from_iAPI' ) {
+		wpDispatch( store ).syncCartWithIAPIStore( quantityChanges );
+	}
+} );
 
 // This will skip the debounce and immediately push changes to the server when a field is blurred.
 document.body.addEventListener( 'focusout', ( event: FocusEvent ) => {

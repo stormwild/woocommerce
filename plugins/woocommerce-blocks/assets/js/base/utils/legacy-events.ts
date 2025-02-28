@@ -9,6 +9,7 @@ const CustomEvent = window.CustomEvent || null;
 interface DispatchedEventProperties {
 	// Whether the event bubbles.
 	bubbles?: boolean;
+
 	// Whether the event is cancelable.
 	cancelable?: boolean;
 	// See https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/detail

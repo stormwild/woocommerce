@@ -1,23 +1,28 @@
 /**
  * External dependencies
  */
-import { store, getContext as getContextFn } from '@woocommerce/interactivity';
-import { select, subscribe, dispatch } from '@wordpress/data';
-import { cartStore } from '@woocommerce/block-data';
-import { Cart } from '@woocommerce/type-defs/cart';
-import { createRoot } from '@wordpress/element';
-import NoticeBanner from '@woocommerce/base-components/notice-banner';
-import { decodeEntities } from '@wordpress/html-entities';
+import {
+	store,
+	getContext as getContextFn,
+	useLayoutEffect,
+} from '@wordpress/interactivity';
+
+/**
+ * Internal dependencies
+ */
+import type { Store as WooStore } from '../../../../base/stores/cart-items';
+import { StoreNoticesStore } from '../../../../blocks/product-collection/notices-frontend';
 
 interface Context {
-	isLoading: boolean;
 	addToCartText: string;
 	productId: number;
 	displayViewCart: boolean;
 	quantityToAdd: number;
-	temporaryNumberOfItems: number;
+	tempQuantity: number;
 	animationStatus: AnimationStatus;
 }
+
+const getContext = () => getContextFn< Context >();
 
 enum AnimationStatus {
 	IDLE = 'IDLE',
@@ -27,218 +32,186 @@ enum AnimationStatus {
 
 interface Store {
 	state: {
-		cart?: Cart;
-		inTheCartText?: string;
-		numberOfItemsInTheCart: number;
+		inTheCartText: string;
+		quantity: number;
 		hasCartLoaded: boolean;
 		slideInAnimation: boolean;
 		slideOutAnimation: boolean;
 		addToCartText: string;
 		displayViewCart: boolean;
+		noticeId: string;
 	};
 	actions: {
-		addToCart: () => void;
+		addCartItem: () => void;
+		refreshCartItems: () => void;
 		handleAnimationEnd: ( event: AnimationEvent ) => void;
 	};
 	callbacks: {
 		startAnimation: () => void;
-		syncTemporaryNumberOfItemsOnLoad: () => void;
+		syncTempQuantityOnLoad: () => void;
 	};
 }
 
-const storeNoticeClass = '.wc-block-store-notices';
+// TS error should be fixed by https://github.com/woocommerce/gutenberg/pull/1
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+const { state: wooState } = store< WooStore >(
+	'woocommerce',
+	{},
+	{
+		// Stores are locked to prevent 3PD usage until the API is stable.
+		lock: 'I acknowledge that using a private store means my plugin will inevitably break on the next store release.',
+	}
+);
 
-const createNoticeContainer = () => {
-	const noticeContainer = document.createElement( 'div' );
-	noticeContainer.classList.add( storeNoticeClass.replace( '.', '' ) );
-	return noticeContainer;
-};
-
-const injectNotice = ( domNode: Element, errorMessage: string ) => {
-	const root = createRoot( domNode );
-
-	root.render(
-		<NoticeBanner status="error" onRemove={ () => root.unmount() }>
-			{ errorMessage }
-		</NoticeBanner>
-	);
-
-	domNode?.scrollIntoView( {
-		behavior: 'smooth',
-		inline: 'nearest',
-	} );
-};
-
-const getProductById = ( cartState: Cart | undefined, productId: number ) => {
-	return cartState?.items.find( ( item ) => item.id === productId );
-};
-
-const getButtonText = (
-	addToCart: string,
-	inTheCart: string,
-	numberOfItems: number
-): string => {
-	if ( numberOfItems === 0 ) return addToCart;
-	return inTheCart.replace( '###', numberOfItems.toString() );
-};
-
-// The `getContextFn` function is wrapped just to avoid prettier issues.
-const getContext = ( ns?: string ) => getContextFn< Context >( ns );
-
-const { state } = store< Store >( 'woocommerce/product-button', {
-	state: {
-		get slideInAnimation() {
-			const { animationStatus } = getContext();
-			return animationStatus === AnimationStatus.SLIDE_IN;
-		},
-		get slideOutAnimation() {
-			const { animationStatus } = getContext();
-			return animationStatus === AnimationStatus.SLIDE_OUT;
-		},
-		get numberOfItemsInTheCart() {
-			const { productId } = getContext();
-			const product = getProductById( state.cart, productId );
-			return product?.quantity || 0;
-		},
-		get hasCartLoaded(): boolean {
-			return !! state.cart;
-		},
-		get addToCartText(): string {
-			const context = getContext();
-			const inTheCartText = state.inTheCartText || '';
-			// We use the temporary number of items when there's no animation, or the
-			// second part of the animation hasn't started.
-			const showTemporaryNumber =
-				context.animationStatus === AnimationStatus.IDLE ||
-				context.animationStatus === AnimationStatus.SLIDE_OUT;
-			const numberOfItems = showTemporaryNumber
-				? context.temporaryNumberOfItems
-				: state.numberOfItemsInTheCart;
-
-			return getButtonText(
-				context.addToCartText,
-				inTheCartText,
-				numberOfItems
-			);
-		},
-		get displayViewCart(): boolean {
-			const { displayViewCart, temporaryNumberOfItems } = getContext();
-			if ( ! displayViewCart ) return false;
-			if ( ! state.hasCartLoaded ) {
-				return temporaryNumberOfItems > 0;
-			}
-			return state.numberOfItemsInTheCart > 0;
-		},
-	},
-	actions: {
-		*addToCart() {
-			const context = getContext();
-			const { productId, quantityToAdd } = context;
-
-			context.isLoading = true;
-
-			try {
-				yield dispatch( cartStore ).addItemToCart(
-					productId,
-					quantityToAdd
+const { state } = store< Store >(
+	'woocommerce/product-button',
+	{
+		state: {
+			get quantity() {
+				const { productId } = getContext();
+				const product = wooState.cart.items.find(
+					( item ) => item.id === productId
 				);
+				return product?.quantity || 0;
+			},
+			get slideInAnimation() {
+				const { animationStatus } = getContext();
+				return animationStatus === AnimationStatus.SLIDE_IN;
+			},
+			get slideOutAnimation() {
+				const { animationStatus } = getContext();
+				return animationStatus === AnimationStatus.SLIDE_OUT;
+			},
+			get addToCartText(): string {
+				const { animationStatus, tempQuantity, addToCartText } =
+					getContext();
 
-				// After the cart is updated, sync the temporary number of items again.
-				context.temporaryNumberOfItems = state.numberOfItemsInTheCart;
-			} catch ( error ) {
-				const storeNoticeBlock =
-					document.querySelector( storeNoticeClass );
+				// We use the temporary quantity when there's no animation, or
+				// when the second part of the animation hasn't started yet.
+				const showTemporaryNumber =
+					animationStatus === AnimationStatus.IDLE ||
+					animationStatus === AnimationStatus.SLIDE_OUT;
+				const quantity = showTemporaryNumber
+					? tempQuantity || 0
+					: state.quantity;
 
-				if ( ! storeNoticeBlock ) {
-					document
-						.querySelector( '.entry-content' )
-						?.prepend( createNoticeContainer() );
+				if ( quantity === 0 ) return addToCartText;
+
+				return state.inTheCartText.replace(
+					'###',
+					quantity.toString()
+				);
+			},
+			get displayViewCart(): boolean {
+				const { displayViewCart } = getContext();
+				if ( ! displayViewCart ) return false;
+				return state.quantity > 0;
+			},
+		},
+		actions: {
+			*addCartItem() {
+				const context = getContext();
+				const { productId, quantityToAdd } = context;
+
+				// Todo: move the CartItems store part to its own module.
+				const { actions } = ( yield import(
+					'../../../../base/stores/cart-items'
+				) ) as WooStore;
+
+				try {
+					yield actions.addCartItem( {
+						id: productId,
+						quantity: state.quantity + quantityToAdd,
+					} );
+				} catch ( error ) {
+					const message = ( error as Error ).message;
+
+					const { actions: noticeActions } =
+						store< StoreNoticesStore >(
+							'woocommerce/product-collection-notices',
+							{},
+							{
+								// Stores are locked to prevent 3PD usage until the API is stable.
+								lock: 'I acknowledge that using a private store means my plugin will inevitably break on the next store release.',
+							}
+						);
+
+					// Technically as long as the product collection is present, noticeActions
+					// will be too, but we check for 'addNotice' to guard against possible fatal errors.
+					if ( 'addNotice' in noticeActions ) {
+						// The old implementation always overwrites the last
+						// notice, so we remove the last notice before adding a
+						// new one.
+						if ( state.noticeId !== '' ) {
+							noticeActions.removeNotice( state.noticeId );
+						}
+
+						const noticeId = noticeActions.addNotice( {
+							notice: message,
+							type: 'error',
+							dismissible: true,
+						} );
+
+						state.noticeId = noticeId;
+					}
+
+					// We don't care about errors blocking execution, but will
+					// console.error for troubleshooting.
+					// eslint-disable-next-line no-console
+					console.error( error );
 				}
 
-				const domNode =
-					storeNoticeBlock ??
-					document.querySelector( storeNoticeClass );
-
-				const message = ( error as Error ).message;
-
-				if ( domNode ) {
-					injectNotice( domNode, decodeEntities( message ) );
-				}
-
-				// We don't care about errors blocking execution, but will
-				// console.error for troubleshooting.
-				// eslint-disable-next-line no-console
-				console.error( error );
-			} finally {
 				context.displayViewCart = true;
-				context.isLoading = false;
-			}
+			},
+			*refreshCartItems() {
+				// Todo: move the CartItems store part to its own module.
+				const { actions } = ( yield import(
+					'../../../../base/stores/cart-items'
+				) ) as WooStore;
+				actions.refreshCartItems();
+			},
+			handleAnimationEnd( event: AnimationEvent ) {
+				const context = getContext();
+				if ( event.animationName === 'slideOut' ) {
+					// When the first part of the animation (slide-out) ends, we move
+					// to the second part (slide-in).
+					context.animationStatus = AnimationStatus.SLIDE_IN;
+				} else if ( event.animationName === 'slideIn' ) {
+					// When the second part of the animation ends, we update the
+					// temporary quantity to sync it with the cart and reset the
+					// animation status so it can be triggered again.
+					context.tempQuantity = state.quantity;
+					context.animationStatus = AnimationStatus.IDLE;
+				}
+			},
 		},
-		handleAnimationEnd: ( event: AnimationEvent ) => {
-			const context = getContext();
-			if ( event.animationName === 'slideOut' ) {
-				// When the first part of the animation (slide-out) ends, we move
-				// to the second part (slide-in).
-				context.animationStatus = AnimationStatus.SLIDE_IN;
-			} else if ( event.animationName === 'slideIn' ) {
-				// When the second part of the animation ends, we update the
-				// temporary number of items to sync it with the cart and reset the
-				// animation status so it can be triggered again.
-				context.temporaryNumberOfItems = state.numberOfItemsInTheCart;
-				context.animationStatus = AnimationStatus.IDLE;
-			}
+		callbacks: {
+			syncTempQuantityOnLoad() {
+				const context = getContext();
+				// When we instantiate this element, we sync the temporary
+				// quantity with the quantity in the cart to avoid triggering
+				// the animation. We do this only once, and we use
+				// useLayoutEffect to avoid the useEffect flickering.
+				// eslint-disable-next-line react-hooks/rules-of-hooks
+				useLayoutEffect( () => {
+					context.tempQuantity = state.quantity;
+					// eslint-disable-next-line react-hooks/exhaustive-deps
+				}, [] );
+			},
+			startAnimation() {
+				const context = getContext();
+				// We start the animation if the temporary quantity is out of
+				// sync with the quantity in the cart and the animation hasn't
+				// started yet.
+				if (
+					context.tempQuantity !== state.quantity &&
+					context.animationStatus === AnimationStatus.IDLE
+				) {
+					context.animationStatus = AnimationStatus.SLIDE_OUT;
+				}
+			},
 		},
 	},
-	callbacks: {
-		syncTemporaryNumberOfItemsOnLoad: () => {
-			const context = getContext();
-			// If the cart has loaded when we instantiate this element, we sync
-			// the temporary number of items with the number of items in the cart
-			// to avoid triggering the animation. We do this only once, but we
-			// use useLayoutEffect to avoid the useEffect flickering.
-			if ( state.hasCartLoaded ) {
-				context.temporaryNumberOfItems = state.numberOfItemsInTheCart;
-			}
-		},
-		startAnimation: () => {
-			const context = getContext();
-			// We start the animation if the cart has loaded, the temporary number
-			// of items is out of sync with the number of items in the cart, the
-			// button is not loading (because that means the user started the
-			// interaction) and the animation hasn't started yet.
-			if (
-				state.hasCartLoaded &&
-				context.temporaryNumberOfItems !==
-					state.numberOfItemsInTheCart &&
-				! context.isLoading &&
-				context.animationStatus === AnimationStatus.IDLE
-			) {
-				context.animationStatus = AnimationStatus.SLIDE_OUT;
-			}
-		},
-	},
-} );
-
-// Subscribe to changes in Cart data.
-subscribe( () => {
-	const cartData = select( cartStore ).getCartData();
-	const isResolutionFinished = select( cartStore ).hasFinishedResolution(
-		'getCartData',
-		[]
-	);
-	if ( isResolutionFinished ) {
-		state.cart = cartData;
-	}
-}, cartStore );
-
-// RequestIdleCallback is not available in Safari, so we use setTimeout as an alternative.
-const callIdleCallback =
-	window.requestIdleCallback || ( ( cb ) => setTimeout( cb, 100 ) );
-
-// This selector triggers a fetch of the Cart data. It is done in a
-// `requestIdleCallback` to avoid potential performance issues.
-callIdleCallback( () => {
-	if ( ! state.hasCartLoaded ) {
-		select( cartStore ).getCartData();
-	}
-} );
+	{ lock: true }
+);

@@ -12,7 +12,7 @@ import {
  */
 import { InitialDisabled } from '../../components/initial-disabled';
 import { EXCLUDED_BLOCKS } from '../../constants';
-import { getAllowedBlocks } from '../../utils';
+import { getAllowedBlocks } from '../../utils/get-allowed-blocks';
 import { filtersPreview } from './constants';
 
 const Edit = () => {

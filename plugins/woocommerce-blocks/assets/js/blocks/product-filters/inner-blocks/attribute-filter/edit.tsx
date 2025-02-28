@@ -29,7 +29,7 @@ import { attributeOptionsPreview } from './constants';
 import './style.scss';
 import { EditProps, isAttributeCounts } from './types';
 import { getAttributeFromId } from './utils';
-import { getAllowedBlocks } from '../../utils';
+import { getAllowedBlocks } from '../../utils/get-allowed-blocks';
 import { EXCLUDED_BLOCKS } from '../../constants';
 import { FilterOptionItem } from '../../types';
 import { InitialDisabled } from '../../components/initial-disabled';

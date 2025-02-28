@@ -146,3 +146,14 @@ export const setIsCustomerDataDirty = debounce(
 	},
 	300
 );
+
+/**
+ * Sets whether it should trigger the event to sync with the Interactivity API
+ * store. It's used to prevent emiting the `wc-blocks_store_sync_required`
+ * event and causing an infinite loop.
+ */
+let triggerStoreSyncEvent = true;
+export const setTriggerStoreSyncEvent = ( value: boolean ) => {
+	triggerStoreSyncEvent = value;
+};
+export const getTriggerStoreSyncEvent = () => triggerStoreSyncEvent;

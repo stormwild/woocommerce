@@ -26,10 +26,17 @@ import { cartStore } from '@woocommerce/block-data';
 /**
  * Internal dependencies
  */
-import { notifyQuantityChanges } from './notify-quantity-changes';
+import {
+	notifyQuantityChanges,
+	QuantityChanges,
+} from './notify-quantity-changes';
 import { updateCartErrorNotices } from './notify-errors';
 import { apiFetchWithHeaders } from '../shared-controls';
-import { getIsCustomerDataDirty, setIsCustomerDataDirty } from './utils';
+import {
+	getIsCustomerDataDirty,
+	setIsCustomerDataDirty,
+	setTriggerStoreSyncEvent,
+} from './utils';
 
 interface CartThunkArgs {
 	select: CurriedSelectorsOf< typeof cartStore >;
@@ -39,6 +46,8 @@ interface CartThunkArgs {
 /**
  * A thunk used in updating the store with the cart items retrieved from a request. This also notifies the shopper
  * of any unexpected quantity changes occurred.
+ *
+ * @param {CartResponse} response The response from the API request.
  */
 export const receiveCart =
 	( response: Partial< CartResponse > ) =>
@@ -47,11 +56,11 @@ export const receiveCart =
 		const oldCart = select.getCartData();
 		const oldCartErrors = [ ...oldCart.errors, ...select.getCartErrors() ];
 
-		// Set data from the response.
 		dispatch.setCartData( cartResponse );
 
 		// Get the new cart data before showing updates.
 		const newCart = select.getCartData();
+
 		notifyQuantityChanges( {
 			oldCart,
 			newCart,
@@ -130,6 +139,60 @@ export const applyExtensionCartUpdate =
 			}
 			dispatch.receiveCart( response );
 			return response;
+		} catch ( error ) {
+			dispatch.receiveError( isApiErrorResponse( error ) ? error : null );
+			return Promise.reject( error );
+		}
+	};
+
+/**
+ * Fetch the cart but avoid triggering the event that syncs with the
+ * Interactivity API store to avoid infinite loops.
+ *
+ * @param {QuantityChanges} quantityChanges The quantity changes data included in the sync event.
+ * @throws Will throw an error if there is an API problem.
+ */
+export const syncCartWithIAPIStore =
+	( {
+		cartItemsPendingQuantity,
+		cartItemsPendingDelete,
+		productsPendingAdd,
+	}: QuantityChanges ) =>
+	async ( { dispatch, select }: CartThunkArgs ) => {
+		try {
+			const { response } = await apiFetchWithHeaders< {
+				response: CartResponse;
+			} >( {
+				path: '/wc/store/v1/cart',
+				method: 'GET',
+				cache: 'no-store',
+			} );
+
+			const cartResponse = camelCaseKeys( response ) as unknown as Cart;
+			const oldCart = select.getCartData();
+			const oldCartErrors = [
+				...oldCart.errors,
+				...select.getCartErrors(),
+			];
+
+			// Set data from the response.
+			setTriggerStoreSyncEvent( false );
+			dispatch.setCartData( cartResponse );
+			setTriggerStoreSyncEvent( true );
+
+			// Get the new cart data before showing updates.
+			const newCart = select.getCartData();
+
+			notifyQuantityChanges( {
+				oldCart,
+				newCart,
+				cartItemsPendingQuantity,
+				cartItemsPendingDelete,
+				productsPendingAdd,
+			} );
+
+			updateCartErrorNotices( newCart.errors, oldCartErrors );
+			dispatch.setErrorData( null );
 		} catch ( error ) {
 			dispatch.receiveError( isApiErrorResponse( error ) ? error : null );
 			return Promise.reject( error );
