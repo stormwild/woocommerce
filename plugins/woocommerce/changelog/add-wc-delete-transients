@@ -1,0 +1,4 @@
+Significance: minor
+Type: add
+
+Add wc_delete_transients for batch transient deletion
