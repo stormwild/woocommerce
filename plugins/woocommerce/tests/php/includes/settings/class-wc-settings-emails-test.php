@@ -84,6 +84,7 @@ class WC_Settings_Emails_Test extends WC_Settings_Unit_Test_Case {
 			'woocommerce_email_body_background_color'  => 'color',
 			'woocommerce_email_text_color'             => 'color',
 			'woocommerce_email_footer_text_color'      => 'color',
+			'woocommerce_email_auto_sync_with_theme'   => 'hidden',
 			'email_merchant_notes'                     => array( 'title', 'sectionend' ),
 			'woocommerce_merchant_email_notifications' => 'checkbox',
 		);
@@ -124,6 +125,7 @@ class WC_Settings_Emails_Test extends WC_Settings_Unit_Test_Case {
 			'email_color_palette'                      => 'email_color_palette',
 			'woocommerce_email_text_color'             => 'color',
 			'woocommerce_email_footer_text_color'      => 'color',
+			'woocommerce_email_auto_sync_with_theme'   => 'hidden',
 			'email_merchant_notes'                     => array( 'title', 'sectionend' ),
 			'woocommerce_merchant_email_notifications' => 'checkbox',
 		);
