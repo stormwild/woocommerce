@@ -217,12 +217,6 @@ Fired when a product list is rendered.
 
 This documentation will be amended following a review of this action.
 
-#### `experimental__woocommerce_blocks-product-search`
-
-Fired when a search is submitted.
-
-This documentation will be amended following a review of this action.
-
 #### `experimental__woocommerce_blocks-store-notice-create`
 
 Fired when a store notice is created.
