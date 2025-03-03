@@ -38,8 +38,8 @@ test.describe( 'Email Style Sync', () => {
 	test.beforeEach( async ( { baseURL } ) => {
 		// Enable email improvements feature
 		await setFeatureFlag( baseURL, 'yes' );
-		// Ensure auto-sync is disabled by default
-		await setAutoSyncFlag( baseURL, 'no' );
+		// Ensure auto-sync is enabled by default
+		await setAutoSyncFlag( baseURL, 'yes' );
 		// Ensure color palette is not synced with theme
 		await setOption(
 			request,
@@ -71,12 +71,8 @@ test.describe( 'Email Style Sync', () => {
 		// Sync color palette with theme
 		await page.getByRole( 'button', { name: 'Sync with theme' } ).click();
 
-		// Check initial state (should be disabled by default)
+		// Check initial state (should be enabled by default)
 		await expect( autoSyncToggle ).toBeVisible();
-		await expect( autoSyncToggle ).not.toBeChecked();
-
-		// Toggle it on
-		await autoSyncToggle.click();
 		await expect( autoSyncToggle ).toBeChecked();
 
 		// Save settings
@@ -87,7 +83,7 @@ test.describe( 'Email Style Sync', () => {
 		await expect( autoSyncToggle ).toBeVisible();
 		await expect( autoSyncToggle ).toBeChecked();
 
-		// Toggle it back off
+		// Toggle it off
 		await autoSyncToggle.click();
 		await expect( autoSyncToggle ).not.toBeChecked();
 
