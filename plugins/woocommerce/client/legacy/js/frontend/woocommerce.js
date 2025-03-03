@@ -22,17 +22,32 @@ jQuery( function ( $ ) {
 		$( '.woocommerce-store-notice' ).hide();
 	} else {
 		$( '.woocommerce-store-notice' ).show();
-	}
+		/**
+		 * After adding the role="button" attribute to the 
+		 * .woocommerce-store-notice__dismiss-link element, 
+		 * we need to add the keydown event listener to it.
+		 */
+		function store_notice_keydown_handler( event ) {
+			if ( ['Enter', ' '].includes( event.key ) ) {
+				event.preventDefault();
+				$( '.woocommerce-store-notice__dismiss-link' ).click();
+			}
+		}
 
-	// Set a cookie and hide the store notice when the dismiss button is clicked
-	$( '.woocommerce-store-notice__dismiss-link' ).on(
-		'click',
-		function ( event ) {
+		// Set a cookie and hide the store notice when the dismiss button is clicked
+		function store_notice_click_handler( event ) {
 			Cookies.set( cookieName, 'hidden', { path: '/' } );
 			$( '.woocommerce-store-notice' ).hide();
 			event.preventDefault();
+			$( '.woocommerce-store-notice__dismiss-link' )
+				.off( 'click', store_notice_click_handler )
+				.off( 'keydown', store_notice_keydown_handler );
 		}
-	);
+		
+		$( '.woocommerce-store-notice__dismiss-link' )
+			.on( 'click', store_notice_click_handler )
+			.on( 'keydown', store_notice_keydown_handler );
+	}
 
 	// Make form field descriptions toggle on focus.
 	if ( $( '.woocommerce-input-wrapper span.description' ).length ) {
