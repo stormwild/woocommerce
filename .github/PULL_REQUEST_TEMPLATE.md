@@ -17,7 +17,7 @@
 <!-- Please include a link to the issue of the bug being fixed, if one doesn't exist please create it. -->
 <!-- If the PR that introduced the bug is known, please also add its link below. -->
 
-Closes Issue # .
+Closes # .
 
 (For Bug Fixes) Bug introduced in PR # .
 
