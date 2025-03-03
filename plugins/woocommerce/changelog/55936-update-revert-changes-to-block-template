@@ -1,0 +1,4 @@
+Significance: minor
+Type: update
+
+Use Block Hooks API to dynamically inject brand terms instead of hardcoding them in the single product template.
