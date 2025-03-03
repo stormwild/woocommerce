@@ -2945,3 +2945,11 @@ function wc_update_961_migrate_default_email_base_color() {
 		update_option( 'woocommerce_email_base_color', '#720eec' );
 	}
 }
+
+/**
+ * Remove the option woocommerce_order_attribution_install_banner_dismissed.
+ * This data is now stored in the user meta table in the PR #55715.
+ */
+function wc_update_980_remove_order_attribution_install_banner_dismissed_option() {
+	delete_option( 'woocommerce_order_attribution_install_banner_dismissed' );
+}

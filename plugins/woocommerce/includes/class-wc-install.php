@@ -274,6 +274,9 @@ class WC_Install {
 		'9.6.1' => array(
 			'wc_update_961_migrate_default_email_base_color',
 		),
+		'9.8.0' => array(
+			'wc_update_980_remove_order_attribution_install_banner_dismissed_option',
+		),
 	);
 
 	/**
