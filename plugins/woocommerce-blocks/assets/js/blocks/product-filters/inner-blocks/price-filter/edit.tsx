@@ -8,7 +8,6 @@ import {
 } from '@wordpress/block-editor';
 import { useCollectionData } from '@woocommerce/base-context/hooks';
 import { __ } from '@wordpress/i18n';
-import { TemplateArray } from '@wordpress/blocks';
 
 /**
  * Internal dependencies
@@ -41,33 +40,19 @@ const Edit = () => {
 						allowedBlocks={ getAllowedBlocks() }
 						template={ [
 							[
-								'core/group',
+								'core/heading',
 								{
-									layout: {
-										type: 'flex',
-										flexWrap: 'nowrap',
-									},
-									metadata: {
-										name: __( 'Header', 'woocommerce' ),
-									},
+									level: 4,
+									content: __( 'Price', 'woocommerce' ),
 									style: {
 										spacing: {
-											blockGap: '0',
+											margin: {
+												bottom: '0.625rem',
+												top: '0',
+											},
 										},
 									},
 								},
-								[
-									[
-										'core/heading',
-										{
-											level: 4,
-											content: __(
-												'Price',
-												'woocommerce'
-											),
-										},
-									],
-								].filter( Boolean ) as unknown as TemplateArray,
 							],
 							[ 'woocommerce/product-filter-price-slider', {} ],
 						] }

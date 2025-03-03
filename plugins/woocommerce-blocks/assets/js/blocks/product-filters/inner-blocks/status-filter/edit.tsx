@@ -10,7 +10,6 @@ import { useCollectionData } from '@woocommerce/base-context/hooks';
 import { __ } from '@wordpress/i18n';
 import { useMemo } from '@wordpress/element';
 import { getSetting } from '@woocommerce/settings';
-import type { TemplateArray } from '@wordpress/blocks';
 
 /**
  * Internal dependencies
@@ -26,30 +25,19 @@ const Edit = ( props: EditProps ) => {
 		{
 			template: [
 				[
-					'core/group',
+					'core/heading',
 					{
-						layout: {
-							type: 'flex',
-							flexWrap: 'nowrap',
-						},
-						metadata: {
-							name: __( 'Header', 'woocommerce' ),
-						},
+						level: 4,
+						content: __( 'Status', 'woocommerce' ),
 						style: {
 							spacing: {
-								blockGap: '0',
+								margin: {
+									bottom: '0.625rem',
+									top: '0',
+								},
 							},
 						},
 					},
-					[
-						[
-							'core/heading',
-							{
-								level: 4,
-								content: __( 'Status', 'woocommerce' ),
-							},
-						],
-					].filter( Boolean ) as unknown as TemplateArray,
 				],
 				[ 'woocommerce/product-filter-checkbox-list' ],
 			],

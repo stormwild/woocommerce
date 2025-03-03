@@ -19,7 +19,6 @@ import { withSpokenMessages } from '@wordpress/components';
 import { useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { getSetting } from '@woocommerce/settings';
-import type { TemplateArray } from '@wordpress/blocks';
 
 /**
  * Internal dependencies
@@ -137,32 +136,21 @@ const Edit = ( props: EditProps ) => {
 			allowedBlocks: getAllowedBlocks( EXCLUDED_BLOCKS ),
 			template: [
 				[
-					'core/group',
+					'core/heading',
 					{
-						layout: {
-							type: 'flex',
-							flexWrap: 'nowrap',
-						},
-						metadata: {
-							name: __( 'Header', 'woocommerce' ),
-						},
+						level: 4,
+						content:
+							attributeObject?.label ||
+							__( 'Attribute', 'woocommerce' ),
 						style: {
 							spacing: {
-								blockGap: '0',
+								margin: {
+									bottom: '0.625rem',
+									top: '0',
+								},
 							},
 						},
 					},
-					[
-						[
-							'core/heading',
-							{
-								level: 4,
-								content:
-									attributeObject?.label ||
-									__( 'Attribute', 'woocommerce' ),
-							},
-						],
-					].filter( Boolean ) as unknown as TemplateArray,
 				],
 				[ displayStyle ],
 			],
