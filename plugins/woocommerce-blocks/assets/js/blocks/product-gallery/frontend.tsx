@@ -89,7 +89,7 @@ const productGallery = {
 		},
 		onSelectedLargeImageKeyDown: ( event: KeyboardEvent ) => {
 			if (
-				( state.isSelected && event.code === 'Enter' ) ||
+				event.code === 'Enter' ||
 				event.code === 'Space' ||
 				event.code === 'NumpadEnter'
 			) {
@@ -97,6 +97,14 @@ const productGallery = {
 					event.preventDefault();
 				}
 				actions.openDialog();
+			}
+
+			if ( event.code === 'ArrowRight' ) {
+				actions.selectNextImage();
+			}
+
+			if ( event.code === 'ArrowLeft' ) {
+				actions.selectPreviousImage();
 			}
 		},
 		onViewAllImagesKeyDown: ( event: KeyboardEvent ) => {
