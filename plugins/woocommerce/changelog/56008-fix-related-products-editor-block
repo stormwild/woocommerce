@@ -1,0 +1,4 @@
+Significance: patch
+Type: fix
+
+Related Products: correctly cache related products taking into account the relationship set.

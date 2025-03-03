@@ -162,7 +162,8 @@ test.describe( `${ blockData.name }`, () => {
 		} );
 	} );
 
-	test( 'Renders correct image when selecting a product variation in the Add to Cart with Options block', async ( {
+	// TODO: This test is flaky, we will fix it in https://github.com/woocommerce/woocommerce/pull/55246
+	test.skip( 'Renders correct image when selecting a product variation in the Add to Cart with Options block', async ( {
 		page,
 		editor,
 		pageObject,
