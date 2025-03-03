@@ -1,0 +1,4 @@
+Significance: patch
+Type: fix
+
+Relay the block context from Product Template to the inner blocks
