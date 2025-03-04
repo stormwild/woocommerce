@@ -12,6 +12,7 @@
 			"wide",
 			"full"
 		],
+		"ariaLabel": true,
 		"html": false,
 		"color": {
 			"background": true,

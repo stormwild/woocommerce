@@ -831,7 +831,7 @@ Visually highlight a product category and encourage prompt action.
 -	**Category:** woocommerce
 -   **Ancestor:** 
 -   **Parent:** 
--	**Supports:** align (full, wide), color (background, text), spacing (padding), ~~html~~
+-	**Supports:** align (full, wide), ariaLabel, color (background, text), spacing (padding), ~~html~~
 -	**Attributes:** alt, categoryId, contentAlign, dimRatio, editMode, focalPoint, hasParallax, imageFit, isRepeated, linkText, mediaId, mediaSrc, minHeight, overlayColor, overlayGradient, previewCategory, showDesc
 
 ## Featured Product - woocommerce/featured-product
@@ -842,7 +842,7 @@ Highlight a product or variation.
 -	**Category:** woocommerce
 -   **Ancestor:** 
 -   **Parent:** 
--	**Supports:** align (full, wide), color (background, text), multiple, spacing (padding), ~~html~~
+-	**Supports:** align (full, wide), ariaLabel, color (background, text), multiple, spacing (padding), ~~html~~
 -	**Attributes:** alt, contentAlign, dimRatio, editMode, focalPoint, hasParallax, imageFit, isRepeated, linkText, mediaId, mediaSrc, minHeight, overlayColor, overlayGradient, previewProduct, productId, showDesc, showPrice
 
 ## Filter Block - woocommerce/filter-wrapper
