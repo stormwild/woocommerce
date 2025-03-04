@@ -51,6 +51,16 @@ const options = [
 	},
 ];
 
+// Create a larger list of options for virtual scrolling example
+const manyOptions = Array.from( { length: 2000 }, ( _, index ) => {
+	const key = `option-${ index + 1 }`;
+	return {
+		key,
+		label: `Option ${ index + 1 }`,
+		value: { id: key },
+	};
+} );
+
 const SelectControlExample = () => {
 	const [ state, setState ] = useState( {
 		simpleSelected: [],
@@ -60,6 +70,7 @@ const SelectControlExample = () => {
 		multipleSelected: [],
 		inlineSelected: [],
 		allOptionsIncludingSelected: options[ options.length - 1 ].key,
+		virtualScrollSelected: [],
 	} );
 
 	const {
@@ -70,6 +81,7 @@ const SelectControlExample = () => {
 		multipleSelected,
 		inlineSelected,
 		allOptionsIncludingSelected,
+		virtualScrollSelected,
 	} = state;
 
 	return (
@@ -159,6 +171,21 @@ const SelectControlExample = () => {
 				placeholder="Start typing to filter options..."
 				selected={ multipleSelected }
 				showClearButton
+			/>
+			<br />
+			<SelectControl
+				label="Virtual scrolling with many options"
+				isSearchable
+				onChange={ ( selected ) =>
+					setState( { ...state, virtualScrollSelected: selected } )
+				}
+				options={ manyOptions }
+				placeholder="Start typing to filter options..."
+				selected={ virtualScrollSelected }
+				showAllOnFocus
+				virtualScroll={ true }
+				virtualItemHeight={ 56 }
+				virtualListHeight={ 56 * 6 }
 			/>
 		</div>
 	);

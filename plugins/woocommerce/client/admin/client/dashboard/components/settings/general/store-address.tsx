@@ -390,6 +390,9 @@ export function StoreAddress( {
 					onCountryStateChange( selected as string );
 				} }
 				controlClassName={ getInputProps( 'countryState' ).className }
+				virtualScroll={ true }
+				virtualItemHeight={ 56 }
+				virtualListHeight={ 56 * 6 }
 			>
 				{ countryStateAutofill }
 			</SelectControl>
