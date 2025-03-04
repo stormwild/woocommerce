@@ -1,11 +1,11 @@
 @import "~@wordpress/base-styles/colors";
 
-.mailpoet-personalization-tags-modal {
+.woocommerce-personalization-tags-modal {
 	p:first-child {
 		margin-top: 0;
 	}
 
-	.mailpoet-personalization-tags-modal-category {
+	.woocommerce-personalization-tags-modal-category {
 		display: inline-block;
 		font-size: 11px;
 		line-height: 16px;
@@ -14,18 +14,18 @@
 		text-transform: uppercase;
 	}
 
-	.mailpoet-personalization-tags-modal-category-group {
+	.woocommerce-personalization-tags-modal-category-group {
 		display: flex;
 		flex-direction: column;
 		gap: 10px;
 
-		.mailpoet-personalization-tags-modal-category-group-item {
+		.woocommerce-personalization-tags-modal-category-group-item {
 			align-items: stretch;
 			border-bottom: 1px solid var(--wp-components-color-gray-300, #ddd);
 			display: flex;
 			padding: 16px 0;
 
-			.mailpoet-personalization-tags-modal-item-text {
+			.woocommerce-personalization-tags-modal-item-text {
 				display: flex;
 				flex: 1;
 				flex-direction: column;
@@ -44,12 +44,12 @@
 		}
 	}
 
-	.mailpoet-personalization-tags-modal-menu {
+	.woocommerce-personalization-tags-modal-menu {
 		div[role="group"] {
 			display: flex;
 		}
 
-		.mailpoet-personalization-tags-modal-menu-item-active {
+		.woocommerce-personalization-tags-modal-menu-item-active {
 			color: #000;
 			font-weight: 700;
 		}
@@ -67,7 +67,7 @@
 			}
 		}
 
-		.mailpoet-personalization-tags-modal-menu-separator {
+		.woocommerce-personalization-tags-modal-menu-separator {
 			background-color: var(--wp-components-color-gray-700, #757575);
 			height: 16px;
 			margin: 10px 4px;
@@ -76,12 +76,12 @@
 	}
 }
 
-.mailpoet-personalization-tag-popover {
+.woocommerce-personalization-tag-popover {
 	align-items: center;
 	display: flex;
 	justify-content: center;
 
-	.mailpoet-personalization-tag-popover-content {
+	.woocommerce-personalization-tag-popover-content {
 		max-width: 350px;
 		min-width: auto;
 		width: 90vw;
@@ -91,7 +91,7 @@
 		}
 	}
 
-	.mailpoet-personalization-tag-popover-content-buttons {
+	.woocommerce-personalization-tag-popover-content-buttons {
 		margin: 16px;
 		text-align: right;
 
@@ -101,7 +101,7 @@
 	}
 }
 
-a.mailpoet-email-editor-personalization-tags-link {
+a.woocommerce-email-editor-personalization-tags-link {
 	color: linktext;
 	cursor: pointer;
 	text-decoration: underline;

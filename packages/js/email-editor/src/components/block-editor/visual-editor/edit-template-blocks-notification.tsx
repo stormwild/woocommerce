@@ -61,7 +61,7 @@ export default function EditTemplateBlocksNotification( { contentRef } ) {
 	return (
 		<ConfirmDialog
 			isOpen={ isDialogOpen }
-			confirmButtonText={ __( 'Edit template', 'mailpoet' ) }
+			confirmButtonText={ __( 'Edit template', 'woocommerce' ) }
 			onConfirm={ () => {
 				setIsDialogOpen( false );
 				onNavigateToEntityRecord( {
@@ -84,7 +84,7 @@ export default function EditTemplateBlocksNotification( { contentRef } ) {
 		>
 			{ __(
 				'The block you’ve selected is part of a template that might be used in other emails. Are you sure you want to edit the template?',
-				'mailpoet'
+				'woocommerce'
 			) }
 		</ConfirmDialog>
 	);

@@ -2,7 +2,7 @@
 
 namespace Automattic\WooCommerce\Internal\EmailEditor\EmailPatterns;
 
-use MailPoet\EmailEditor\Engine\Patterns\Abstract_Pattern;
+use Automattic\WooCommerce\EmailEditor\Engine\Patterns\Abstract_Pattern;
 
 /**
  * Pattern class for WooCommerce email content.

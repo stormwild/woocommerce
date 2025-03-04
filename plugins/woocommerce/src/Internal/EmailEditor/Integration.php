@@ -4,8 +4,8 @@ declare( strict_types=1 );
 
 namespace Automattic\WooCommerce\Internal\EmailEditor;
 
-use MailPoet\EmailEditor\EmailEditorContainer;
-use MailPoet\EmailEditor\Engine\Dependency_Check;
+use Automattic\WooCommerce\EmailEditor\Email_Editor_Container;
+use Automattic\WooCommerce\EmailEditor\Engine\Dependency_Check;
 use Automattic\WooCommerce\Internal\EmailEditor\EmailPatterns\PatternsController;
 use Automattic\WooCommerce\Internal\EmailEditor\EmailTemplates\TemplatesController;
 
@@ -35,7 +35,7 @@ class Integration {
 	 * Constructor.
 	 */
 	public function __construct() {
-		$editor_container       = EmailEditorContainer::container();
+		$editor_container       = Email_Editor_Container::container();
 		$this->dependency_check = $editor_container->get( Dependency_Check::class );
 	}
 
@@ -68,8 +68,8 @@ class Integration {
 	 * Register hooks for the integration.
 	 */
 	public function register_hooks() {
-		add_filter( 'mailpoet_email_editor_post_types', array( $this, 'add_email_post_type' ) );
-		add_filter( 'mailpoet_is_email_editor_page', array( $this, 'is_editor_page' ), 10, 1 );
+		add_filter( 'woocommerce_email_editor_post_types', array( $this, 'add_email_post_type' ) );
+		add_filter( 'woocommerce_is_email_editor_page', array( $this, 'is_editor_page' ), 10, 1 );
 		add_filter( 'replace_editor', array( $this, 'replace_editor' ), 10, 2 );
 	}
 

@@ -1,6 +1,12 @@
 <?php
+/**
+ * Email Editor Container class file.
+ *
+ * @package Automattic\WooCommerce\EmailEditor
+ */
 
-namespace MailPoet\EmailEditor;
+declare( strict_types = 1 );
+namespace Automattic\WooCommerce\EmailEditor;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -20,7 +26,7 @@ class Package {
 	 * Init the package.
 	 */
 	public static function init() {
-		EmailEditorContainer::init();
+		Email_Editor_Container::init();
 	}
 
 	/**

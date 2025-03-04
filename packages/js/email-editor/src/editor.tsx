@@ -41,7 +41,7 @@ function Editor() {
 }
 
 const WrappedEditor = applyFilters(
-	'mailpoet_email_editor_wrap_editor_component',
+	'woocommerce_email_editor_wrap_editor_component',
 	Editor
 ) as typeof Editor;
 

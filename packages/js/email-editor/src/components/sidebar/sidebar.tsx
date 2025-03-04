@@ -41,7 +41,7 @@ function SidebarContent( props: Props ) {
 	return (
 		<ComplementaryArea
 			identifier={ mainSidebarId }
-			closeLabel={ __( 'Close sidebar', 'mailpoet' ) }
+			closeLabel={ __( 'Close sidebar', 'woocommerce' ) }
 			headerClassName="editor-sidebar__panel-tabs"
 			className="edit-post-sidebar"
 			header={
@@ -51,7 +51,7 @@ function SidebarContent( props: Props ) {
 			}
 			icon={ drawerRight }
 			scope={ storeName }
-			smallScreenTitle={ __( 'No title', 'mailpoet' ) }
+			smallScreenTitle={ __( 'No title', 'woocommerce' ) }
 			isActiveByDefault
 			{ ...props }
 		>
