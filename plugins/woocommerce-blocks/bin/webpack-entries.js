@@ -30,6 +30,20 @@ const blocks = {
 		customDir: 'add-to-cart-with-options/variation-selector',
 		isExperimental: true,
 	},
+	'add-to-cart-with-options-variation-selector-item': {
+		customDir:
+			'add-to-cart-with-options/variation-selector/attribute-item-template',
+		isExperimental: true,
+	},
+	'add-to-cart-with-options-variation-selector-attribute-name': {
+		customDir: 'add-to-cart-with-options/variation-selector/attribute-name',
+		isExperimental: true,
+	},
+	'add-to-cart-with-options-variation-selector-attribute-options': {
+		customDir:
+			'add-to-cart-with-options/variation-selector/attribute-options',
+		isExperimental: true,
+	},
 	'add-to-cart-with-options-grouped-product-selector': {
 		customDir: 'add-to-cart-with-options/grouped-product-selector',
 		isExperimental: true,

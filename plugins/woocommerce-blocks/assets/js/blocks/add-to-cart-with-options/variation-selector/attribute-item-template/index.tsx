@@ -8,15 +8,13 @@ import { Icon, button } from '@wordpress/icons';
  * Internal dependencies
  */
 import metadata from './block.json';
-import AddToCartWithOptionsVariationSelectorEdit from './edit';
-import AddToCartWithOptionsVariationSelectorSave from './save';
-import { shouldBlockifiedAddToCartWithOptionsBeRegistered } from '../utils';
-import './style.scss';
-import './editor.scss';
+import AttributeItemTemplateEdit from './edit';
+import AttributeItemTemplateSave from './save';
+import { shouldBlockifiedAddToCartWithOptionsBeRegistered } from '../../utils';
 
 if ( shouldBlockifiedAddToCartWithOptionsBeRegistered ) {
 	registerBlockType( metadata, {
-		edit: AddToCartWithOptionsVariationSelectorEdit,
+		edit: AttributeItemTemplateEdit,
 		attributes: metadata.attributes,
 		icon: {
 			src: (
@@ -26,6 +24,6 @@ if ( shouldBlockifiedAddToCartWithOptionsBeRegistered ) {
 				/>
 			),
 		},
-		save: AddToCartWithOptionsVariationSelectorSave,
+		save: AttributeItemTemplateSave,
 	} );
 }

@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import { store } from '@woocommerce/interactivity';
+import { store } from '@wordpress/interactivity';
 
 store( 'woocommerce/add-to-cart-with-options', {
 	state: {},
