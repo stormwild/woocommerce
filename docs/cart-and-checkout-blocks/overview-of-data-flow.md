@@ -67,7 +67,7 @@ const myCustomValue = wc.wcSettings.getSetting(
 
 Dynamic data is data that is likely to change in response to the shopper's actions, for example, changing location, or items in the cart. In this case, you need to add this to the cart API response. The cart response is sent on many routes during the shopper's journey, and on almost every API response triggered by the Cart/Checkout blocks.
 
-To add data here, you'll need to extend the API response. See [Exposing your data in the Store API](https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce-blocks/docs/third-party-developers/extensibility/rest-api/extend-rest-api-add-data.md).
+To add data here, you'll need to extend the API response. See [Exposing your data in the Store API](../../plugins/woocommerce/client/blocks/docs/third-party-developers/extensibility/rest-api/extend-rest-api-add-data.md).
 
 ### Client (JavaScript) to Server (PHP)
 
@@ -79,13 +79,13 @@ When the shopper updates a checkout field, the data is sent to the server immedi
 
 #### Piggybacking on a Store API request
 
-This is useful for things that don't require an immediate response from the server, for example if you've added a new block to the Checkout and it contains a form field that should be saved along with the order. If this form field just needs to be saved and doesn't need to update any other values in the cart, then the data should be sent with the checkout request. The [Add a new inner block containing a custom field to the WooCommerce Checkout Block](https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce-blocks/docs/third-party-developers/extensibility/rest-api/extend-rest-api-add-custom-fields.md) documentation provides a worked example of using `setExtensionData` along with extending the Store API to receive your data in an existing request.
+This is useful for things that don't require an immediate response from the server, for example if you've added a new block to the Checkout and it contains a form field that should be saved along with the order. If this form field just needs to be saved and doesn't need to update any other values in the cart, then the data should be sent with the checkout request. The [Add a new inner block containing a custom field to the WooCommerce Checkout Block](../../plugins/woocommerce/client/blocks/docs/third-party-developers/extensibility/rest-api/extend-rest-api-add-custom-fields.md) documentation provides a worked example of using `setExtensionData` along with extending the Store API to receive your data in an existing request.
 
 #### Sending data on-demand using `extensionCartUpdate`
 
 You may wish to send your data to the server immediately, rather than waiting for a Store API request to be made. This may be desired if the data may update the cart, for example adding fees, changing which shipping methods are available, or changing the tax rates.
 
-The [Updating the cart on-demand with the Store API](https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce-blocks/docs/third-party-developers/extensibility/rest-api/extend-rest-api-update-cart.md) document outlines how to do this.
+The [Updating the cart on-demand with the Store API](../../plugins/woocommerce/client/blocks/docs/third-party-developers/extensibility/rest-api/extend-rest-api-update-cart.md) document outlines how to do this. 
 
 ## When is data sent/received in the Cart/Checkout blocks?
 
@@ -115,7 +115,7 @@ When the shopper changes shipping method, a Store API request is made and it ret
 
 ### Changing payment method
 
-When the shopper changes payment method, it does not automatically send a Store API request to the server. If you need to update the server when the payment method is changed and before the order is placed, the correct approach would be to use [`cartExtensionUpdate`](https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce-blocks/docs/third-party-developers/extensibility/rest-api/extend-rest-api-update-cart.md).
+When the shopper changes payment method, it does not automatically send a Store API request to the server. If you need to update the server when the payment method is changed and before the order is placed, the correct approach would be to use [`cartExtensionUpdate`](../../plugins/woocommerce/client/blocks/docs/third-party-developers/extensibility/rest-api/extend-rest-api-update-cart.md).
 
 ### Adding/editing order notes
 
