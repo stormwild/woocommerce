@@ -258,8 +258,12 @@
 						"--shard=3/4",
 						"--shard=4/4"
 					],
-					"changes": [],
+					"changes": [
+						"tests/e2e-pw/**"
+					],
+					"onlyForDependencies": ["@woocommerce/e2e-utils-playwright"],
 					"events": [
+						"pull_request",
 						"daily-checks",
 						"release-checks",
 						"core-e2e-gutenberg"
