@@ -6,10 +6,10 @@ import {
 	AddressForm,
 	AddressFormValues,
 	Field,
-	KeyedFormFields,
+	KeyedParsedFormFields,
 } from '@woocommerce/settings';
 import { isObject, objectHasProp } from '@woocommerce/types';
-import { JSONSchemaType } from 'ajv';
+import type { JSONSchemaType } from 'ajv';
 
 export interface FieldProps {
 	id: string;
@@ -18,13 +18,13 @@ export interface FieldProps {
 	autoCapitalize: string | undefined;
 	autoComplete: string | undefined;
 	errorMessage: string | undefined;
-	required: boolean | undefined;
+	required: boolean;
 	placeholder: string | undefined;
 	className: string;
 }
 
 export const createFieldProps = (
-	field: KeyedFormFields[ number ],
+	field: KeyedParsedFormFields[ number ],
 	formId: string,
 	fieldAddressType: string
 ): FieldProps => ( {
@@ -56,7 +56,7 @@ export const createCheckboxFieldProps = ( fieldProps: FieldProps ) => {
 };
 export const getFieldData = < T extends keyof AddressForm >(
 	key: T,
-	fields: KeyedFormFields,
+	fields: KeyedParsedFormFields,
 	values: AddressFormValues
 ): {
 	field: AddressForm[ typeof key ] & {
@@ -79,15 +79,9 @@ export const getFieldData = < T extends keyof AddressForm >(
 
 export const hasSchemaRules = (
 	field: Field,
-	key: keyof Field[ 'rules' ]
+	key: 'required' | 'hidden' | 'validation'
 ): field is Field & {
-	rules: {
-		[ k in typeof key ]: JSONSchemaType< DocumentObject< 'global' > >;
-	};
+	[ K in typeof key ]: JSONSchemaType< DocumentObject< 'global' > >;
 } => {
-	return (
-		isObject( field.rules ) &&
-		isObject( field.rules[ key ] ) &&
-		Object.keys( field.rules[ key ] ).length > 0
-	);
+	return isObject( field[ key ] ) && Object.keys( field[ key ] ).length > 0;
 };

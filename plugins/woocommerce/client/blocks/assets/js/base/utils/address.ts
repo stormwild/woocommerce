@@ -2,25 +2,25 @@
  * External dependencies
  */
 import prepareFormFields from '@woocommerce/base-components/cart-checkout/form/prepare-form-fields';
-import { isEmail } from '@wordpress/url';
 import {
+	ADDRESS_FORM_KEYS,
+	SHIPPING_COUNTRIES,
+	SHIPPING_STATES,
+} from '@woocommerce/block-settings';
+import {
+	AddressForm,
+	BillingAddress,
+	defaultFields,
+	ShippingAddress,
+} from '@woocommerce/settings';
+import {
+	isObject,
 	isString,
 	type CartResponseBillingAddress,
 	type CartResponseShippingAddress,
-	isObject,
 } from '@woocommerce/types';
-import {
-	ShippingAddress,
-	BillingAddress,
-	defaultFields,
-	AddressForm,
-} from '@woocommerce/settings';
 import { decodeEntities } from '@wordpress/html-entities';
-import {
-	SHIPPING_COUNTRIES,
-	SHIPPING_STATES,
-	ADDRESS_FORM_KEYS,
-} from '@woocommerce/block-settings';
+import { isEmail } from '@wordpress/url';
 
 /**
  * Compare two addresses and see if they are the same.
@@ -101,10 +101,11 @@ export const emptyHiddenAddressFields = <
 		defaultFields,
 		address.country
 	);
+
 	const newAddress = Object.assign( {}, address );
 
 	addressForm.forEach( ( { key, hidden } ) => {
-		if ( hidden && isValidAddressKey( key, address ) ) {
+		if ( hidden === true && isValidAddressKey( key, address ) ) {
 			newAddress[ key ] = '';
 		}
 	} );
@@ -213,7 +214,7 @@ export const isAddressComplete = (
 			: addressForm;
 
 	return filteredAddressForm.every( ( { key, hidden, required } ) => {
-		if ( hidden || ! required ) {
+		if ( hidden === true || required === false ) {
 			return true;
 		}
 		return isValidAddressKey( key, address ) && address[ key ] !== '';

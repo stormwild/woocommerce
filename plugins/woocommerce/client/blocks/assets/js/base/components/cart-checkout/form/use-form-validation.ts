@@ -2,25 +2,25 @@
  * External dependencies
  */
 import {
-	KeyedFormFields,
-	FormFields,
-	AddressFormValues,
-	ContactFormValues,
-	OrderFormValues,
-	FormType,
-} from '@woocommerce/settings';
-import {
-	useSchemaParser,
 	DocumentObject,
 	usePrevious,
+	useSchemaParser,
 } from '@woocommerce/base-hooks';
-import type { JSONSchemaType, ErrorObject } from 'ajv';
-import { __, sprintf } from '@wordpress/i18n';
-import { useRef } from '@wordpress/element';
-import fastDeepEqual from 'fast-deep-equal/es6';
-import { isPostcode, getFieldLabel } from '@woocommerce/blocks-checkout';
-import { isEmail } from '@wordpress/url';
+import { getFieldLabel, isPostcode } from '@woocommerce/blocks-checkout';
+import {
+	AddressFormValues,
+	ContactFormValues,
+	FormFields,
+	FormType,
+	KeyedFormFields,
+	OrderFormValues,
+} from '@woocommerce/settings';
 import { nonNullable } from '@woocommerce/types';
+import { useRef } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
+import { isEmail } from '@wordpress/url';
+import type { ErrorObject, JSONSchemaType } from 'ajv';
+import fastDeepEqual from 'fast-deep-equal/es6';
 
 /**
  * Internal dependencies
@@ -144,7 +144,7 @@ export const useFormValidation = (
 			! field.hidden && // And visible
 			( field.required || field.key in values ) // And is required or has a optional with a value (or both).
 		) {
-			acc[ field.key ] = field.rules.validation;
+			acc[ field.key ] = field.validation;
 		}
 		return acc;
 	}, {} );

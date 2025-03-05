@@ -1,16 +1,16 @@
 /**
  * External dependencies
  */
-import {
-	Field,
-	FormFields,
-	CountryAddressFields,
-	KeyedFormFields,
-	FieldLocaleOverrides,
-} from '@woocommerce/settings';
-import { __, sprintf } from '@wordpress/i18n';
-import { isNumber, isString } from '@woocommerce/types';
 import { COUNTRY_LOCALE } from '@woocommerce/block-settings';
+import {
+	CountryAddressFields,
+	Field,
+	FieldLocaleOverrides,
+	FormFields,
+	KeyedFormFields,
+} from '@woocommerce/settings';
+import { isNumber, isString } from '@woocommerce/types';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Gets props from the core locale, then maps them to the shape we require in the client.
@@ -99,8 +99,10 @@ const prepareFormFields = (
 
 	return fieldKeys
 		.map( ( field ) => {
-			const defaultConfig = defaultFields[ field ] || {};
-			const localeConfig = localeConfigs[ field ] || {};
+			const defaultConfig =
+				field in defaultFields ? defaultFields[ field ] : {};
+			const localeConfig =
+				field in localeConfigs ? localeConfigs[ field ] : {};
 
 			return {
 				key: field,
