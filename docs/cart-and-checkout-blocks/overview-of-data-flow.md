@@ -3,16 +3,17 @@ post_title: Cart and Checkout - Overview of data flow between client and server
 menu_title: Data flow overview
 tags: reference
 ---
+
 <!-- markdownlint-disable MD041 -->
 
 In the WooCommerce Cart and Checkout blocks, the server is the source of truth for critical transactional and persistent data. This includes:
 
-- Cart item details (items, quantities, and prices)
-- Cart totals (e.g. taxes, fees, subtotals)
-- Customer information (shipping and billing addresses, other customer data)
-    - Additional fields added using the [Additional Checkout Fields API](https://developer.woocommerce.com/docs/cart-and-checkout-additional-checkout-fields/) are also persisted server-side.
-- Shipping methods and rates
-- Other cart details, such as applied coupons
+-   Cart item details (items, quantities, and prices)
+-   Cart totals (e.g. taxes, fees, subtotals)
+-   Customer information (shipping and billing addresses, other customer data)
+    -   Additional fields added using the [Additional Checkout Fields API](https://developer.woocommerce.com/docs/cart-and-checkout-additional-checkout-fields/) are also persisted server-side.
+-   Shipping methods and rates
+-   Other cart details, such as applied coupons
 
 Such data must be persisted server-side to ensure accuracy, consistency, and reliability across different user sessions and devices.
 Ephemeral UI state—such as temporary validation states, or UI-specific interactions like expanded/collapsed sections should remain client-side and not be automatically persisted on the server, unless the specific state needs to be maintained across page loads or is critical to the user's checkout process.
@@ -56,7 +57,10 @@ If a duplicate key exists, it will not be overwritten. Using a unique identifier
 To get this data on the client, use `wc.wcSettings.getSetting` like so:
 
 ```js
-const myCustomValue = wc.wcSettings.getSetting( 'namespace/value', 'Fallback value.' );
+const myCustomValue = wc.wcSettings.getSetting(
+	'namespace/value',
+	'Fallback value.'
+);
 ```
 
 #### Dynamic data
@@ -67,7 +71,11 @@ To add data here, you'll need to extend the API response. See [Exposing your dat
 
 ### Client (JavaScript) to Server (PHP)
 
-Getting data from the client to the server can be done in a couple of different ways too. The options are: piggyback on a Store API request when one is made, or send the data on demand.
+Getting data from the client to the server can be done in three different ways:
+
+#### Checkout field updates
+
+When the shopper updates a checkout field, the data is sent to the server immediately. For Additional Fields, this is sent via a PUT request to the `/checkout` endpoint. For address fields, this is sent via a POST request to the `cart/update-customer` endpoint (via batch). Both will return an updated cart, which is then applied to the client and totals are updated.
 
 #### Piggybacking on a Store API request
 
@@ -77,7 +85,7 @@ This is useful for things that don't require an immediate response from the serv
 
 You may wish to send your data to the server immediately, rather than waiting for a Store API request to be made. This may be desired if the data may update the cart, for example adding fees, changing which shipping methods are available, or changing the tax rates.
 
-The [Updating the cart on-demand with the Store API](https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce-blocks/docs/third-party-developers/extensibility/rest-api/extend-rest-api-update-cart.md) document outlines how to do this. 
+The [Updating the cart on-demand with the Store API](https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce-blocks/docs/third-party-developers/extensibility/rest-api/extend-rest-api-update-cart.md) document outlines how to do this.
 
 ## When is data sent/received in the Cart/Checkout blocks?
 
@@ -89,7 +97,7 @@ On page load, the `wc/store/cart` and `wc/store/checkout` data stores are hydrat
 
 ### Entering customer data into the checkout form
 
-When the shopper enters data into the form, the data is immediately written to the `wc/store/cart` data store, and a debounced method called [`pushChanges`](https://github.com/woocommerce/woocommerce/blob/4861ec250ef1789f814f4209755165e8abe7b838/plugins/woocommerce-blocks/assets/js/data/cart/push-changes.ts#L167) is called. This method sends the customer data to the server where it is persisted against the customer. The full cart is sent back as a response, and the data store is updated with this. 
+When the shopper enters data into the form, the data is immediately written to the `wc/store/cart` data store, and a debounced method called [`pushChanges`](https://github.com/woocommerce/woocommerce/blob/4861ec250ef1789f814f4209755165e8abe7b838/plugins/woocommerce-blocks/assets/js/data/cart/push-changes.ts#L167) is called. This method sends the customer data to the server where it is persisted against the customer. The full cart is sent back as a response, and the data store is updated with this.
 
 This is important to note, because if any code is running on the server that modifies the customer addresses, then it will be reflected in the response.
 
