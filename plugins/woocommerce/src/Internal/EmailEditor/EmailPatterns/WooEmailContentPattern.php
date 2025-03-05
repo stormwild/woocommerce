@@ -60,6 +60,10 @@ class WooEmailContentPattern extends Abstract_Pattern {
 <p>Here comes content composed of supported core blocks and Woo transactional email block(s).</p>
 <!-- /wp:paragraph -->
 
+<!-- wp:woo/email-content {"lock":{"move":false,"remove":true}} -->
+<div class="wp-block-woo-email-content">##WOO_CONTENT##</div>
+<!-- /wp:woo/email-content -->
+
 <!-- wp:buttons {"layout":{"justifyContent":"center"}} -->
 <div class="wp-block-buttons"><!-- wp:button {"style":{"color":{"background":"#873eff"}}} -->
 <div class="wp-block-button"><a class="wp-block-button__link has-background wp-element-button" style="background-color:#873eff">Shop now</a></div>

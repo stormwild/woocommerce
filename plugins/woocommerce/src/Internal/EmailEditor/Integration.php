@@ -61,6 +61,7 @@ class Integration {
 		$container->get( PatternsController::class );
 		$container->get( TemplatesController::class );
 		$container->get( PersonalizationTagManager::class );
+		$container->get( BlockEmailRenderer::class );
 		$this->editor_page_renderer = $container->get( PageRenderer::class );
 	}
 

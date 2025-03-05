@@ -119,6 +119,17 @@ class PageRenderer {
 		);
 
 		$current_user_email = wp_get_current_user()->user_email;
+		
+		// Fetch all email types from WooCommerce including those added by other plugins.
+		$wc_emails = \WC_Emails::instance();
+		$email_types = $wc_emails->get_emails();
+		$email_types = array_values( array_map( function( $email ) {
+			return array(
+				'value' => $email->id,
+				'label' => $email->title,
+			);
+		}, $email_types ) );
+
 		wp_localize_script(
 			'woocommerce_email_editor',
 			'WooCommerceEmailEditor',
@@ -133,6 +144,7 @@ class PageRenderer {
 					'listings' => admin_url( 'edit.php?post_type=' . Integration::EMAIL_POST_TYPE ),
 					'send'     => admin_url( 'edit.php?post_type=' . Integration::EMAIL_POST_TYPE ),
 				),
+				'email_types' => $email_types,
 			)
 		);
 	}
