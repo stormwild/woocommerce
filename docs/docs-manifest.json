@@ -359,7 +359,7 @@
       ]
     },
     {
-      "content": "\nAccess a collection of useful code snippets to customize and enhance your WooCommerce store's functionality.\n",
+      "content": "\n# Using the Code Snippets Plugin for WooCommerce Customizations\n\n## What is a Code Snippet?  \n\nCustomizing WooCommerce functionality often requires adding code snippets to modify behavior, enhance features, or integrate with third-party tools. Instead of editing theme files or the `functions.php` file directly, we recommend using the **Code Snippets** plugin from the WordPress.org repository. This approach ensures a safer, more manageable, and more organized way to add custom code to your WooCommerce store.  \n\n## Why Use the Code Snippets Plugin?  \n\nEditing your theme’s `functions.php` file or adding custom code directly to WooCommerce files can lead to several issues:  \n\n- **Loss of Custom Code on Theme Updates:** When you update your theme, modifications made in `functions.php` are lost.  \n- **Potential for Errors and Site Breakage:** A single syntax error can make your website inaccessible.  \n- **Difficult Debugging:** Managing multiple customizations in a single `functions.php` file can become unorganized.  \n\nThe **Code Snippets** plugin addresses these issues by allowing you to:  \n\n- Add, activate, and deactivate snippets without modifying core files.  \n- Organize custom snippets with descriptions and tags.  \n- Avoid losing changes when updating your theme or WooCommerce.  \n- Debug and test code safely before deploying to a live site.  \n\n## How to Install the Code Snippets Plugin  \n\n1. Log in to your WordPress admin dashboard.  \n2. Navigate to **Plugins > Add New**.  \n3. Search for **\"Code Snippets\"** in the search bar.  \n4. Click **Install Now** on the \"Code Snippets\" plugin by **Code Snippets Pro**.  \n5. After installation, click **Activate**.  \n\n## Adding Custom WooCommerce Snippets  \n\nOnce the plugin is installed and activated, follow these steps to add a WooCommerce customization:  \n\n1. Navigate to **Snippets** in your WordPress dashboard.  \n2. Click **Add New**.  \n3. Give your snippet a descriptive title.  \n4. Enter your WooCommerce-specific PHP code in the code editor.  \n5. Select **Only run in administration area** or **Run everywhere**, depending on your needs.  \n6. Click **Save Changes and Activate**.  \n\n## Example: Add a Custom Message to the WooCommerce Checkout Page  \n\n```php\nadd_action('woocommerce_before_checkout_form', function() {\n    echo '<p style=\"color: red; font-weight: bold;\">Reminder: Ensure your shipping address is correct before placing your order.</p>';\n});\n``` \n\n## Managing and Troubleshooting Snippets  \n\n- **Deactivating Snippets:** If a snippet causes issues, simply deactivate it from the Code Snippets interface without affecting the rest of your site.  \n- **Error Handling:** The plugin detects fatal errors and automatically deactivates problematic snippets.  \n- **Backup and Export:** You can export your snippets for backup or transfer to another site.  \n\n## Next Steps  \n\nFor more advanced customizations, refer to the [WooCommerce Developer Documentation](https://developer.woocommerce.com/) to build blocks, extensions, and more!  \n\n",
       "category_slug": "code-snippets",
       "category_title": "Code Snippets",
       "posts": [
@@ -393,7 +393,7 @@
           "post_title": "Unhook and remove WooCommerce emails",
           "tags": "code-snippet",
           "edit_url": "https://github.com/woocommerce/woocommerce/edit/trunk/docs/code-snippets/unhook--remove-woocommerce-emails.md",
-          "hash": "9b10cc18f64970b1c919dc1b320497e66444befcae6733d2dc7c8ec07b564e6d",
+          "hash": "5b9f2fb44c59e59c053c1c8162157b9c888e73c01d6317d604e00468cffbdb69",
           "url": "https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/docs/code-snippets/unhook--remove-woocommerce-emails.md",
           "id": "0fdfe3b483ae74a9e5dc1fc21b80814462222ec3"
         },
@@ -407,19 +407,10 @@
           "id": "78d5b5a20ce6471b74f809386eff41fffe2d1adb"
         },
         {
-          "post_title": "Shipping Method API",
-          "menu_title": "Shipping method API",
-          "tags": "shipping, API",
-          "edit_url": "https://github.com/woocommerce/woocommerce/edit/trunk/docs/code-snippets/shipping_method_api.md",
-          "hash": "bd7cbc361fe94acaa40fbc5befa8d14f302705a9d700dd7d7e78a482b003fe0b",
-          "url": "https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/docs/code-snippets/shipping_method_api.md",
-          "id": "a419b97e5594918a015c61227ad9226c509eb314"
-        },
-        {
           "post_title": "Rename a country",
           "tags": "code-snippet",
           "edit_url": "https://github.com/woocommerce/woocommerce/edit/trunk/docs/code-snippets/rename-a-country.md",
-          "hash": "80086f76587535c16e79d987ba00544766b167fe33fd435544c8b80683c5f946",
+          "hash": "99b7f04c99c387db63a0729da47a0f7f0e752b0e09e2aa10d99ae72e80645dde",
           "url": "https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/docs/code-snippets/rename-a-country.md",
           "id": "67a49394f2e8ad0f8f81333207679be770bc8038"
         },
@@ -474,7 +465,7 @@
           "menu_title": "Free shipping customizations",
           "tags": "code-snippets",
           "edit_url": "https://github.com/woocommerce/woocommerce/edit/trunk/docs/code-snippets/free_shipping_customization.md",
-          "hash": "0f5793a00b7e2db6d0862ff4130951ebdd1845bd77237d8e94dc4e63f4fe70e9",
+          "hash": "953c5d719a7325818ded53124a09c2bf6480bfe1a536beb12dedcc8dc83574a8",
           "url": "https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/docs/code-snippets/free_shipping_customization.md",
           "id": "cac6f1ccd661588e9a5fa7405643e9c6d4da388e"
         },
@@ -531,7 +522,7 @@
           "post_title": "Change a currency symbol",
           "tags": "code-snippet",
           "edit_url": "https://github.com/woocommerce/woocommerce/edit/trunk/docs/code-snippets/change-a-currency-symbol.md",
-          "hash": "c1d0018d19b242e3a0776572167adfee75014a509069f51f6440305508550500",
+          "hash": "8fb3d6d4bb58519e266be61285dd5d88b74f1f0254686177d3d9d2cb3c6b2968",
           "url": "https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/docs/code-snippets/change-a-currency-symbol.md",
           "id": "35ff98a542ad0b092aa44a049c6015cd43ed5857"
         },
@@ -539,7 +530,7 @@
           "post_title": "Add a message above the login / register form",
           "tags": "code-snippet",
           "edit_url": "https://github.com/woocommerce/woocommerce/edit/trunk/docs/code-snippets/before-login--register-form.md",
-          "hash": "dd3d61cd1f99d459956167041718e6a25693901a810d4bde47613d5ea2595ca3",
+          "hash": "9c8232c090961db22c78f7645c25cecfca1606e91f818c213f5e71c8bc4fbcc2",
           "url": "https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/docs/code-snippets/before-login--register-form.md",
           "id": "26ea2036f16952c8c965f2ab38ab214e421aa615"
         },
@@ -547,7 +538,7 @@
           "post_title": "Adjust the quantity input values",
           "tags": "code-snippet",
           "edit_url": "https://github.com/woocommerce/woocommerce/edit/trunk/docs/code-snippets/adjust-quantity-input-values.md",
-          "hash": "2dce454ba4247b8ef604cf0f4dd42c6d9eedfc02115b7add4551c47e7c242c71",
+          "hash": "d4c34bc279ce07a3ed9b91a19a53b634f12eac73e10122139e7eca72bcab4b24",
           "url": "https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/docs/code-snippets/adjust-quantity-input-values.md",
           "id": "e4d92076cbd872380edb6beb1ff944f749d2d0e1"
         },
@@ -555,7 +546,7 @@
           "post_title": "Add or modify states",
           "tags": "code-snippet",
           "edit_url": "https://github.com/woocommerce/woocommerce/edit/trunk/docs/code-snippets/add-or-modify-states.md",
-          "hash": "0f58428d8db1c7bc3e118362c25d129985a0a17957938d4003e64d4a56ea929b",
+          "hash": "362b2369e9f6ee013a65eee647cb0c2258183041ce479fc9290ca007e11a7db2",
           "url": "https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/docs/code-snippets/add-or-modify-states.md",
           "id": "59ff38edfc09669967a06dd1dd3e6fb967422367"
         },
@@ -564,7 +555,7 @@
           "menu_title": "Add currencies and symbols",
           "tags": "code-snippet",
           "edit_url": "https://github.com/woocommerce/woocommerce/edit/trunk/docs/code-snippets/add-a-currency-symbol.md",
-          "hash": "f91b76a0ebe65b6095157e904435c563b477be639a70795890656a29871cea76",
+          "hash": "6225c913d0b17b0ddc41f5f1d8f8ef3fbe7a9ab7ac6ae48535dfa46e7af3d0a4",
           "url": "https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/docs/code-snippets/add-a-currency-symbol.md",
           "id": "1c031c2af4a1461253e798daa3304baa89a83979"
         },
@@ -573,7 +564,7 @@
           "menu_title": "Add a country",
           "tags": "code-snippet",
           "edit_url": "https://github.com/woocommerce/woocommerce/edit/trunk/docs/code-snippets/add-a-country.md",
-          "hash": "2b5488637e3ecad6113abea73f26fab79e953d84b7e034d4aa71767f6b7338a6",
+          "hash": "93d1f72ebd6c7557da5609c6dad37e58aca0599dad1b1a2e65311e59d2a5b3c3",
           "url": "https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/docs/code-snippets/add-a-country.md",
           "id": "3f20affcf41e51989b0a7408aefe32b95d1da073"
         }
@@ -1537,7 +1528,7 @@
           "menu_title": "Shipping method API",
           "tags": "reference",
           "edit_url": "https://github.com/woocommerce/woocommerce/edit/trunk/docs/shipping/shipping-method-api.md",
-          "hash": "40bf33d540692608fccec48e9a6cc08e51c510c894c32414723c75cc2d2dc3a8",
+          "hash": "04c1caa84990bea8b00032a645456d19cc9da1aa9e171755f03b0b136dcd1492",
           "url": "https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/docs/shipping/shipping-method-api.md",
           "id": "70270a01c8f1f2b630c809c0b9611940e99293a9",
           "links": {
@@ -1958,5 +1949,5 @@
       "categories": []
     }
   ],
-  "hash": "dddb01255fe0e5ccb2ab430a497059ce405a570b7149b97c49eaa2863873a67b"
+  "hash": "9cb05e281a69b7be475fbbbff220509f37565da28cb96fa47256c5bc595eb2ce"
 }
