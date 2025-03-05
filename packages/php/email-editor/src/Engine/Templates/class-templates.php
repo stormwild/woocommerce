@@ -155,11 +155,18 @@ class Templates {
 		if ( $post_type && ! in_array( $post_type, $this->post_types, true ) ) {
 			return $templates;
 		}
-		$block_templates = get_block_templates();
+		$block_templates       = get_block_templates();
+		$email_templates_slugs = array_map(
+			function ( Template $template ) {
+				return $template->get_slug();
+			},
+			$this->templates_registry->get_all()
+		);
 		foreach ( $block_templates as $block_template ) {
-			// Ideally we could check for supported post_types but there seems to be a bug and once a template has some edits and is stored in DB
-			// the core returns null for post_types.
-			if ( $block_template->plugin !== $this->template_prefix ) {
+			if ( ! in_array( $block_template->slug, $email_templates_slugs, true ) ) {
+				continue;
+			}
+			if ( isset( $templates[ $block_template->slug ] ) ) {
 				continue;
 			}
 			$templates[ $block_template->slug ] = $block_template;
