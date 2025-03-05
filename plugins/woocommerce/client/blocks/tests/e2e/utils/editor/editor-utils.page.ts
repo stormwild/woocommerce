@@ -121,7 +121,7 @@ export class Editor extends CoreEditor {
 	 *
 	 * Besides, some blocks that manipulate their attributes after insertion
 	 * aren't work probably with `insertBlock` as that method requires
-	 * attributes object and uses that data to creat the block object.
+	 * attributes object and uses that data to create the block object.
 	 */
 	async insertBlockUsingGlobalInserter( blockTitle: string ) {
 		await this.openGlobalBlockInserter();
@@ -131,4 +131,32 @@ export class Editor extends CoreEditor {
 			.first()
 			.click();
 	}
+
+	/**
+	 * This is to avoid tests failing due to two notices appearing at the same
+	 * time. This is an upstream issue with the `saveSiteEditorEntities` method.
+	 * It should be removed once the upstream issue is fixed.
+	 *
+	 * @see https://github.com/WordPress/gutenberg/issues/69042
+	 */
+	saveSiteEditorEntities = async ( {
+		isOnlyCurrentEntityDirty = false,
+	}: {
+		isOnlyCurrentEntityDirty?: boolean;
+	} = {} ) => {
+		try {
+			await new CoreEditor( { page: this.page } ).saveSiteEditorEntities(
+				{
+					isOnlyCurrentEntityDirty,
+				}
+			);
+		} catch ( error ) {
+			if (
+				! ( error instanceof Error ) ||
+				! error.message.includes( 'strict mode violation' )
+			) {
+				throw error;
+			}
+		}
+	};
 }
