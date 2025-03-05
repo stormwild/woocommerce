@@ -126,9 +126,12 @@ export interface BillingAddress extends AddressFormValues {
 	email: string;
 }
 
-export type CountryAddressFields =
-	| Record< string, Record< keyof FormFields, FieldLocaleOverrides > >
-	| Record< string, never >;
+export type KeyedFormField< T extends keyof FormFields > = FormField & {
+	key: T;
+	errorMessage?: string;
+};
+
+export type CountryAddressFields = Record< string, FormFields >;
 
 /**
  * Default field properties.

@@ -4,7 +4,7 @@
 import {
 	CURRENT_USER_IS_ADMIN,
 	FormFields,
-	KeyedFormFields,
+	KeyedFormField,
 	FormType,
 } from '@woocommerce/settings';
 import { useSchemaParser } from '@woocommerce/base-hooks';
@@ -20,17 +20,17 @@ import { hasSchemaRules } from './utils';
 /**
  * Combines address fields, including fields from the locale, and sorts them by index.
  */
-export const useFormFields = (
+export const useFormFields = < T extends keyof FormFields >(
 	// List of field keys to include in the form.
-	fieldKeys: ( keyof FormFields )[],
+	fieldKeys: T[],
 	// Default fields from settings.
 	defaultFields: FormFields,
 	// Form type, can be billing, shipping, contact, order, or calculator.
 	formType: FormType,
 	// Address country.
 	addressCountry = ''
-): KeyedFormFields => {
-	const currentResults = useRef< KeyedFormFields >( [] );
+): KeyedFormField< T >[] => {
+	const currentResults = useRef< KeyedFormField< T >[] >( [] );
 	const { parser, data } = useSchemaParser( formType );
 
 	const formFields = prepareFormFields(
