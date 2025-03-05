@@ -69,17 +69,26 @@ export class ProductGalleryPage {
 		}
 	}
 
-	async getActiveElementImageId( { page }: { page: Page } ) {
+	/**
+	 * Get the image ID of the active image element.
+	 *
+	 * @param {Object} params      - The parameters object.
+	 * @param {Page}   params.page - The page.
+	 * @return The image element id.
+	 */
+	async getActiveImageElementId( { page }: { page: Page } ) {
 		return page.evaluate( () => {
 			const element = document?.activeElement;
 			if ( ! element ) {
 				return null;
 			}
-			const context = element.getAttribute( 'data-wp-context' );
-			if ( ! context ) {
-				return null;
+
+			const dataImageId = element.getAttribute( 'data-image-id' );
+			if ( dataImageId ) {
+				return dataImageId;
 			}
-			return JSON.parse( context ).imageId;
+
+			return null;
 		} );
 	}
 

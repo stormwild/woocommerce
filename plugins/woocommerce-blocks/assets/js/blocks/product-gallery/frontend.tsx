@@ -5,13 +5,12 @@ import {
 	store,
 	getContext as getContextFn,
 	getElement,
+	withScope,
 } from '@wordpress/interactivity';
 import type { StorePart } from '@woocommerce/utils';
 
 export interface ProductGalleryContext {
-	// It's an actual image number, not an index, hence one-based!
-	selectedImageNumber: number;
-	imageId: string;
+	selectedImageId: string;
 	imageIds: string[];
 	isDialogOpen: boolean;
 	productId: string;
@@ -20,13 +19,20 @@ export interface ProductGalleryContext {
 	touchStartX: number;
 	touchCurrentX: number;
 	isDragging: boolean;
+	userHasInteracted: boolean;
+	imageData: {
+		id: string;
+		src: string;
+		srcSet: string;
+		sizes: string;
+	}[];
 }
 
 const getContext = ( ns?: string ) =>
 	getContextFn< ProductGalleryContext >( ns );
 
 type Store = typeof productGallery & StorePart< ProductGallery >;
-const { state, actions } = store< Store >( 'woocommerce/product-gallery' );
+const { actions } = store< Store >( 'woocommerce/product-gallery' );
 
 const getArrowsState = ( imageNumber: number, totalImages: number ) => ( {
 	// One-based index so it ranges from 1 to imagesIds.length.
@@ -34,21 +40,103 @@ const getArrowsState = ( imageNumber: number, totalImages: number ) => ( {
 	disableRight: imageNumber === totalImages,
 } );
 
+/**
+ * Scrolls an image into view.
+ *
+ * @param {string} imageId - The ID of the image to scroll into view.
+ */
+const scrollImageIntoView = ( imageId: string ) => {
+	if ( ! imageId ) {
+		return;
+	}
+	const imageElement = document.querySelector(
+		`.wp-block-woocommerce-product-gallery-large-image img[data-image-id="${ imageId }"]`
+	);
+	if ( imageElement ) {
+		imageElement.scrollIntoView( {
+			behavior: 'smooth',
+			block: 'nearest',
+			inline: 'center',
+		} );
+	}
+};
+
+/**
+ * Gets the number of the active image.
+ *
+ * @param {string[]} imageIds        - The IDs of the images.
+ * @param {string}   selectedImageId - The ID of the selected image.
+ * @return {number} The number of the active image.
+ */
+const getSelectedImageNumber = (
+	imageIds: string[],
+	selectedImageId: string
+) => imageIds.indexOf( selectedImageId ) + 1;
+
 const productGallery = {
 	state: {
-		get isSelected() {
-			const { selectedImageNumber, imageIds, imageId } = getContext();
-			return selectedImageNumber === imageIds.indexOf( imageId ) + 1;
+		/**
+		 * The number of the active image. Not to be confused with the index of the active image in the imageIds array.
+		 *
+		 * @return {number} The number of the active image.
+		 */
+		get selectedImageNumber(): number {
+			const { imageIds, selectedImageId } = getContext();
+			return getSelectedImageNumber( imageIds, selectedImageId );
 		},
+		/**
+		 * The index of the active image in the imageIds array.
+		 *
+		 * @return {number} The index of the active image.
+		 */
 		get imageIndex(): number {
-			const { imageIds, imageId } = getContext();
-			return imageIds.indexOf( imageId );
+			const { imageIds, selectedImageId } = getContext();
+			return imageIds.indexOf( selectedImageId );
 		},
-		get thumbnailTabIndex(): string {
-			return state.isSelected ? '0' : '-1';
+		/**
+		 * The processed image data.
+		 *
+		 * @return {Object} The processed image data.
+		 */
+		get processedImageData() {
+			// The thumbnail block preloads all required images into cache. Without thumbnails, only the first two images load initially,
+			// as users navigate one at a time, with more loading on interaction. If thumbnails later use smaller, separate images, this
+			// logic will need adjustment, as users could jump to an unloaded image by clicking a thumbnail.
+			const { imageData, userHasInteracted, imageIds, selectedImageId } =
+				getContext();
+
+			const selectedImageNumber = getSelectedImageNumber(
+				imageIds,
+				selectedImageId
+			);
+
+			return imageData.map( ( image, index ) => {
+				const isActive = selectedImageNumber === index + 1;
+				const tabIndex = isActive ? '0' : '-1';
+
+				if ( ! userHasInteracted && index >= 2 ) {
+					// Return a copy with empty src and srcSet for images beyond the first two
+					return {
+						...image,
+						isActive,
+						tabIndex,
+						src: '',
+						srcSet: '',
+					};
+				}
+				return {
+					...image,
+					isActive,
+					tabIndex,
+				};
+			} );
 		},
 	},
 	actions: {
+		userHasInteracted: () => {
+			const context = getContext();
+			context.userHasInteracted = true;
+		},
 		selectImage: ( newImageNumber: number ) => {
 			const context = getContext();
 
@@ -57,22 +145,44 @@ const productGallery = {
 				context.imageIds.length
 			);
 
-			context.selectedImageNumber = newImageNumber;
+			actions.userHasInteracted();
 			context.disableLeft = disableLeft;
 			context.disableRight = disableRight;
+
+			const { imageData } = context;
+			const imageIndex = newImageNumber - 1;
+			const imageId = imageData[ imageIndex ].id;
+			context.selectedImageId = imageId;
+			if ( imageIndex !== -1 ) {
+				scrollImageIntoView( imageId );
+			}
 		},
 		selectCurrentImage: ( event?: MouseEvent ) => {
 			if ( event ) {
 				event.stopPropagation();
 			}
-			const newImageNumber = state.imageIndex + 1;
+			const element = getElement()?.ref as HTMLElement;
+			if ( ! element ) {
+				return;
+			}
+			const imageId = element.getAttribute( 'data-image-id' );
+			if ( ! imageId ) {
+				return;
+			}
+			const context = getContext();
+			const newImageNumber = context.imageIds.indexOf( imageId ) + 1;
 			actions.selectImage( newImageNumber );
 		},
 		selectNextImage: ( event?: MouseEvent ) => {
 			if ( event ) {
 				event.stopPropagation();
 			}
-			const { selectedImageNumber, imageIds } = getContext();
+			const { imageIds, selectedImageId } = getContext();
+			const selectedImageNumber = getSelectedImageNumber(
+				imageIds,
+				selectedImageId
+			);
+
 			const newImageNumber = Math.min(
 				imageIds.length,
 				selectedImageNumber + 1
@@ -83,7 +193,13 @@ const productGallery = {
 			if ( event ) {
 				event.stopPropagation();
 			}
-			const { selectedImageNumber } = getContext();
+
+			const { imageIds, selectedImageId } = getContext();
+			const selectedImageNumber = getSelectedImageNumber(
+				imageIds,
+				selectedImageId
+			);
+
 			const newImageNumber = Math.max( 1, selectedImageNumber - 1 );
 			actions.selectImage( newImageNumber );
 		},
@@ -210,33 +326,50 @@ const productGallery = {
 					newImageNumber,
 					context.imageIds.length
 				);
-				context.selectedImageNumber = newImageNumber;
+				context.selectedImageId =
+					context.imageIds[ newImageNumber - 1 ];
 				context.disableLeft = disableLeft;
 				context.disableRight = disableRight;
+				scrollImageIntoView( context.imageIds[ newImageNumber - 1 ] );
 			};
 
 			const selectFirstImage = () => selectImage( 1 );
 
-			const observer = new MutationObserver( function ( mutations ) {
-				for ( const mutation of mutations ) {
-					const mutationTarget = mutation.target as HTMLElement;
-					const currentImageAttribute =
-						mutationTarget.getAttribute( 'current-image' );
-					if (
-						mutation.type === 'attributes' &&
-						currentImageAttribute &&
-						context.imageIds.includes( currentImageAttribute )
-					) {
-						const nextImageNumber =
-							context.imageIds.indexOf( currentImageAttribute ) +
-							1;
+			// Initial mutation is triggered when the page is loaded.
+			// We don't want to set `userHasInteracted` to true on initial mutation
+			let isInitialMutation = true;
 
-						selectImage( nextImageNumber );
-					} else {
-						selectFirstImage();
+			const observer = new MutationObserver(
+				withScope( function ( mutations ) {
+					for ( const mutation of mutations ) {
+						if ( ! isInitialMutation ) {
+							actions.userHasInteracted();
+						}
+
+						if ( isInitialMutation ) {
+							isInitialMutation = false;
+						}
+
+						const mutationTarget = mutation.target as HTMLElement;
+						const currentImageAttribute =
+							mutationTarget.getAttribute( 'current-image' );
+						if (
+							mutation.type === 'attributes' &&
+							currentImageAttribute &&
+							context.imageIds.includes( currentImageAttribute )
+						) {
+							const nextImageNumber =
+								context.imageIds.indexOf(
+									currentImageAttribute
+								) + 1;
+
+							actions.selectImage( nextImageNumber );
+						} else {
+							actions.selectImage( 1 );
+						}
 					}
-				}
-			} );
+				} )
+			);
 
 			observer.observe( variableProductCartForm, {
 				attributes: true,
@@ -259,8 +392,12 @@ const productGallery = {
 			};
 		},
 		dialogStateChange: () => {
-			const { selectedImageNumber, isDialogOpen } = getContext();
+			const { imageIds, selectedImageId, isDialogOpen } = getContext();
 			const { ref: dialogRef } = getElement() || {};
+			const selectedImageNumber = getSelectedImageNumber(
+				imageIds,
+				selectedImageId
+			);
 
 			if ( isDialogOpen && dialogRef instanceof HTMLElement ) {
 				dialogRef.focus();

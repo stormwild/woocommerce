@@ -110,6 +110,8 @@ class ProductGallery extends AbstractBlock {
 
 		$product_gallery_thumbnail_images = ProductGalleryUtils::get_product_gallery_images( $post_id, 'thumbnail', array() );
 		$product_gallery_full_images      = ProductGalleryUtils::get_product_gallery_images( $post_id, 'full', array() );
+		$image_src_data                   = ProductGalleryUtils::get_product_gallery_image_data( $product );
+		$image_id                         = count( $image_src_data ) > 0 ? $image_src_data[0]['id'] : -1;
 		$classname_single_image           = '';
 
 		if ( count( $product_gallery_thumbnail_images ) < 2 ) {
@@ -128,19 +130,17 @@ class ProductGallery extends AbstractBlock {
 				'data-wp-context',
 				wp_json_encode(
 					array(
-						'selectedImageNumber' => 1,
-						'isDialogOpen'        => false,
-						'disableLeft'         => true,
-						'disableRight'        => false,
-						'isDragging'          => false,
-						'touchStartX'         => 0,
-						'touchCurrentX'       => 0,
-						'productId'           => $product_id,
-						'imageIds'            => ProductGalleryUtils::get_product_gallery_image_ids( $product, null, false ),
-            'styles'                 => array(
-							'transform'        => 'scale(1.0)',
-							'transform-origin' => '',
-						),
+						'imageData'         => $image_src_data,
+						'isDialogOpen'      => false,
+						'disableLeft'       => true,
+						'disableRight'      => false,
+						'isDragging'        => false,
+						'touchStartX'       => 0,
+						'touchCurrentX'     => 0,
+						'productId'         => $product_id,
+						'imageIds'          => ProductGalleryUtils::get_product_gallery_image_ids( $product, null, false ),
+						'selectedImageId'   => $image_id,
+						'userHasInteracted' => false,
 					),
 					JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
 				)

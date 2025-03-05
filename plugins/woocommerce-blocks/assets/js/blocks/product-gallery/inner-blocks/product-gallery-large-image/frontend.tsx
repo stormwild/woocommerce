@@ -1,11 +1,7 @@
 /**
  * External dependencies
  */
-import {
-	store,
-	getContext as getContextFn,
-	getElement,
-} from '@wordpress/interactivity';
+import { store, getContext as getContextFn } from '@wordpress/interactivity';
 import type { StorePart } from '@woocommerce/utils';
 
 /**
@@ -24,72 +20,48 @@ type Context = {
 const getContext = ( ns?: string ) => getContextFn< Context >( ns );
 
 type Store = typeof productGalleryLargeImage & StorePart< ProductGallery >;
-const { state, actions } = store< Store >( 'woocommerce/product-gallery' );
+const { actions } = store< Store >( 'woocommerce/product-gallery' );
 
 const productGalleryLargeImage = {
-	state: {
-		get styles() {
-			const { styles } = getContext();
-			const { isSelected } = state;
-			return isSelected
-				? Object.entries( styles ?? [] ).reduce(
-						( acc, [ key, value ] ) => {
-							const style = `${ key }:${ value };`;
-							return acc.length > 0
-								? `${ acc } ${ style }`
-								: style;
-						},
-						''
-				  )
-				: '';
-		},
-	},
 	actions: {
 		startZoom: ( event: MouseEvent ) => {
 			const target = event.target as HTMLElement;
 			const isMouseEventFromLargeImage = target.classList.contains(
 				'wc-block-woocommerce-product-gallery-large-image__image'
 			);
+
 			if ( ! isMouseEventFromLargeImage ) {
-				return actions.resetZoom();
+				return actions.resetZoom( event );
 			}
 
 			const element = event.target as HTMLElement;
 			const percentageX = ( event.offsetX / element.clientWidth ) * 100;
 			const percentageY = ( event.offsetY / element.clientHeight ) * 100;
 
-			const { styles } = getContext();
+			const { selectedImageId } = getContext();
 
-			if ( styles ) {
-				styles.transform = `scale(1.3)`;
-				styles[
-					'transform-origin'
-				] = `${ percentageX }% ${ percentageY }%`;
+			if ( selectedImageId === target.getAttribute( 'data-image-id' ) ) {
+				target.style.transform = `scale(1.3)`;
+				target.style.transformOrigin = `${ percentageX }% ${ percentageY }%`;
 			}
 		},
-		resetZoom: () => {
-			const context = getContext();
-			if ( context.styles ) {
-				context.styles.transform = `scale(1.0)`;
-				context.styles[ 'transform-origin' ] = '';
-			}
-		},
-	},
-	callbacks: {
-		scrollInto: () => {
-			if ( ! state.isSelected ) {
+		resetZoom: ( event: MouseEvent ) => {
+			const target = event.target as HTMLElement;
+
+			if ( ! target ) {
 				return;
 			}
 
-			const { ref } = getElement();
-			if ( ref ) {
-				// Scroll to the selected image with a smooth animation.
-				ref.scrollIntoView( {
-					behavior: 'smooth',
-					block: 'nearest',
-					inline: 'center',
-				} );
+			const image = target.querySelector(
+				'.wc-block-woocommerce-product-gallery-large-image__image--active-image-slide'
+			) as HTMLElement;
+
+			if ( ! image ) {
+				return;
 			}
+
+			image.style.transform = `scale(1.0)`;
+			image.style.transformOrigin = '';
 		},
 	},
 };

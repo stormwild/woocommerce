@@ -9,6 +9,46 @@ class ProductGalleryUtils {
 	const CROP_IMAGE_SIZE_NAME = '_woo_blocks_product_gallery_crop_full';
 
 	/**
+	 * Get the product gallery image data.
+	 *
+	 * @param \WC_Product $product The product object to retrieve the gallery images for.
+	 * @return array An array of image data for the product gallery.
+	 */
+	public static function get_product_gallery_image_data( $product ) {
+		$image_data = array();
+		$image_ids  = self::get_product_gallery_image_ids( $product );
+
+		foreach ( $image_ids as $image_id ) {
+			if ( '0' === $image_id ) {
+				// Handle placeholder image.
+				$image_data[] = array(
+					'id'     => '0',
+					'src'    => wc_placeholder_img_src(),
+					'srcSet' => '',
+					'sizes'  => '',
+				);
+				continue;
+			}
+
+			// Get the image source.
+			$full_src = wp_get_attachment_image_src( $image_id, 'full' );
+
+			// Get srcset and sizes.
+			$srcset = wp_get_attachment_image_srcset( $image_id, 'full' );
+			$sizes  = wp_get_attachment_image_sizes( $image_id, 'full' );
+
+			$image_data[] = array(
+				'id'     => $image_id,
+				'src'    => $full_src ? $full_src[0] : '',
+				'srcSet' => $srcset ? $srcset : '',
+				'sizes'  => $sizes ? $sizes : '',
+			);
+		}
+
+		return $image_data;
+	}
+
+	/**
 	 * When requesting a full-size image, this function may return an array with a single image.
 	 * However, when requesting a non-full-size image, it will always return an array with multiple images.
 	 * This distinction is based on the image size needed for rendering purposes:
@@ -55,13 +95,8 @@ class ProductGalleryUtils {
 					$product_image_html_processor = new \WP_HTML_Tag_Processor( $product_image_html );
 					$product_image_html_processor->next_tag( 'img' );
 					$product_image_html_processor->set_attribute(
-						'data-wp-context',
-						wp_json_encode(
-							array(
-								'imageId' => $product_gallery_image_id,
-							),
-							JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
-						)
+						'data-image-id',
+						$product_gallery_image_id
 					);
 
 					if ( wp_is_mobile() ) {
