@@ -166,22 +166,22 @@ final class ProductFilterAttribute extends AbstractBlock {
 		$product_attribute = wc_get_attribute( $block_attributes['attributeId'] );
 		$attribute_counts  = $this->get_attribute_counts( $block, $product_attribute->slug, $block_attributes['queryType'] );
 		$hide_empty        = $block_attributes['hideEmpty'] ?? true;
+		$orderby           = $block_attributes['sortOrder'] ? explode( '-', $block_attributes['sortOrder'] )[0] : 'name';
+		$order             = $block_attributes['sortOrder'] ? strtoupper( explode( '-', $block_attributes['sortOrder'] )[1] ) : 'DESC';
+
+		$args = array(
+			'taxonomy' => $product_attribute->slug,
+			'orderby'  => $orderby,
+			'order'    => $order,
+		);
 
 		if ( $hide_empty ) {
-			$attribute_terms = get_terms(
-				array(
-					'taxonomy' => $product_attribute->slug,
-					'include'  => array_keys( $attribute_counts ),
-				)
-			);
+			$args['include'] = array_keys( $attribute_counts );
 		} else {
-			$attribute_terms = get_terms(
-				array(
-					'taxonomy'   => $product_attribute->slug,
-					'hide_empty' => false,
-				)
-			);
+			$args['hide_empty'] = false;
 		}
+
+		$attribute_terms = get_terms( $args );
 
 		$filter_param_key = 'filter_' . str_replace( 'pa_', '', $product_attribute->slug );
 		$filter_params    = $block->context['filterParams'] ?? array();

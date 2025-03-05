@@ -3,12 +3,12 @@
  */
 import { TemplateCompiler, test as base, expect } from '@woocommerce/e2e-utils';
 
-const COLOR_ATTRIBUTE_VALUES = [ 'Blue', 'Gray', 'Green', 'Red', 'Yellow' ];
+const COLOR_ATTRIBUTE_VALUES = [ 'Blue', 'Red', 'Green', 'Gray', 'Yellow' ];
 const COLOR_ATTRIBUTES_WITH_COUNTS = [
 	'Blue (4)',
-	'Gray (2)',
-	'Green (3)',
 	'Red (4)',
+	'Green (3)',
+	'Gray (2)',
 	'Yellow (1)',
 ];
 
