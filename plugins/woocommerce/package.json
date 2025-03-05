@@ -287,8 +287,12 @@
 						"--shard=3/4",
 						"--shard=4/4"
 					],
-					"changes": [],
+					"changes": [
+						"tests/e2e-pw/**"
+					],
+					"onlyForDependencies": ["@woocommerce/e2e-utils-playwright"],
 					"events": [
+						"pull_request",
 						"daily-checks",
 						"release-checks",
 						"core-e2e-gutenberg"
@@ -307,8 +311,12 @@
 					"testType": "e2e",
 					"command": "test:e2e:hpos",
 					"shardingArguments": [],
-					"changes": [],
+					"changes": [
+						"tests/e2e-pw/**"
+					],
+					"onlyForDependencies": ["@woocommerce/e2e-utils-playwright"],
 					"events": [
+						"pull_request",
 						"daily-checks",
 						"release-checks",
 						"core-e2e-hpos-disabled"
@@ -333,7 +341,10 @@
 						"--shard=4/5",
 						"--shard=5/5"
 					],
-					"changes": [],
+					"changes": [
+						"tests/e2e-pw/**"
+					],
+					"onlyForDependencies": ["@woocommerce/e2e-utils-playwright"],
 					"testEnv": {
 						"start": "env:test",
 						"config": {
@@ -341,6 +352,7 @@
 						}
 					},
 					"events": [
+						"pull_request",
 						"daily-checks",
 						"release-checks",
 						"core-e2e-php-8.1"
@@ -362,7 +374,10 @@
 						"--shard=4/5",
 						"--shard=5/5"
 					],
-					"changes": [],
+					"changes": [
+						"tests/e2e-pw/**"
+					],
+					"onlyForDependencies": ["@woocommerce/e2e-utils-playwright"],
 					"testEnv": {
 						"start": "env:test",
 						"config": {
@@ -370,6 +385,7 @@
 						}
 					},
 					"events": [
+						"pull_request",
 						"daily-checks",
 						"release-checks",
 						"core-e2e-wp-latest-1"
@@ -391,7 +407,10 @@
 						"--shard=4/5",
 						"--shard=5/5"
 					],
-					"changes": [],
+					"changes": [
+						"tests/e2e-pw/**"
+					],
+					"onlyForDependencies": ["@woocommerce/e2e-utils-playwright"],
 					"testEnv": {
 						"start": "env:test",
 						"config": {
@@ -399,6 +418,7 @@
 						}
 					},
 					"events": [
+						"pull_request",
 						"daily-checks",
 						"release-checks",
 						"core-e2e-wp-pre-release"
@@ -484,10 +504,12 @@
 					"changes": [
 						"tests/performance/**"
 					],
+					"onlyForDependencies": [],
 					"testEnv": {
 						"start": "test:perf:ci-setup"
 					},
 					"events": [
+						"pull_request",
 						"push",
 						"core-k6"
 					]
