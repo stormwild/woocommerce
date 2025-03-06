@@ -14,4 +14,13 @@ class AddToCartWithOptionsVariationSelectorAttributeOptions extends AbstractBloc
 	 * @var string
 	 */
 	protected $block_name = 'add-to-cart-with-options-variation-selector-attribute-options';
+
+	/**
+	 * Get the frontend style handle for this block type.
+	 *
+	 * @return null
+	 */
+	protected function get_block_type_style() {
+		return null;
+	}
 }
