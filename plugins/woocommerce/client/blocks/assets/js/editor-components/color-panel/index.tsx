@@ -2,12 +2,14 @@
 /**
  * External dependencies
  */
-import { useMemo } from '@wordpress/element';
+import { useMemo, RefObject } from '@wordpress/element';
 import { useSelect, useDispatch } from '@wordpress/data';
+import { getElementBackgroundColor } from '@woocommerce/utils';
 import {
 	store as blockEditorStore,
 	getColorClassName,
 	InspectorControls,
+	ContrastChecker,
 	useBlockEditContext,
 	// eslint-disable-next-line @wordpress/no-unsafe-wp-apis
 	__experimentalColorGradientSettingsDropdown as ColorGradientSettingsDropdown,
@@ -111,8 +113,10 @@ const createSettings = (
 
 export const ColorPanel = ( {
 	colorTypes,
+	miniCartButtonRef,
 }: {
 	colorTypes: CustomColorsMap;
+	miniCartButtonRef: RefObject< HTMLButtonElement >;
 } ) => {
 	const colorGradientOptions = useMultipleOriginColorsAndGradients();
 	const flattenedColors = flattenColors( colorGradientOptions );
@@ -142,6 +146,48 @@ export const ColorPanel = ( {
 		attributes,
 		clientId,
 	] );
+
+	const colorContrastWarnings = useMemo( () => {
+		if ( ! settings || settings.length === 0 ) {
+			return;
+		}
+
+		const contrastWarnings = [];
+
+		for ( let i = 0; i < settings.length; i++ ) {
+			const setting = settings[ i ];
+
+			if ( ! setting.colorValue || ! miniCartButtonRef.current ) {
+				continue;
+			}
+
+			const bgColor = getElementBackgroundColor(
+				miniCartButtonRef.current
+			);
+			const message = ContrastChecker( {
+				backgroundColor: bgColor,
+				textColor: setting.colorValue,
+			} );
+
+			if ( message ) {
+				contrastWarnings.push(
+					<div
+						style={ { gridColumnEnd: -1, gridColumnStart: 1 } }
+						key={ setting.label }
+					>
+						<p>{ setting.label }</p>
+						<ContrastChecker
+							backgroundColor={ bgColor }
+							textColor={ setting.colorValue }
+						/>
+					</div>
+				);
+			}
+		}
+
+		return contrastWarnings;
+	}, [ settings, miniCartButtonRef ] );
+
 	return (
 		colorGradientOptions.hasColorsOrGradients && (
 			// @ts-ignore The dev package version doesn't have types for group.
@@ -152,6 +198,7 @@ export const ColorPanel = ( {
 					panelId={ clientId }
 					{ ...colorGradientOptions }
 				/>
+				{ colorContrastWarnings?.map( ( warning ) => warning ) }
 			</InspectorControls>
 		)
 	);

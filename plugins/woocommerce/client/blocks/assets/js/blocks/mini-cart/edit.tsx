@@ -18,7 +18,7 @@ import { __, isRTL } from '@wordpress/i18n';
 import Noninteractive from '@woocommerce/base-components/noninteractive';
 import { isSiteEditorPage } from '@woocommerce/utils';
 import type { ReactElement } from 'react';
-import { useEffect } from '@wordpress/element';
+import { useEffect, useRef } from '@wordpress/element';
 import { select } from '@wordpress/data';
 import { cartOutline, bag, bagAlt } from '@woocommerce/icons';
 import { Icon } from '@wordpress/icons';
@@ -67,6 +67,7 @@ const Edit = ( { attributes, setAttributes }: Props ): ReactElement => {
 		miniCartIcon,
 		productCountVisibility,
 	} = migrateAttributesToColorPanel( attributes );
+	const miniCartButtonRef = useRef< HTMLButtonElement >( null );
 
 	const miniCartColorAttributes = {
 		priceColor: {
@@ -347,9 +348,15 @@ const Edit = ( { attributes, setAttributes }: Props ): ReactElement => {
 					</BaseControl>
 				</PanelBody>
 			</InspectorControls>
-			<ColorPanel colorTypes={ miniCartColorAttributes } />
+			<ColorPanel
+				colorTypes={ miniCartColorAttributes }
+				miniCartButtonRef={ miniCartButtonRef }
+			/>
 			<Noninteractive>
-				<button className="wc-block-mini-cart__button">
+				<button
+					ref={ miniCartButtonRef }
+					className="wc-block-mini-cart__button"
+				>
 					<QuantityBadge
 						count={ productCount }
 						iconColor={ iconColor }

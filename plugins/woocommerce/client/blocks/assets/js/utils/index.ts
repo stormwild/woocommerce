@@ -1,6 +1,7 @@
 export * from './array-operations';
 export * from './attributes-query';
 export * from './attributes';
+export * from './colors';
 export * from './filters';
 export * from './notices';
 export * from './object-operations';
