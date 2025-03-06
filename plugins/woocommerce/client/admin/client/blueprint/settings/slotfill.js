@@ -44,7 +44,7 @@ const Blueprint = () => {
 	const [ checkedState, setCheckedState ] = useState(
 		blueprintStepGroups.reduce( ( acc, group ) => {
 			acc[ group.id ] = group.items.reduce( ( groupAcc, item ) => {
-				groupAcc[ item.id ] = true; // Default all to true
+				groupAcc[ item.id ] = item.checked ?? false;
 				return groupAcc;
 			}, {} );
 			return acc;
