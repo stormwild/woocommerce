@@ -25,7 +25,6 @@ const singleProductPrice = '555.00';
 // - default cart and checkout blocks, mini-cart
 // - Product Gallery (Beta) - it's not intended to be used in posts
 const blocks = [
-	'Active Filters',
 	'All Reviews',
 	'Best Sellers',
 	'Cross-Sells',
@@ -33,10 +32,6 @@ const blocks = [
 	'Featured Category',
 	'Featured Product',
 	'Featured Products',
-	'Filter by Attribute',
-	'Filter by Price',
-	'Filter by Rating',
-	'Filter by Stock',
 	'Hand-Picked Products',
 	'New Arrivals',
 	'On Sale Products',
