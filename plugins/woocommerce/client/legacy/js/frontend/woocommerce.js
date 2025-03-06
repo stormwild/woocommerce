@@ -123,18 +123,12 @@ jQuery( function ( $ ) {
 	$( '.password-input' ).each( function () {
 		const describedBy = $( this ).find( 'input' ).attr( 'id' );
 		$( this ).append(
-			'<button class="show-password-input" aria-label="' +
+			'<button type="button" class="show-password-input" aria-label="' +
 				woocommerce_params.i18n_password_show +
 				'" aria-describedBy="' +
 				describedBy +
 				'"></button>'
 		);
-
-		$( this ).on( 'keydown', function ( event ) {
-			if ( 'Enter' === event.key ) {
-				event.preventDefault();
-			}
-		} );
 	} );
 
 	$( '.show-password-input' ).on( 'click', function ( event ) {
@@ -164,15 +158,6 @@ jQuery( function ( $ ) {
 		}
 
 		$( this ).siblings( 'input' ).focus();
-	} );
-
-	$( '#customer_login .password-input' ).on( 'keydown', function ( event ) {
-		if ( 'Enter' === event.key ) {
-			$( this )
-				.closest( 'form' )
-				.find( '[type=submit]' )
-				.click();
-		}
 	} );
 
 	$( 'a.coming-soon-footer-banner-dismiss' ).on( 'click', function ( e ) {
