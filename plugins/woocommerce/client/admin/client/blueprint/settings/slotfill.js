@@ -68,9 +68,6 @@ const Blueprint = () => {
 				},
 			} );
 			const link = document.createElement( 'a' );
-			link.innerHTML =
-				'Click here in case download does not start automatically';
-
 			let url = null;
 
 			if ( response.type === 'zip' ) {
@@ -85,7 +82,6 @@ const Blueprint = () => {
 				link.setAttribute( 'download', 'woo-blueprint.json' );
 			}
 
-			linkContainer.appendChild( document.createElement( 'br' ) );
 			linkContainer.appendChild( link );
 
 			link.click();
