@@ -40,8 +40,6 @@ class Package {
 			return;
 		}
 
-		self::initialize();
-
 		\Automattic\WooCommerce\EmailEditor\Package::init();
 		self::initialize();
 	}
