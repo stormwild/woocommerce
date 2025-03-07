@@ -3,16 +3,14 @@
  */
 import { test as setup } from './fixtures';
 
-setup( 'reset site', async ( { baseURL, wpApi } ) => {
+setup( 'reset site', async ( { restApi } ) => {
 	setup.skip(
 		process.env.DISABLE_SITE_RESET !== undefined,
 		'Reset disabled by DISABLE_SITE_RESET environment variable'
 	);
 
 	try {
-		const response = await wpApi.get(
-			`${ baseURL }/wp-json/wc-cleanup/v1/reset`
-		);
+		const response = await restApi.get( `wc-cleanup/v1/reset` );
 
 		if ( response.ok() ) {
 			console.log( 'Site reset successful:', response.status() );

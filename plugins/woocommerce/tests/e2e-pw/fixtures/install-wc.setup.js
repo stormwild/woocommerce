@@ -3,10 +3,10 @@
  */
 import { test as setup } from './fixtures';
 
-async function deactivateWooCommerce( wcbtApi ) {
+async function deactivateWooCommerce( restApi ) {
 	try {
-		await wcbtApi.fetch(
-			'/wp-json/wc-admin-test-helper/live-branches/deactivate/v1',
+		await restApi.fetch(
+			'wc-admin-test-helper/live-branches/deactivate/v1',
 			{ method: 'GET' }
 		);
 		console.log( 'WC deactivated.' );
@@ -15,15 +15,15 @@ async function deactivateWooCommerce( wcbtApi ) {
 	}
 }
 
-async function getActivatedWooCommerceVersion( wpApi ) {
-	const response = await wpApi.get( './wp-json/wp/v2/plugins', {
+async function getActivatedWooCommerceVersion( restApi ) {
+	const response = await restApi.get( 'wp/v2/plugins', {
 		data: { status: 'active' },
 	} );
 	const plugins = await response.json();
 	return plugins.find( ( plugin ) => plugin.name === 'WooCommerce' )?.version;
 }
 
-setup( 'Install WC using WC Beta Tester', async ( { wcbtApi, wpApi } ) => {
+setup( 'Install WC using WC Beta Tester', async ( { restApi } ) => {
 	setup.skip(
 		! process.env.INSTALL_WC,
 		'Skipping installing WC using WC Beta Tester; INSTALL_WC not found.'
@@ -31,7 +31,7 @@ setup( 'Install WC using WC Beta Tester', async ( { wcbtApi, wpApi } ) => {
 	console.log( 'INSTALL_WC is enabled. Running installation script...' );
 
 	// Check if WooCommerce is activated and its version
-	const activatedWcVersion = await getActivatedWooCommerceVersion( wpApi );
+	const activatedWcVersion = await getActivatedWooCommerceVersion( restApi );
 
 	if ( activatedWcVersion ) {
 		console.log(
@@ -46,8 +46,8 @@ setup( 'Install WC using WC Beta Tester', async ( { wcbtApi, wpApi } ) => {
 
 	// Install WC
 	if ( wcVersion === 'latest' ) {
-		const latestResponse = await wcbtApi.fetch(
-			'/wp-json/wc-admin-test-helper/live-branches/install/latest/v1',
+		const latestResponse = await restApi.fetch(
+			'wc-admin-test-helper/live-branches/install/latest/v1',
 			{
 				method: 'POST',
 				data: { include_pre_releases: true },
@@ -68,7 +68,7 @@ setup( 'Install WC using WC Beta Tester', async ( { wcbtApi, wpApi } ) => {
 			);
 			return;
 		}
-		await deactivateWooCommerce( wcbtApi );
+		await deactivateWooCommerce( restApi );
 
 		if ( ! resolvedVersion ) {
 			console.error( 'Error: latestResponse.version is undefined.' );
@@ -82,7 +82,7 @@ setup( 'Install WC using WC Beta Tester', async ( { wcbtApi, wpApi } ) => {
 			);
 			return;
 		}
-		await deactivateWooCommerce( wcbtApi );
+		await deactivateWooCommerce( restApi );
 
 		try {
 			const downloadUrl =
@@ -90,8 +90,8 @@ setup( 'Install WC using WC Beta Tester', async ( { wcbtApi, wpApi } ) => {
 					? 'https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip'
 					: `https://github.com/woocommerce/woocommerce/releases/download/${ wcVersion }/woocommerce.zip`;
 
-			const installResponse = await wcbtApi.fetch(
-				'/wp-json/wc-admin-test-helper/live-branches/install/v1',
+			const installResponse = await restApi.fetch(
+				'wc-admin-test-helper/live-branches/install/v1',
 				{
 					method: 'POST',
 					data: {
@@ -118,8 +118,8 @@ setup( 'Install WC using WC Beta Tester', async ( { wcbtApi, wpApi } ) => {
 	// Activate WC
 	if ( resolvedVersion ) {
 		try {
-			const activationResponse = await wcbtApi.fetch(
-				'/wp-json/wc-admin-test-helper/live-branches/activate/v1',
+			const activationResponse = await restApi.fetch(
+				'wc-admin-test-helper/live-branches/activate/v1',
 				{
 					method: 'POST',
 					data: {
@@ -149,7 +149,7 @@ setup( 'Install WC using WC Beta Tester', async ( { wcbtApi, wpApi } ) => {
 
 	// Check if WooCommerce is activated and its version
 	const finalActivatedWcVersion = await getActivatedWooCommerceVersion(
-		wpApi
+		restApi
 	);
 
 	if (
