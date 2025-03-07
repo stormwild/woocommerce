@@ -59,6 +59,8 @@ class AddToCartWithOptions extends AbstractBlock {
 			return '';
 		}
 
+		wp_enqueue_script_module( $this->get_full_block_name() );
+
 		$product_type = $product->get_type();
 
 		if ( in_array( $product_type, array( ProductType::SIMPLE, ProductType::EXTERNAL, ProductType::VARIABLE, ProductType::GROUPED ), true ) ) {
@@ -215,5 +217,15 @@ class AddToCartWithOptions extends AbstractBlock {
 		}
 
 		return $form_html;
+	}
+
+	/**
+	 * Disable the frontend script for this block type, it's built with script modules.
+	 *
+	 * @param string $key Data to get, or default to everything.
+	 * @return null
+	 */
+	protected function get_block_type_script( $key = null ) {
+		return null;
 	}
 }

@@ -4,8 +4,8 @@ declare( strict_types=1 );
 
 namespace Automattic\WooCommerce\Internal\EmailEditor\EmailTemplates;
 
-use MailPoet\EmailEditor\Engine\Templates\Template;
-use MailPoet\EmailEditor\Engine\Templates\Templates_Registry;
+use Automattic\WooCommerce\EmailEditor\Engine\Templates\Template;
+use Automattic\WooCommerce\EmailEditor\Engine\Templates\Templates_Registry;
 use Automattic\WooCommerce\Internal\EmailEditor\Integration;
 
 defined( 'ABSPATH' ) || exit;
@@ -31,7 +31,7 @@ class TemplatesController {
 	 * @return void
 	 */
 	final public function init(): void {
-		add_filter( 'mailpoet_email_editor_register_templates', array( $this, 'register_templates' ) );
+		add_filter( 'woocommerce_email_editor_register_templates', array( $this, 'register_templates' ) );
 	}
 
 	/**

@@ -4,10 +4,10 @@ declare( strict_types=1 );
 
 namespace Automattic\WooCommerce\Internal\EmailEditor;
 
-use MailPoet\EmailEditor\Engine\Settings_Controller;
-use MailPoet\EmailEditor\Engine\Theme_Controller;
-use MailPoet\EmailEditor\Engine\User_Theme;
-use MailPoet\EmailEditor\EmailEditorContainer;
+use Automattic\WooCommerce\EmailEditor\Engine\Settings_Controller;
+use Automattic\WooCommerce\EmailEditor\Engine\Theme_Controller;
+use Automattic\WooCommerce\EmailEditor\Engine\User_Theme;
+use Automattic\WooCommerce\EmailEditor\Email_Editor_Container;
 use Automattic\WooCommerce\Internal\Admin\WCAdminAssets;
 
 defined( 'ABSPATH' ) || exit;
@@ -41,7 +41,7 @@ class PageRenderer {
 	 * Constructor.
 	 */
 	public function __construct() {
-		$editor_container          = EmailEditorContainer::container();
+		$editor_container          = Email_Editor_Container::container();
 		$this->settings_controller = $editor_container->get( Settings_Controller::class );
 		$this->theme_controller    = $editor_container->get( Theme_Controller::class );
 		$this->user_theme          = $editor_container->get( User_Theme::class );
@@ -72,7 +72,7 @@ class PageRenderer {
 		$this->preload_rest_api_data( $post );
 
 		require_once ABSPATH . 'wp-admin/admin-header.php';
-		echo '<div id="mailpoet-email-editor" class="block-editor block-editor__container hide-if-no-js"></div>';
+		echo '<div id="woocommerce-email-editor" class="block-editor block-editor__container hide-if-no-js"></div>';
 	}
 
 	/**
@@ -119,9 +119,20 @@ class PageRenderer {
 		);
 
 		$current_user_email = wp_get_current_user()->user_email;
+		
+		// Fetch all email types from WooCommerce including those added by other plugins.
+		$wc_emails = \WC_Emails::instance();
+		$email_types = $wc_emails->get_emails();
+		$email_types = array_values( array_map( function( $email ) {
+			return array(
+				'value' => $email->id,
+				'label' => $email->title,
+			);
+		}, $email_types ) );
+
 		wp_localize_script(
 			'woocommerce_email_editor',
-			'MailPoetEmailEditor',
+			'WooCommerceEmailEditor',
 			array(
 				'current_post_type'     => esc_js( $post->post_type ),
 				'current_post_id'       => $post->ID,
@@ -133,6 +144,7 @@ class PageRenderer {
 					'listings' => admin_url( 'edit.php?post_type=' . Integration::EMAIL_POST_TYPE ),
 					'send'     => admin_url( 'edit.php?post_type=' . Integration::EMAIL_POST_TYPE ),
 				),
+				'email_types' => $email_types,
 			)
 		);
 	}

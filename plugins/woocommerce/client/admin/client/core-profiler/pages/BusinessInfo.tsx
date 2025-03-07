@@ -329,6 +329,9 @@ export const BusinessInfo = ( {
 						selected={ storeCountry ? [ storeCountry ] : [] }
 						showAllOnFocus
 						isSearchable
+						virtualScroll={ true }
+						virtualItemHeight={ 40 }
+						virtualListHeight={ 40 * 9 }
 					/>
 					{ countries.length === 0 && (
 						<Notice

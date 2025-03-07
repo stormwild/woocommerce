@@ -44,7 +44,6 @@
 				"@wordpress/data-controls",
 				"@wordpress/date",
 				"@wordpress/editor",
-				"@wordpress/dependency-extraction-webpack-plugin",
 				"@wordpress/deprecated",
 				"@wordpress/dom",
 				"@wordpress/dom-ready",
@@ -233,7 +232,6 @@
 				"@wordpress/stylelint-config",
 				"@wordpress/scripts",
 				"@wordpress/jest-console",
-				"@wordpress/dependency-extraction-webpack-plugin",
 				"@wordpress/e2e-test-utils",
 				"@wordpress/jest-preset-default",
 				"@wordpress/postcss-plugins-preset",
@@ -311,6 +309,17 @@
 			"pinVersion": "^1.15.0"
 		},
 		{
+			"label": "@wordpress/* build-dependencies (always ahead of runtime-dependencies)",
+			"dependencies": [
+				"@wordpress/dependency-extraction-webpack-plugin"
+			],
+			"packages": [
+				"**"
+			],
+			"pinVersion": "next"
+		},
+		{
+			"label": "@wordpress/* runtime-dependencies",
 			"dependencies": [
 				"@wordpress/**"
 			],

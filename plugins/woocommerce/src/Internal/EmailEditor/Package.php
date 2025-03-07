@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * This class is used to initialize the email editor package.
  *
- * It is a wrapper around the MailPoet\EmailEditor\Package class and
+ * It is a wrapper around the Automattic\WooCommerce\EmailEditor\Package class and
  * ensures that the email editor package is only initialized if the block editor feature flag is enabled.
  */
 class Package {
@@ -18,7 +18,7 @@ class Package {
 	 *
 	 * @var string
 	 */
-	const VERSION = \MailPoet\EmailEditor\Package::VERSION;
+	const VERSION = \Automattic\WooCommerce\EmailEditor\Package::VERSION;
 
 	/**
 	 * Package active.
@@ -42,7 +42,8 @@ class Package {
 
 		self::initialize();
 
-		\MailPoet\EmailEditor\Package::init(); // The namespace will be changed to Automattic\WooCommerce\EmailEditor\Package in the future.
+		\Automattic\WooCommerce\EmailEditor\Package::init();
+		self::initialize();
 	}
 
 	/**
@@ -51,7 +52,7 @@ class Package {
 	 * @return string
 	 */
 	public static function get_version() {
-		return \MailPoet\EmailEditor\Package::get_version();
+		return \Automattic\WooCommerce\EmailEditor\Package::get_version();
 	}
 
 	/**
@@ -60,7 +61,7 @@ class Package {
 	 * @return string
 	 */
 	public static function get_path() {
-		return \MailPoet\EmailEditor\Package::get_path();
+		return \Automattic\WooCommerce\EmailEditor\Package::get_path();
 	}
 
 	/**

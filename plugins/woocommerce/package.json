@@ -2,7 +2,7 @@
 	"name": "@woocommerce/plugin-woocommerce",
 	"private": true,
 	"title": "WooCommerce",
-	"version": "9.8.0",
+	"version": "9.9.0",
 	"homepage": "https://woocommerce.com/",
 	"repository": {
 		"type": "git",
@@ -18,7 +18,7 @@
 		"build:project": "pnpm --if-present '/^build:project:.*$/'",
 		"build:project:copy-assets:legacy": "rsync -avhW --checksum --delete --quiet client/legacy/build/css/ assets/css && rsync -avhW --checksum --delete --quiet client/legacy/build/js/ assets/js",
 		"build:project:copy-assets:admin": "rsync -avhW --checksum --delete --quiet client/admin/build/ assets/client/admin && pnpm email-editor:build:project:copy-assets",
-		"build:project:copy-assets:blocks": "rsync -avhW --checksum --delete --quiet ../woocommerce-blocks/build/ assets/client/blocks && rsync -avhW --checksum --quiet ../woocommerce-blocks/blocks.ini blocks.ini && wp-scripts build-blocks-manifest --input=assets/client/blocks --output=assets/client/blocks/blocks-json.php",
+		"build:project:copy-assets:blocks": "rsync -avhW --checksum --delete --quiet client/blocks/build/ assets/client/blocks && rsync -avhW --checksum --quiet client/blocks/blocks.ini blocks.ini && wp-scripts build-blocks-manifest --input=assets/client/blocks --output=assets/client/blocks/blocks-json.php",
 		"email-editor:build:project:copy-assets": "rsync -avhW --checksum --delete --quiet client/admin/node_modules/@woocommerce/email-editor/build/ assets/client/admin/email-editor && rsync -avhW --checksum --quiet client/admin/node_modules/@woocommerce/email-editor/assets/ assets/client/admin/email-editor",
 		"build:project:actualize-translation-domains": "wireit",
 		"changelog": "XDEBUG_MODE=off composer install --quiet && composer exec -- changelogger",
@@ -258,8 +258,12 @@
 						"--shard=3/4",
 						"--shard=4/4"
 					],
-					"changes": [],
+					"changes": [
+						"tests/e2e-pw/**"
+					],
+					"onlyForDependencies": ["@woocommerce/e2e-utils-playwright"],
 					"events": [
+						"pull_request",
 						"daily-checks",
 						"release-checks",
 						"core-e2e-gutenberg"
@@ -283,8 +287,12 @@
 						"--shard=3/4",
 						"--shard=4/4"
 					],
-					"changes": [],
+					"changes": [
+						"tests/e2e-pw/**"
+					],
+					"onlyForDependencies": ["@woocommerce/e2e-utils-playwright"],
 					"events": [
+						"pull_request",
 						"daily-checks",
 						"release-checks",
 						"core-e2e-gutenberg"
@@ -303,8 +311,12 @@
 					"testType": "e2e",
 					"command": "test:e2e:hpos",
 					"shardingArguments": [],
-					"changes": [],
+					"changes": [
+						"tests/e2e-pw/**"
+					],
+					"onlyForDependencies": ["@woocommerce/e2e-utils-playwright"],
 					"events": [
+						"pull_request",
 						"daily-checks",
 						"release-checks",
 						"core-e2e-hpos-disabled"
@@ -329,7 +341,10 @@
 						"--shard=4/5",
 						"--shard=5/5"
 					],
-					"changes": [],
+					"changes": [
+						"tests/e2e-pw/**"
+					],
+					"onlyForDependencies": ["@woocommerce/e2e-utils-playwright"],
 					"testEnv": {
 						"start": "env:test",
 						"config": {
@@ -337,6 +352,7 @@
 						}
 					},
 					"events": [
+						"pull_request",
 						"daily-checks",
 						"release-checks",
 						"core-e2e-php-8.1"
@@ -358,7 +374,10 @@
 						"--shard=4/5",
 						"--shard=5/5"
 					],
-					"changes": [],
+					"changes": [
+						"tests/e2e-pw/**"
+					],
+					"onlyForDependencies": ["@woocommerce/e2e-utils-playwright"],
 					"testEnv": {
 						"start": "env:test",
 						"config": {
@@ -366,6 +385,7 @@
 						}
 					},
 					"events": [
+						"pull_request",
 						"daily-checks",
 						"release-checks",
 						"core-e2e-wp-latest-1"
@@ -387,7 +407,10 @@
 						"--shard=4/5",
 						"--shard=5/5"
 					],
-					"changes": [],
+					"changes": [
+						"tests/e2e-pw/**"
+					],
+					"onlyForDependencies": ["@woocommerce/e2e-utils-playwright"],
 					"testEnv": {
 						"start": "env:test",
 						"config": {
@@ -395,6 +418,7 @@
 						}
 					},
 					"events": [
+						"pull_request",
 						"daily-checks",
 						"release-checks",
 						"core-e2e-wp-pre-release"
@@ -480,10 +504,12 @@
 					"changes": [
 						"tests/performance/**"
 					],
+					"onlyForDependencies": [],
 					"testEnv": {
 						"start": "test:perf:ci-setup"
 					},
 					"events": [
+						"pull_request",
 						"push",
 						"core-k6"
 					]
@@ -551,7 +577,7 @@
 					],
 					"report": {
 						"resultsBlobName": "blocks-e2e-report",
-						"resultsPath": "../woocommerce-blocks/tests/e2e/artifacts/test-results",
+						"resultsPath": "./client/blocks/tests/e2e/artifacts/test-results",
 						"allure": true
 					}
 				},
@@ -589,7 +615,7 @@
 					],
 					"report": {
 						"resultsBlobName": "blocks-e2e-report-wp-pre-release",
-						"resultsPath": "../woocommerce-blocks/tests/e2e/artifacts/test-results",
+						"resultsPath": "./client/blocks/tests/e2e/artifacts/test-results",
 						"allure": true
 					}
 				},
@@ -623,7 +649,7 @@
 					],
 					"report": {
 						"resultsBlobName": "blocks-e2e-report-wp-latest-1",
-						"resultsPath": "../woocommerce-blocks/tests/e2e/artifacts/test-results",
+						"resultsPath": "./client/blocks/tests/e2e/artifacts/test-results",
 						"allure": true
 					}
 				},
@@ -758,15 +784,15 @@
 				"node_modules/@woocommerce/block-library/blocks.ini",
 				"node_modules/@woocommerce/classic-assets/build",
 				"node_modules/@woocommerce/api/dist/",
+				"node_modules/@woocommerce/eslint-plugin/configs",
+				"node_modules/@woocommerce/eslint-plugin/rules",
+				"node_modules/@woocommerce/eslint-plugin/index.js",
 				"!node_modules/@woocommerce/api/*.ts.map",
 				"!node_modules/@woocommerce/api/*.tsbuildinfo",
 				"!node_modules/@woocommerce/api/dist/**/__tests__/",
 				"!node_modules/@woocommerce/api/dist/**/__mocks__/",
 				"!node_modules/@woocommerce/api/dist/**/__snapshops__/",
-				"!node_modules/@woocommerce/api/dist/**/__test_data__/",
-				"node_modules/@woocommerce/eslint-plugin/configs",
-				"node_modules/@woocommerce/eslint-plugin/rules",
-				"node_modules/@woocommerce/eslint-plugin/index.js"
+				"!node_modules/@woocommerce/api/dist/**/__test_data__/"
 			]
 		}
 	}
