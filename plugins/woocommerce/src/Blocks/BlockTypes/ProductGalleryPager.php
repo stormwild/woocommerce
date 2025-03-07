@@ -61,8 +61,9 @@ class ProductGalleryPager extends AbstractBlock {
 			return '';
 		}
 
-		$product_gallery_images_ids = ProductGalleryUtils::get_product_gallery_image_ids( $product );
-		$total_images               = count( $product_gallery_images_ids );
+		$product_image_data = ProductGalleryUtils::get_product_gallery_image_data( $product );
+		$all_image_ids      = $product_image_data['image_ids'] ?? [];
+		$total_images       = count( $all_image_ids );
 
 		if ( 0 === $total_images ) {
 			return '';
