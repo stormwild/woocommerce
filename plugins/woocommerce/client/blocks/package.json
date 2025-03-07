@@ -45,7 +45,6 @@
 	],
 	"scripts": {
 		"analyze-bundles": "cross-env WP_BUNDLE_ANALYZER=1 pnpm run build",
-		"changelog": "XDEBUG_MODE=off composer install --quiet && composer exec -- changelogger",
 		"build": "pnpm --if-present --workspace-concurrency=Infinity --stream --filter=\"$npm_package_name...\" '/^build:project:.*$/'",
 		"build:project": "pnpm --if-present '/^build:project:.*$/'",
 		"build:project:bundle": "wireit",
@@ -333,10 +332,6 @@
 		"*.{js,ts,tsx}": [
 			"prettier --write",
 			"pnpm run lint:js"
-		],
-		"*.php": [
-			"php -d display_errors=1 -l",
-			"composer run-script phpcs"
 		],
 		"*.md": [
 			"pnpm run lint:md:docs"
