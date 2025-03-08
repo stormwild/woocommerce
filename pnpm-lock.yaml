@@ -1805,6 +1805,9 @@ importers:
       '@types/wordpress__media-utils':
         specifier: ^4.14.4
         version: 4.14.4(@emotion/is-prop-valid@1.2.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@woocommerce/dependency-extraction-webpack-plugin':
+        specifier: workspace:*
+        version: link:../dependency-extraction-webpack-plugin
       '@woocommerce/eslint-plugin':
         specifier: workspace:*
         version: link:../eslint-plugin
@@ -1817,9 +1820,21 @@ importers:
       '@wordpress/stylelint-config':
         specifier: ^21.36.0
         version: 21.36.0(postcss@8.4.32)(stylelint@14.16.1)
+      copy-webpack-plugin:
+        specifier: ^10.2.4
+        version: 10.2.4(webpack@5.91.0(@swc/core@1.3.100))
       prettier:
         specifier: npm:wp-prettier@^3.0.3
         version: wp-prettier@3.0.3
+      ts-loader:
+        specifier: 9.5.x
+        version: 9.5.1(typescript@5.7.2)(webpack@5.91.0(@swc/core@1.3.100)(webpack-cli@5.1.4))
+      typescript:
+        specifier: 5.7.x
+        version: 5.7.2
+      wireit:
+        specifier: 0.14.10
+        version: 0.14.10
       wp-types:
         specifier: ^3.65.0
         version: 3.66.1
@@ -3318,7 +3333,11 @@ importers:
         specifier: 0.14.10
         version: 0.14.10
 
-  packages/php/email-editor: {}
+  packages/php/email-editor:
+    devDependencies:
+      rimraf:
+        specifier: 5.0.5
+        version: 5.0.5
 
   packages/php/remote-specs-validation:
     dependencies:
@@ -64631,6 +64650,16 @@ snapshots:
       source-map: 0.7.4
       typescript: 5.7.2
       webpack: 5.89.0(@swc/core@1.3.100)(webpack-cli@3.3.12)
+
+  ts-loader@9.5.1(typescript@5.7.2)(webpack@5.91.0(@swc/core@1.3.100)(webpack-cli@5.1.4)):
+    dependencies:
+      chalk: 4.1.2
+      enhanced-resolve: 5.16.0
+      micromatch: 4.0.7
+      semver: 7.6.3
+      source-map: 0.7.4
+      typescript: 5.7.2
+      webpack: 5.91.0(@swc/core@1.3.100)(webpack-cli@5.1.4)
 
   ts-loader@9.5.1(typescript@5.7.2)(webpack@5.97.1(@swc/core@1.3.100)(uglify-js@3.17.4)):
     dependencies:

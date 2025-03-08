@@ -335,6 +335,8 @@
 				"node_modules/@woocommerce/date/build-types",
 				"node_modules/@woocommerce/dependency-extraction-webpack-plugin/src/",
 				"node_modules/@woocommerce/dependency-extraction-webpack-plugin/assets/",
+				"node_modules/@woocommerce/email-editor/build",
+				"node_modules/@woocommerce/email-editor/assets",
 				"node_modules/@woocommerce/eslint-plugin/configs",
 				"node_modules/@woocommerce/eslint-plugin/rules",
 				"node_modules/@woocommerce/eslint-plugin/index.js",
