@@ -8,14 +8,13 @@ import { Icon, button } from '@wordpress/icons';
  * Internal dependencies
  */
 import metadata from './block.json';
-import ProductItemTemplateEdit from './edit';
-import ProductItemTemplateSave from './save';
+import ProductItemCTAEdit from './edit';
 import { shouldBlockifiedAddToCartWithOptionsBeRegistered } from '../../utils';
 import './style.scss';
 
 if ( shouldBlockifiedAddToCartWithOptionsBeRegistered ) {
 	registerBlockType( metadata, {
-		edit: ProductItemTemplateEdit,
+		edit: ProductItemCTAEdit,
 		attributes: metadata.attributes,
 		icon: {
 			src: (
@@ -25,6 +24,6 @@ if ( shouldBlockifiedAddToCartWithOptionsBeRegistered ) {
 				/>
 			),
 		},
-		save: ProductItemTemplateSave,
+		save: () => null,
 	} );
 }
