@@ -194,7 +194,7 @@ for ( const productType of Object.keys( productData ) ) {
 						page.getByText( 'Shipping class', { exact: true } )
 					).toBeVisible();
 					await page
-						.getByPlaceholder( '0' )
+						.locator('#_weight')
 						.fill( productData[ productType ].shipping.weight );
 					await page
 						.getByPlaceholder( 'Length', { exact: true } )
@@ -211,8 +211,8 @@ for ( const productType of Object.keys( productData ) ) {
 			// eslint-disable-next-line playwright/no-conditional-in-test
 			if ( productData[ productType ].virtual ) {
 				await test.step( 'add virtual product details', async () => {
-					await page.getByLabel( 'Virtual' ).check();
-					await expect( page.getByLabel( 'Virtual' ) ).toBeChecked();
+					await page.getByRole('checkbox', { name: 'Virtual' }).check();
+					await expect(page.getByRole('checkbox', { name: 'Virtual' })).toBeChecked();
 				} );
 			}
 
