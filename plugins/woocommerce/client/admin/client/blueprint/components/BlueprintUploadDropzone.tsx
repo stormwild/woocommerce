@@ -154,6 +154,7 @@ type FileUploadEvents =
 	| { type: 'IMPORT' }
 	| { type: 'CONFIRM_IMPORT' }
 	| { type: 'RETRY' }
+	| { type: 'DISMISS_ERRORS' }
 	| {
 			type: `xstate.done.actor.${ number }.fileUpload.uploading`;
 			output: BlueprintQueueResponse;
@@ -345,6 +346,13 @@ export const fileUploadMachine = setup( {
 		},
 		importSuccess: {},
 	},
+	on: {
+		DISMISS_ERRORS: {
+			actions: assign( {
+				error: () => undefined,
+			} ),
+		},
+	},
 } );
 
 export const BlueprintUploadDropzone = () => {
@@ -354,12 +362,17 @@ export const BlueprintUploadDropzone = () => {
 		<>
 			{ state.context.error && (
 				<div className="blueprint-upload-dropzone-error">
-					<Notice status="error" isDismissible={ false }>
+					<Notice
+						status="error"
+						onDismiss={ () => send( { type: 'DISMISS_ERRORS' } ) }
+					>
 						<pre>{ state.context.error.message }</pre>
 					</Notice>
 				</div>
 			) }
-			{ ( state.matches( 'idle' ) || state.matches( 'error' ) ) && (
+			{ ( state.matches( 'idle' ) ||
+				state.matches( 'error' ) ||
+				state.matches( 'parsingSteps' ) ) && (
 				<div className="blueprint-upload-form">
 					<FormFileUpload
 						className="blueprint-upload-field"
