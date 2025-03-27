@@ -74,14 +74,6 @@ setup( 'disable new payments settings page', async ( { baseURL } ) => {
 	await setNewPaymentsSettingsPage( { baseURL, enabled: 'no' } );
 } );
 
-setup( 'disable new payments settings page', async ( { baseURL } ) => {
-	await setNewPaymentsSettingsPage( { baseURL, enabled: 'no' } );
-} );
-
-setup( 'disable new payments settings page', async ( { baseURL } ) => {
-	await setNewPaymentsSettingsPage( { baseURL, enabled: 'no' } );
-} );
-
 setup( 'determine if multisite', async ( { restApi } ) => {
 	const response = await restApi.get( `${ WC_API_PATH }/system_status` );
 	const { environment } = response.data;
