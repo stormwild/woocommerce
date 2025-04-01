@@ -4,7 +4,7 @@ Tags: online store, ecommerce, shop, shopping cart, sell online
 Requires at least: 6.6
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 9.7.0
+Stable tag: 9.7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -169,7 +169,7 @@ WooCommerce comes with some sample data you can use to see how products look; im
 
 == Changelog ==
 
-= 9.8.0 2025-03-31 =
+= 9.8.0 2025-04-07 =
 
 **WooCommerce**
 
@@ -500,6 +500,27 @@ WooCommerce comes with some sample data you can use to see how products look; im
 * Enhancement - Update Coming Soon block patterns with improved styling and layout [#55088](https://github.com/woocommerce/woocommerce/pull/55088)
 * Enhancement - Updated "Coming Soon" templates to dynamically adapt font families based on the active theme, with specific behavior for TwentyTwentyFour and non-block themes [#54521](https://github.com/woocommerce/woocommerce/pull/54521)
 * Enhancement - Update remote logging feature UI to depend on usage tracking status [#55119](https://github.com/woocommerce/woocommerce/pull/55119)
+* Fix - Avoid fatal by casting page number to integer [#56049](https://github.com/woocommerce/woocommerce/pull/56049)
+* Fix - Fix: Ensure inline error messages display correctly on the classic checkout page.​ [#56510](https://github.com/woocommerce/woocommerce/pull/56510)
+* Fix - Fix: Ensure Related Products collection displays correctly in Single Product template [#56666](https://github.com/woocommerce/woocommerce/pull/56666)
+* Fix - Fix: Product Collection -  ensures that the query type indicator is displayed correctly in the Query Loop block. [#56582](https://github.com/woocommerce/woocommerce/pull/56582)
+* Fix - Fix coming soon templates created prior 9.8.0 [#56210](https://github.com/woocommerce/woocommerce/pull/56210)
+* Fix - Fix contact additional fields not persisting, required checkboxes persisting when invalid and `woocommerce_store_api_checkout_update_order_from_request` not triggered on a PUT request to the `/wc/store/v1/checkout` endpoint. [#55989](https://github.com/woocommerce/woocommerce/pull/55989)
+* Fix - Fix email accent color causing invisible text in emails [#56061](https://github.com/woocommerce/woocommerce/pull/56061)
+* Fix - Fixes a Array to string conversion PHP Warning where saved payment methods are sometimes saved as the wrong type. [#56520](https://github.com/woocommerce/woocommerce/pull/56520)
+* Fix - Fixes an error when `_wc_delete_transients` is called but there aren't any transients stored in DB to delete yet. [#56136](https://github.com/woocommerce/woocommerce/pull/56136)
+* Fix - Fix loading email preview when email is registered with different than class name [#56622](https://github.com/woocommerce/woocommerce/pull/56622)
+* Fix - Fix missing styling conflict with WordPress 6.8 for the experimental product editor. [#56497](https://github.com/woocommerce/woocommerce/pull/56497)
+* Fix - Remove strict types from wc-product-functions.php [#56797](https://github.com/woocommerce/woocommerce/pull/56797)
+* Add - Added support for `install_options` property in the extensions feed. [#56373](https://github.com/woocommerce/woocommerce/pull/56373)
+* Update - Deprecate the woocommerce_register_feature_definitions action [#56475](https://github.com/woocommerce/woocommerce/pull/56475)
+* Update - Migrate reactify settings page feature flag to Core feature system [#55692](https://github.com/woocommerce/woocommerce/pull/55692)
+* Update - Remove plugin display limit and improve layout handling in Core Profiler [#56099](https://github.com/woocommerce/woocommerce/pull/56099)
+* Dev - e2e tests: temporary skip some broken e2e tests [#56527](https://github.com/woocommerce/woocommerce/pull/56527)
+* Dev - E2E tests: updates to support WP6.8 [#56163](https://github.com/woocommerce/woocommerce/pull/56163)
+* Dev - Fix https://github.com/woocommerce/woocommerce/issues/55953 [#56484](https://github.com/woocommerce/woocommerce/pull/56484)
+* Tweak - Hide blueprint feature checkbox [#56545](https://github.com/woocommerce/woocommerce/pull/56545)
+* Tweak - Switch from using FeaturesUtil to get_option for the Email Editor Integration package [#56133](https://github.com/woocommerce/woocommerce/pull/56133)
 
 
 [See changelog for all versions](https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/changelog.txt).
