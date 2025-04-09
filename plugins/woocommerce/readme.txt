@@ -169,7 +169,7 @@ WooCommerce comes with some sample data you can use to see how products look; im
 
 == Changelog ==
 
-= 9.8.0 2025-04-07 =
+= 9.8.1 2025-04-09 =
 
 **WooCommerce**
 
@@ -521,6 +521,8 @@ WooCommerce comes with some sample data you can use to see how products look; im
 * Dev - Fix https://github.com/woocommerce/woocommerce/issues/55953 [#56484](https://github.com/woocommerce/woocommerce/pull/56484)
 * Tweak - Hide blueprint feature checkbox [#56545](https://github.com/woocommerce/woocommerce/pull/56545)
 * Tweak - Switch from using FeaturesUtil to get_option for the Email Editor Integration package [#56133](https://github.com/woocommerce/woocommerce/pull/56133)
+* Fix - Fix a bug in which having 2x of a sold individually item in cart would throw a fatal. [#57070](https://github.com/woocommerce/woocommerce/pull/57070)
+* Dev - Fix flakiness in `product/product-edit.spec.js` [#56900](https://github.com/woocommerce/woocommerce/pull/56900)
 
 
 [See changelog for all versions](https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/changelog.txt).
