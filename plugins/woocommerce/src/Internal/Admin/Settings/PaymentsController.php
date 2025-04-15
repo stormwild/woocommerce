@@ -3,11 +3,9 @@ declare( strict_types=1 );
 
 namespace Automattic\WooCommerce\Internal\Admin\Settings;
 
-use Automattic\WooCommerce\Internal\Admin\FeaturePlugin;
 use Automattic\WooCommerce\Internal\Features\FeaturesController;
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use Exception;
-use WooCommerce\Admin\Experimental_Abtest;
 
 defined( 'ABSPATH' ) || exit;
 /**
@@ -28,6 +26,17 @@ class PaymentsController {
 	 * Register hooks.
 	 */
 	public function register() {
+		// Hook into feature flag WP option DB addition (not update) to one-time adjust the feature's default enablement.
+		add_action(
+			'add_option_woocommerce_feature_reactify-classic-payments-settings_enabled',
+			array( $this, 'adjust_feature_default_enablement' ),
+			999,
+			2
+		);
+
+		// Hook into the WooCommerce updated event to handle feature enablement for v9.8.0 and v9.8.1.
+		add_action( 'woocommerce_updated', array( $this, 'handle_feature_enablement_for_v9_8' ), 999 );
+
 		// Because we gate the hooking based on a feature flag,
 		// we need to delay the registration until the 'woocommerce_init' hook.
 		// Otherwise, we end up in an infinite loop.
@@ -35,49 +44,73 @@ class PaymentsController {
 	}
 
 	/**
-	 * Adjust the new Payments Settings page feature default enablement based on the experiment.
-	 * This is invoked from within FeaturesController.
+	 * Adjust the new Payments Settings page feature default enablement.
 	 *
-	 * @param FeaturesController $features_controller The features controller instance.
+	 * Currently, we target only new stores so we need to make sure that
+	 * the feature is not enabled by default for existing stores.
+	 * At the same time, we need to migrate the old WCAdmin feature flag value.
+	 *
+	 * Note: We rely on the fact that this logic is only executed ONCE, when the feature flag is first added to the DB.
+	 *       If the feature flag is already present in the DB, this method should not be called.
+	 *
+	 * @param string $option_name  The name of the option.
+	 * @param mixed  $option_value The value of the option.
 	 *
 	 * @return void
 	 */
-	public function adjust_feature_default_enablement_by_experiment( FeaturesController $features_controller ) {
-		// Needed for CLI and unit tests.
-		FeaturePlugin::instance()->init();
+	public function adjust_feature_default_enablement( $option_name, $option_value ) {
+		// First, migrate the WCAdmin feature flag to the new feature flag.
+		// If there is a value saved for the old feature flag, we will respect it.
+		$wc_admin_helper_features = get_option( 'wc_admin_helper_feature_values', array() );
+		foreach ( $wc_admin_helper_features as $feature => $value ) {
+			if ( 'reactify-classic-payments-settings' === $feature ) {
+				update_option( $option_name, filter_var( $value, FILTER_VALIDATE_BOOLEAN ) ? 'yes' : 'no' );
+				return;
+			}
+		}
 
-		// If the feature is disabled (or doesn't exist), don't do anything.
-		if ( ! $features_controller->feature_is_enabled( 'reactify-classic-payments-settings' ) ) {
+		// If the feature was added as disabled, don't do anything.
+		// This means that some logic explicitly disabled the feature, by default.
+		if ( ! filter_var( $option_value, FILTER_VALIDATE_BOOLEAN ) ) {
 			return;
 		}
 
-		// We only want to adjust the default feature value.
-		// If the feature value is already set in the DB, don't do anything.
-		$option_name = $features_controller->feature_enable_option_name( 'reactify-classic-payments-settings' );
-		if ( get_option( $option_name ) !== false ) {
+		// Make sure the feature is disabled by default for existing stores.
+		// For our purposes here, on top of NOT being a fresh/blank store,
+		// we believe that an "existing" store needs to have enabled gateways, of any kind.
+		// Otherwise, we consider it's a new store and will let the feature be enabled by default.
+		if ( ! \WC_Install::is_new_install() && $this->store_has_enabled_gateways() ) {
+			update_option( $option_name, 'no' );
+		}
+	}
+
+	/**
+	 * Handle the feature enablement for WooCommerce v9.8.0 and v9.8.1.
+	 *
+	 * @return void
+	 */
+	public function handle_feature_enablement_for_v9_8() {
+		$wc_initial_installed_version = get_option( \WC_Install::INITIAL_INSTALLED_VERSION, '0.0.0' );
+		// Sanity check: if we are at the same version as the one we are checking for, we don't need to do anything.
+		if ( WC()->version === $wc_initial_installed_version ) {
 			return;
 		}
 
-		// Transient key to handle the experiment group assignment failure.
-		$transient_key = 'wc_experiment_failure_woocommerce_payment_settings_2025_v2';
-
-		// If we failed to determine the experiment group assignment in the previous hour, don't do anything.
-		if ( 'error' === get_transient( $transient_key ) ) {
+		// If the WooCommerce installed version is not 9.8.0 or 9.8.1, we don't need to do anything.
+		if ( version_compare( $wc_initial_installed_version, '9.8.0', '<' ) &&
+			version_compare( $wc_initial_installed_version, '9.8.1', '>' ) ) {
 			return;
 		}
 
-		try {
-			$in_treatment = Experimental_Abtest::in_treatment( 'woocommerce_payment_settings_2025_v2' );
-		} catch ( \Exception $e ) {
-			// If the experiment group assignment fails, set a transient to avoid repeated fetches and
-			// consider the user not in the treatment group.
-			set_transient( $transient_key, 'error', HOUR_IN_SECONDS );
-			$in_treatment = false;
+		// If the feature is already enabled, we don't need to do anything.
+		if ( FeaturesUtil::feature_is_enabled( 'reactify-classic-payments-settings' ) ) {
+			return;
 		}
 
-		// If the user is NOT in the experiment treatment group disable the feature.
-		if ( ! $in_treatment ) {
-			$features_controller->change_feature_enable( 'reactify-classic-payments-settings', false );
+		// If the feature is not enabled and the store is "empty" or did not enable any gateway yet,
+		// we will one-time force enable it.
+		if ( \WC_Install::is_new_install() || ! $this->store_has_enabled_gateways() ) {
+			wc_get_container()->get( FeaturesController::class )->change_feature_enable( 'reactify-classic-payments-settings', true );
 		}
 	}
 
