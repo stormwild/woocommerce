@@ -181,6 +181,7 @@ WooCommerce comes with some sample data you can use to see how products look; im
 * Fix - Fix wc admin scripts loading on unrelated WP admin pages [#57186](https://github.com/woocommerce/woocommerce/pull/57186)
 * Fix - Store API - Move cart init and validation back within checkout route to avoid loading early. [#57255](https://github.com/woocommerce/woocommerce/pull/57255)
 * Update - Merge legacy cart and block based cart shipping calculation methods to ensure shipping calculations happen only when a full address has been provided. [#57176](https://github.com/woocommerce/woocommerce/pull/57176)
+* Fix - Restore default margin in Product Collection block navigation links. [#57275](https://github.com/woocommerce/woocommerce/pull/57275)
 
 
 [See changelog for all versions](https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/changelog.txt).
