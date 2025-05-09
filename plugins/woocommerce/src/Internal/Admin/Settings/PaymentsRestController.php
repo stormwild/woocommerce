@@ -1191,17 +1191,4 @@ class PaymentsRestController extends RestApiControllerBase {
 			),
 		);
 	}
-
-	/**
-	 * Get WooPay eligibility status.
-	 *
-	 * @return array The WooPay eligibility status.
-	 */
-	protected function get_woopay_eligibility() {
-		return rest_ensure_response(
-			array(
-				'is_eligible' => WCPayPromotion::is_woopay_eligible(),
-			)
-		);
-	}
 }
