@@ -252,7 +252,7 @@ class PaymentExtensionSuggestions {
 			),
 			self::PAYPAL_WALLET,
 			self::AMAZON_PAY,
-			self::AFFIRM => array(
+			self::AFFIRM          => array(
 				'_merge_on_type' => array(
 					'links' => array(
 						array(

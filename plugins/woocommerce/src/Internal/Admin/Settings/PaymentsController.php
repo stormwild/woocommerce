@@ -167,7 +167,7 @@ class PaymentsController {
 		global $current_section;
 
 		// For WooPayments and offline payment methods settings pages, we don't want any section navigation.
-		if ( in_array( $current_section, array( 'woocommerce_payments', WC_Gateway_BACS::ID, WC_Gateway_Cheque::ID, WC_Gateway_COD::ID  ), true ) ) {
+		if ( in_array( $current_section, array( 'woocommerce_payments', WC_Gateway_BACS::ID, WC_Gateway_Cheque::ID, WC_Gateway_COD::ID ), true ) ) {
 			return array();
 		}
 
