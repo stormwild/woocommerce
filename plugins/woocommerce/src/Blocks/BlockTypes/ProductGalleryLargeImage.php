@@ -130,6 +130,7 @@ class ProductGalleryLargeImage extends AbstractBlock {
 							srcset="<?php echo esc_attr( $image['srcset'] ); ?>"
 							sizes="<?php echo esc_attr( $image['sizes'] ); ?>"
 							data-image-id="<?php echo esc_attr( $image['id'] ); ?>"
+							alt="<?php echo esc_attr( $image['alt'] ); ?>"
 							data-wp-on--keydown="actions.onSelectedLargeImageKeyDown"
 							data-wp-on--touchstart="actions.onTouchStart"
 							data-wp-on--touchmove="actions.onTouchMove"
@@ -149,7 +150,6 @@ class ProductGalleryLargeImage extends AbstractBlock {
 								loading="lazy"
 							<?php endif; ?>
 							tabindex="0"
-							alt=""
 						/>
 					</li>
 				<?php endforeach; ?>
