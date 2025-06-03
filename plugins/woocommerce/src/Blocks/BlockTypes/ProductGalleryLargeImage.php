@@ -135,7 +135,6 @@ class ProductGalleryLargeImage extends AbstractBlock {
 							data-wp-on--touchstart="actions.onTouchStart"
 							data-wp-on--touchmove="actions.onTouchMove"
 							data-wp-on--touchend="actions.onTouchEnd"
-							data-wp-watch="callbacks.toggleActiveImageAttributes"
 							<?php if ( $context['hoverZoom'] ) : ?>
 								data-wp-on--mousemove="actions.startZoom"
 								data-wp-on--mouseleave="actions.resetZoom"
