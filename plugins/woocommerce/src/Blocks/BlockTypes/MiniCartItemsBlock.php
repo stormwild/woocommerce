@@ -85,13 +85,15 @@ class MiniCartItemsBlock extends AbstractInnerBlock {
 						>
 							<tr class="wc-block-cart-items__row" tabindex="-1">
 								<td class="wc-block-cart-item__image" aria-hidden="true">
-									<a data-wp-bind--href="state.cartItem.permalink" tabindex="-1">
+									<img data-wp-bind--hidden="!state.isProductHiddenFromCatalog" data-wp-bind--src="state.itemThumbnail" data-wp-bind--alt="state.cartItemName">
+									<a data-wp-bind--hidden="state.isProductHiddenFromCatalog" data-wp-bind--href="state.cartItem.permalink" tabindex="-1">
 										<img data-wp-bind--src="state.itemThumbnail" data-wp-bind--alt="state.cartItemName">	
 									</a>
 								</td>
 								<td class="wc-block-cart-item__product">
 									<div class="wc-block-cart-item__wrap">
-										<a data-wp-text="state.cartItemName" data-wp-bind--href="state.cartItem.permalink" class="wc-block-components-product-name"></a>
+										<span data-wp-bind--hidden="!state.isProductHiddenFromCatalog" data-wp-text="state.cartItemName" class="wc-block-components-product-name"></span>
+										<a data-wp-bind--hidden="state.isProductHiddenFromCatalog" data-wp-text="state.cartItemName" data-wp-bind--href="state.cartItem.permalink" class="wc-block-components-product-name"></a>
 										<div class="wc-block-cart-item__prices">
 											<span data-wp-bind--hidden="!state.cartItemHasDiscount" class="price wc-block-components-product-price" hidden>
 												<span class="screen-reader-text">
