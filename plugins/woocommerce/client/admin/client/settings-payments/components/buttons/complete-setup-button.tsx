@@ -6,6 +6,7 @@ import { Button } from '@wordpress/components';
 import { useState, useEffect } from '@wordpress/element';
 import {
 	PaymentGatewayProvider,
+	PaymentsProviderIncentive,
 	woopaymentsOnboardingStore,
 } from '@woocommerce/data';
 import { getHistory, getNewPath } from '@woocommerce/navigation';
@@ -54,6 +55,16 @@ interface CompleteSetupButtonProps {
 	 * The onboarding type for the gateway.
 	 */
 	onboardingType?: string;
+	/**
+	 * Callback used when an incentive is accepted.
+	 *
+	 * @param id Incentive ID.
+	 */
+	acceptIncentive?: ( id: string ) => void;
+	/**
+	 * Incentive data. If provided, the incentive will be accepted when the button is clicked.
+	 */
+	incentive?: PaymentsProviderIncentive | null;
 }
 
 /**
@@ -70,6 +81,8 @@ export const CompleteSetupButton = ( {
 	buttonText = __( 'Complete setup', 'woocommerce' ),
 	setOnboardingModalOpen,
 	onboardingType,
+	acceptIncentive = () => {},
+	incentive = null,
 }: CompleteSetupButtonProps ) => {
 	const [ isUpdating, setIsUpdating ] = useState( false );
 
@@ -101,6 +114,10 @@ export const CompleteSetupButton = ( {
 		recordPaymentsProviderEvent( 'complete_setup_click', gatewayProvider );
 
 		setIsUpdating( true );
+
+		if ( incentive ) {
+			acceptIncentive( incentive.promo_id );
+		}
 
 		if ( onboardingType === 'native_in_context' ) {
 			recordPaymentsOnboardingEvent(
