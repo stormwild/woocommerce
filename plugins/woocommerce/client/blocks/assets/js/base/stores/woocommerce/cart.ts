@@ -47,6 +47,10 @@ export type Store = {
 		// Todo: Check why if I switch to an async function here the types of the store stop working.
 		refreshCartItems: () => void;
 		showNoticeError: ( error: Error | ApiErrorResponse ) => void;
+		updateNotices: (
+			errors: ( Error | ApiErrorResponse )[],
+			removeOthers?: boolean
+		) => void;
 	};
 };
 
@@ -135,6 +139,9 @@ const { state, actions } = store< Store >(
 					if ( isApiErrorResponse( res, json ) ) {
 						throw generateError( json );
 					}
+
+					yield actions.updateNotices( json.errors, true );
+
 					state.cart = json;
 					emitSyncEvent( {
 						quantityChanges: { cartItemsPendingDelete: [ key ] },
@@ -186,9 +193,7 @@ const { state, actions } = store< Store >(
 						throw generateError( json );
 
 					// Checks if the response was successful, but still contains some errors.
-					json.errors?.forEach( ( error ) => {
-						actions.showNoticeError( error );
-					} );
+					yield actions.updateNotices( json.errors, true );
 
 					// Updates the local cart.
 					state.cart = json;
@@ -310,6 +315,18 @@ const { state, actions } = store< Store >(
 							successfulResponses.length - 1
 						]?.body as Cart;
 
+						// Displays any error that successful responses may contain.
+						yield actions.updateNotices(
+							successfulResponses.flatMap(
+								( response ) =>
+									( response.body.errors ?? [] ) as (
+										| Error
+										| ApiErrorResponse
+									 )[]
+							),
+							true
+						);
+
 						// Use the last successful response to update the local cart.
 						state.cart = lastSuccessfulCartResponse;
 
@@ -323,16 +340,15 @@ const { state, actions } = store< Store >(
 					}
 
 					// Show error notices for all failed responses.
-					errorResponses.forEach( ( response ) => {
-						if (
-							response.body &&
-							typeof response.body === 'object'
-						) {
-							actions.showNoticeError(
-								response.body as ApiErrorResponse
-							);
-						}
-					} );
+					yield actions.updateNotices(
+						errorResponses
+							.filter(
+								( response ) =>
+									response.body &&
+									typeof response.body === 'object'
+							)
+							.map( ( { body } ) => body as ApiErrorResponse )
+					);
 				} catch ( error ) {
 					// Reverts the optimistic update.
 					// Todo: Prevent racing conditions with multiple addToCart calls for the same item.
@@ -359,6 +375,8 @@ const { state, actions } = store< Store >(
 					// Checks if the response contains an error.
 					if ( isApiErrorResponse( res, json ) )
 						throw generateError( json );
+
+					yield actions.updateNotices( json.errors, true );
 
 					// Updates the local cart.
 					state.cart = json;
@@ -398,6 +416,40 @@ const { state, actions } = store< Store >(
 				// Emmits console.error for troubleshooting.
 				// eslint-disable-next-line no-console
 				console.error( error );
+			},
+
+			*updateNotices(
+				errors: ( Error | ApiErrorResponse )[] = [],
+				removeOthers = false
+			) {
+				// Todo: Use the module exports instead of `store()` once the store-notices
+				// store is public.
+				yield import( '@woocommerce/stores/store-notices' );
+				const { state: noticeState, actions: noticeActions } =
+					store< StoreNotices >(
+						'woocommerce/store-notices',
+						{},
+						{
+							lock: 'I acknowledge that using a private store means my plugin will inevitably break on the next store release.',
+						}
+					);
+
+				// Todo: Check what should happen if the notice is already displayed.
+				const noticeIds = errors.map( ( error ) =>
+					noticeActions.addNotice( {
+						notice: error.message,
+						type: 'error',
+						dismissible: true,
+					} )
+				);
+
+				const { notices } = noticeState;
+				if ( removeOthers ) {
+					notices
+						.map( ( { id } ) => id )
+						.filter( ( id ) => ! noticeIds.includes( id ) )
+						.forEach( ( id ) => noticeActions.removeNotice( id ) );
+				}
 			},
 		},
 	},
