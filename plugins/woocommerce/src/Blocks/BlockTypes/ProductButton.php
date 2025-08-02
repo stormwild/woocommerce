@@ -219,7 +219,7 @@ class ProductButton extends AbstractBlock {
 		$context_directives = wp_interactivity_data_wp_context( $context );
 
 		$button_directives = $is_descendant_of_add_to_cart_form ?
-			'data-wp-class--disabled="woocommerce/add-to-cart-with-options::!state.isFormValid"' :
+			'data-wp-class--disabled="woocommerce/add-to-cart-with-options::!state.isFormValid" data-wp-on--click="actions.handlePressedState"' :
 			'data-wp-on--click="actions.addCartItem"';
 		$anchor_directive  = $is_descendant_of_add_to_cart_form ? '' : 'data-wp-on--click="woocommerce/product-collection::actions.viewProduct"';
 
@@ -230,7 +230,6 @@ class ProductButton extends AbstractBlock {
 			data-wp-on--animationend="actions.handleAnimationEnd"
 			data-wp-watch="callbacks.startAnimation"
 			data-wp-run="callbacks.syncTempQuantityOnLoad"
-			data-wp-on--click="actions.handlePressedState"
 		';
 
 		$wrapper_attributes = get_block_wrapper_attributes(
@@ -279,7 +278,7 @@ class ProductButton extends AbstractBlock {
 				'{div_directives}'         => $is_ajax_button ? $div_directives : '',
 				'{button_directives}'      => $is_ajax_button ? $button_directives : $anchor_directive,
 				'{span_button_directives}' => $is_ajax_button ? $span_button_directives : '',
-				'{view_cart_html}'         => $is_ajax_button && CartCheckoutUtils::has_cart_page() ? $this->get_view_cart_html() : '',
+				'{view_cart_html}'         => $is_ajax_button && CartCheckoutUtils::has_cart_page() && ! $is_descendant_of_add_to_cart_form ? $this->get_view_cart_html() : '',
 			)
 		);
 
