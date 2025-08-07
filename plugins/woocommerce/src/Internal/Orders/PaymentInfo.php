@@ -3,7 +3,6 @@ declare( strict_types=1 );
 
 namespace Automattic\WooCommerce\Internal\Orders;
 
-use Automattic\Jetpack\Constants;
 use Automattic\WooCommerce\Utilities\StringUtil;
 use WC_Abstract_Order;
 
@@ -35,22 +34,22 @@ class PaymentInfo {
 	public static function get_card_info( WC_Abstract_Order $order ): array {
 		$method = $order->get_payment_method();
 
-		if ( 'woocommerce_payments' === $method ) {
-			$info = self::get_wcpay_card_info( $order );
-		} else {
-			/**
-			 * Filter to allow payment gateways to provide payment card info for an order.
-			 *
-			 * @since 9.5.0
-			 *
-			 * @param array|null        $info  The card info.
-			 * @param WC_Abstract_Order $order The order.
-			 */
-			$info = apply_filters( 'wc_order_payment_card_info', array(), $order );
+		/**
+		 * Filter to allow payment gateways to provide payment card info for an order.
+		 *
+		 * @since 9.5.0
+		 *
+		 * @param array|null        $info  The card info.
+		 * @param WC_Abstract_Order $order The order.
+		 */
+		$info = apply_filters( 'wc_order_payment_card_info', array(), $order );
+		if ( ! is_array( $info ) ) {
+			$info = array();
+		}
 
-			if ( ! is_array( $info ) ) {
-				$info = array();
-			}
+		// Fallback for WooPayments.
+		if ( empty( $info ) && 'woocommerce_payments' === $method ) {
+			$info = self::get_wcpay_card_info( $order );
 		}
 
 		$defaults = array(
@@ -100,11 +99,9 @@ class PaymentInfo {
 			return array();
 		}
 
-		// For testing purposes: if WooCommerce Payments development mode is enabled, an order meta item with
-		// key '_wcpay_payment_details' will be used if it exists as a replacement for the call to the Stripe
-		// API's 'get intent' endpoint. The value must be the JSON encoding of an array simulating the
-		// "payment_details" part of the response from the endpoint.
-		$stored_payment_details = Constants::get_constant( 'WCPAY_DEV_MODE' ) ? $order->get_meta( '_wcpay_payment_details' ) : '';
+		// This is a Woo-specific meta key, not used within WooPayments.
+		$cache_meta_key         = '_wcpay_raw_payment_method_details';
+		$stored_payment_details = $order->get_meta( $cache_meta_key );
 		$payment_details        = json_decode( $stored_payment_details, true );
 
 		if ( ! $payment_details ) {
@@ -137,6 +134,10 @@ class PaymentInfo {
 
 				return array();
 			}
+
+			// Cache payment method details.
+			$order->update_meta_data( $cache_meta_key, wp_json_encode( $payment_details ) );
+			$order->save_meta_data();
 		}
 
 		$card_info = array();
