@@ -42,6 +42,9 @@ class PaymentInfoTest extends WC_Unit_Test_Case {
 		$this->assertEquals( '4242', $result['last4'] );
 	}
 
+	/**
+	 * @testdox The `get_card_info` method should prefer the filter result over the metadata.
+	 */
 	public function test_get_card_info_prefers_filter() {
 		$order = OrderHelper::create_order();
 
@@ -55,7 +58,7 @@ class PaymentInfoTest extends WC_Unit_Test_Case {
 		$order->save();
 
 		// Add a dummy callback to the filter. It should be prefered over metadata.
-		$filter_callback = fn() => [ 'payment_method' => 'foo' ];
+		$filter_callback = fn() => array( 'payment_method' => 'foo' );
 		add_filter( 'wc_order_payment_card_info', $filter_callback );
 
 		$result = $order->get_payment_card_info();
