@@ -101,8 +101,11 @@ class PaymentInfo {
 
 		// This is a Woo-specific meta key, not used within WooPayments.
 		$cache_meta_key         = '_wcpay_raw_payment_method_details';
+		$payment_details        = null;
 		$stored_payment_details = $order->get_meta( $cache_meta_key );
-		$payment_details        = json_decode( $stored_payment_details, true );
+		if ( is_string( $stored_payment_details ) && strlen( $stored_payment_details ) > 0 ) {
+			$payment_details = json_decode( $stored_payment_details, true );
+		}
 
 		if ( ! $payment_details ) {
 			if ( ! class_exists( \WC_Payments::class ) ) {
