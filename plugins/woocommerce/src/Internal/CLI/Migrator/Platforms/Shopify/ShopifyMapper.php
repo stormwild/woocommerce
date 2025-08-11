@@ -201,7 +201,6 @@ class ShopifyMapper implements PlatformMapperInterface {
 			$classification['is_gift_card'] = $shopify_product->is_gift_card;
 		}
 
-		// Subscription product detection - check both camelCase and snake_case for compatibility.
 		if ( property_exists( $shopify_product, 'requiresSellingPlan' ) ) {
 			$classification['requires_subscription'] = $shopify_product->requiresSellingPlan; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- GraphQL uses camelCase.
 		} elseif ( property_exists( $shopify_product, 'requires_selling_plan' ) ) {
@@ -428,7 +427,6 @@ class ShopifyMapper implements PlatformMapperInterface {
 				$simple_data['sku'] = $variant_node->sku;
 			}
 
-			// Stock.
 			if ( $this->should_process( 'stock' ) ) {
 				$manage_stock                  = property_exists( $variant_node, 'inventoryItem' ) && $variant_node->inventoryItem->tracked; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- GraphQL uses camelCase.
 				$simple_data['manage_stock']   = $manage_stock;
@@ -438,7 +436,6 @@ class ShopifyMapper implements PlatformMapperInterface {
 				$simple_data['stock_quantity'] = $stock_quantity;
 			}
 
-			// Weight.
 			if ( $this->should_process( 'weight' ) ) {
 				$weight_data = null;
 				if ( property_exists( $variant_node, 'inventoryItem' ) && is_object( $variant_node->inventoryItem ) && // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- GraphQL uses camelCase.
@@ -515,7 +512,6 @@ class ShopifyMapper implements PlatformMapperInterface {
 					$variation_data['sku'] = $variant_node->sku ?? null;
 				}
 
-				// Stock.
 				if ( $this->should_process( 'stock' ) ) {
 					$manage_stock                     = property_exists( $variant_node, 'inventoryItem' ) && $variant_node->inventoryItem->tracked; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- GraphQL uses camelCase.
 					$variation_data['manage_stock']   = $manage_stock;
@@ -525,7 +521,6 @@ class ShopifyMapper implements PlatformMapperInterface {
 					$variation_data['stock_quantity'] = $stock_quantity;
 				}
 
-				// Weight.
 				if ( $this->should_process( 'weight' ) ) {
 					$weight_data = null;
 					if ( property_exists( $variant_node, 'inventoryItem' ) && is_object( $variant_node->inventoryItem ) && // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- GraphQL uses camelCase.
@@ -539,7 +534,6 @@ class ShopifyMapper implements PlatformMapperInterface {
 					$variation_data['weight'] = $this->get_converted_weight( $weight, $weight_unit );
 				}
 
-				// Mapped Attributes.
 				if ( $this->should_process( 'attributes' ) ) {
 					$variation_data['attributes'] = array();
 					if ( ! empty( $variant_node->selectedOptions ) ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- GraphQL uses camelCase.
@@ -549,7 +543,6 @@ class ShopifyMapper implements PlatformMapperInterface {
 					}
 				}
 
-				// Image Mapping.
 				if ( $this->should_process( 'images' ) ) {
 					$variation_data['image_original_id'] = null;
 					if ( ! empty( $variant_node->media->edges ) ) {
