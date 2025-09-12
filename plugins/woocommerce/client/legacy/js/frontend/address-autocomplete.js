@@ -125,6 +125,11 @@ window.wc.addressAutocomplete.registerAddressAutocompleteProvider =
 					if ( wrapper ) {
 						wrapper.classList.add( 'autocomplete-available' );
 					}
+					// Add combobox role and ARIA attributes for accessibility
+					addressInput.setAttribute( 'role', 'combobox' );
+					addressInput.setAttribute( 'aria-autocomplete', 'list' );
+					addressInput.setAttribute( 'aria-expanded', 'false' );
+					addressInput.setAttribute( 'aria-haspopup', 'listbox' );
 				}
 				return;
 			}
@@ -141,6 +146,14 @@ window.wc.addressAutocomplete.registerAddressAutocompleteProvider =
 			if ( wrapper ) {
 				wrapper.classList.remove( 'autocomplete-available' );
 			}
+			// Remove all ARIA attributes when no provider is available
+			addressInput.removeAttribute( 'role' );
+			addressInput.removeAttribute( 'aria-autocomplete' );
+			addressInput.removeAttribute( 'aria-expanded' );
+			addressInput.removeAttribute( 'aria-haspopup' );
+			addressInput.removeAttribute( 'aria-activedescendant' );
+			addressInput.removeAttribute( 'aria-owns' );
+			addressInput.removeAttribute( 'aria-controls' );
 		}
 	}
 
@@ -164,6 +177,9 @@ window.wc.addressAutocomplete.registerAddressAutocompleteProvider =
 			addressInputs[ type ][ 'address_1' ] = document.getElementById(
 				`${ type }_address_1`
 			);
+			addressInputs[ type ][ 'address_2' ] = document.getElementById(
+				`${ type }_address_2`
+			);
 			addressInputs[ type ][ 'city' ] = document.getElementById(
 				`${ type }_city`
 			);
@@ -182,9 +198,7 @@ window.wc.addressAutocomplete.registerAddressAutocompleteProvider =
 		addressTypes.forEach( ( type ) => {
 			cacheAddressFields( type );
 			const addressInput = addressInputs[ type ][ 'address_1' ];
-			const cityInput = addressInputs[ type ][ 'city' ];
 			const countryInput = addressInputs[ type ][ 'country' ];
-			const postcodeInput = addressInputs[ type ][ 'postcode' ];
 
 			if ( addressInput ) {
 				// Create suggestions container if it doesn't exist.
@@ -214,12 +228,6 @@ window.wc.addressAutocomplete.registerAddressAutocompleteProvider =
 					searchIcon.className = 'address-search-icon';
 					addressInput.parentNode.appendChild( searchIcon );
 				}
-
-				addressInputs[ type ] = {};
-				addressInputs[ type ][ 'address_1' ] = addressInput;
-				addressInputs[ type ][ 'city' ] = cityInput;
-				addressInputs[ type ][ 'country' ] = countryInput;
-				addressInputs[ type ][ 'postcode' ] = postcodeInput;
 
 				suggestionsContainers[ type ] = document.getElementById(
 					`address_suggestions_${ type }`
@@ -287,7 +295,24 @@ window.wc.addressAutocomplete.registerAddressAutocompleteProvider =
 			// This is achieved by removing and re-adding the element to trigger browser updates.
 			const parentElement = input.parentElement;
 			if ( parentElement ) {
+				// Store the current value to preserve it
+				const currentValue = input.value;
+
+				// Mark that we're manipulating the DOM to prevent checkout updates
+				input.setAttribute( 'data-autocomplete-manipulating', 'true' );
+
 				parentElement.appendChild( parentElement.removeChild( input ) );
+
+				// Restore the value if it was lost
+				if ( input.value !== currentValue ) {
+					input.value = currentValue;
+				}
+
+				// Remove the manipulation flag after a brief delay
+				setTimeout( function () {
+					input.removeAttribute( 'data-autocomplete-manipulating' );
+				}, 10 );
+
 				input.focus();
 			}
 		}
@@ -311,7 +336,28 @@ window.wc.addressAutocomplete.registerAddressAutocompleteProvider =
 			// This is achieved by removing and re-adding the element to trigger browser updates.
 			const parentElement = input.parentElement;
 			if ( parentElement ) {
+				// Store the current value to preserve it
+				const currentValue = input.value;
+
+				// Mark that we're manipulating the DOM to prevent checkout updates
+				input.setAttribute( 'data-autocomplete-manipulating', 'true' );
+
 				parentElement.appendChild( parentElement.removeChild( input ) );
+
+				// Restore the value if it was lost
+				if ( input.value !== currentValue ) {
+					input.value = currentValue;
+				}
+
+				// Remove the manipulation flag after a brief delay. Use two rAFs to ensure layout/assistive tech settle.
+				requestAnimationFrame( function () {
+					requestAnimationFrame( function () {
+						input.removeAttribute(
+							'data-autocomplete-manipulating'
+						);
+					} );
+				} );
+
 				if ( shouldFocus ) {
 					input.focus();
 				}
@@ -471,9 +517,9 @@ window.wc.addressAutocomplete.registerAddressAutocompleteProvider =
 				safeSuggestions.forEach( ( suggestion, index ) => {
 					const li = document.createElement( 'li' );
 					li.setAttribute( 'role', 'option' );
+					li.setAttribute( 'aria-label', suggestion.label );
 					li.id = `suggestion-item-${ type }-${ index }`;
 					li.dataset.id = suggestion.id;
-					li.setAttribute( 'tabindex', '-1' );
 
 					li.textContent = ''; // Clear existing content.
 					const labelParts = getHighlightedLabel(
@@ -569,11 +615,11 @@ window.wc.addressAutocomplete.registerAddressAutocompleteProvider =
 				suggestionsContainer.style.marginTop =
 					addressInputs[ type ][ 'address_1' ].offsetHeight + 'px';
 				addressInput.setAttribute( 'aria-expanded', 'true' );
+				suggestionsList.id = `address_suggestions_${ type }_list`;
 				addressInput.setAttribute(
-					'aria-owns',
+					'aria-controls',
 					`address_suggestions_${ type }_list`
 				);
-				suggestionsList.id = `address_suggestions_${ type }_list`;
 				// Don't auto-highlight first suggestion for better screen reader accessibility
 				activeSuggestionIndices[ type ] = -1;
 
@@ -636,7 +682,7 @@ window.wc.addressAutocomplete.registerAddressAutocompleteProvider =
 			suggestionsContainer.style.display = 'none';
 			addressInput.setAttribute( 'aria-expanded', 'false' );
 			addressInput.removeAttribute( 'aria-activedescendant' );
-			addressInput.removeAttribute( 'aria-owns' );
+			addressInput.removeAttribute( 'aria-controls' );
 			activeSuggestionIndices[ type ] = -1;
 
 			// Remove blur event listener when suggestions are hidden
@@ -702,6 +748,11 @@ window.wc.addressAutocomplete.registerAddressAutocompleteProvider =
 				return;
 			}
 
+			// Check if addressInputs exists for this type
+			if ( ! addressInputs[ type ] ) {
+				return;
+			}
+
 			if ( addressData.country ) {
 				setFieldValue(
 					addressInputs[ type ][ 'country' ],
@@ -724,6 +775,11 @@ window.wc.addressAutocomplete.registerAddressAutocompleteProvider =
 				// Cache address fields again as they may have updated following the country change.
 				cacheAddressFields( type );
 
+				// Check if addressInputs exists for this type after re-caching
+				if ( ! addressInputs[ type ] ) {
+					return;
+				}
+
 				// Set all available fields.
 				// Only set fields if the address data property exists and has a value.
 				if ( addressData.address_2 ) {
@@ -731,6 +787,12 @@ window.wc.addressAutocomplete.registerAddressAutocompleteProvider =
 						addressInputs[ type ][ 'address_2' ],
 						addressData.address_2
 					);
+				} else {
+					// Clear address_2 if not provided in address data
+					const addr2El = addressInputs[ type ][ 'address_2' ];
+					if ( addr2El && addr2El.value ) {
+						setFieldValue( addr2El, '' );
+					}
 				}
 				if ( addressData.city ) {
 					setFieldValue(
@@ -797,10 +859,27 @@ window.wc.addressAutocomplete.registerAddressAutocompleteProvider =
 
 		// Initialize event handlers for each address type.
 		addressTypes.forEach( ( type ) => {
+			// Check if addressInputs exists for this type
+			if ( ! addressInputs[ type ] ) {
+				return;
+			}
 			const addressInput = addressInputs[ type ][ 'address_1' ];
 			const countryInput = addressInputs[ type ][ 'country' ];
 			if ( addressInput && countryInput ) {
 				addressInput.addEventListener( 'input', function () {
+					// Unset any active suggestion when user types
+					if ( suggestionsLists[ type ] ) {
+						const activeLi =
+							suggestionsLists[ type ].querySelector(
+								'li.active'
+							);
+						if ( activeLi ) {
+							activeLi.classList.remove( 'active' );
+							activeLi.setAttribute( 'aria-selected', 'false' );
+						}
+						addressInput.removeAttribute( 'aria-activedescendant' );
+						activeSuggestionIndices[ type ] = -1;
+					}
 					displaySuggestions( this.value, countryInput.value, type );
 				} );
 
@@ -846,6 +925,16 @@ window.wc.addressAutocomplete.registerAddressAutocompleteProvider =
 							].querySelector(
 								`li#suggestion-item-${ type }-${ activeSuggestionIndices[ type ] }`
 							);
+							if (
+								! selectedItem ||
+								! selectedItem.dataset ||
+								! selectedItem.dataset.id
+							) {
+								// The selected item was invalid, hide suggestions and re-enable autofill.
+								hideSuggestions( type );
+								enableBrowserAutofill( addressInput );
+								return;
+							}
 							// Hide suggestions immediately for better UX.
 							hideSuggestions( type );
 							enableBrowserAutofill( addressInput );
@@ -853,6 +942,8 @@ window.wc.addressAutocomplete.registerAddressAutocompleteProvider =
 								type,
 								selectedItem.dataset.id
 							);
+							// Return focus to the address input after selection
+							addressInput.focus();
 						}
 					} else if ( e.key === 'Escape' ) {
 						hideSuggestions( type );
@@ -884,6 +975,16 @@ window.wc.addressAutocomplete.registerAddressAutocompleteProvider =
 					target !== addressInputs[ type ][ 'address_1' ]
 				) {
 					hideSuggestions( type );
+					// Restore native autofill after manual dismissal.
+					if (
+						addressInputs[ type ] &&
+						addressInputs[ type ][ 'address_1' ]
+					) {
+						enableBrowserAutofill(
+							addressInputs[ type ][ 'address_1' ],
+							false
+						);
+					}
 				}
 			} );
 		} );
