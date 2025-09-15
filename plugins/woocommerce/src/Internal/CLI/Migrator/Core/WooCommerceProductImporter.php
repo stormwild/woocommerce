@@ -15,6 +15,7 @@ use WC_Product_Variable;
 use WC_Product_Variation;
 use WP_Error;
 use Exception;
+use Automattic\WooCommerce\Utilities\FeaturesUtil;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -517,6 +518,15 @@ class WooCommerceProductImporter {
 		if ( ! empty( $product_data['stock_status'] ) ) {
 			$product->set_stock_status( $product_data['stock_status'] );
 		}
+
+		if ( array_key_exists( 'cost_of_goods', $product_data ) ) {
+			$cogs_is_enabled = FeaturesUtil::feature_is_enabled( 'cost_of_goods_sold' );
+			if ( $cogs_is_enabled ) {
+				$product->set_cogs_value( (float) $product_data['cost_of_goods'] );
+			} else {
+				$this->set_cogs_value_direct( $product, (float) $product_data['cost_of_goods'] );
+			}
+		}
 	}
 
 	/**
@@ -574,7 +584,7 @@ class WooCommerceProductImporter {
 	 * Sets up product attributes for variable products with global taxonomy creation.
 	 *
 	 * @param WC_Product_Variable $product The variable product object.
-	 * @param array               $attributes_data Standardized attribute data from mapper.
+	 * @param array               $attributes_data              Standardized attribute data from mapper.
 	 */
 	private function setup_attributes( WC_Product_Variable $product, array $attributes_data ): void {
 		$woo_attributes                  = array();
@@ -802,6 +812,9 @@ class WooCommerceProductImporter {
 			if ( $saved_variation_id ) {
 				$processed_variation_ids[] = $saved_variation_id;
 				$this->migration_data['variations_mapping'][ $original_variant_id ] = $saved_variation_id;
+				if ( ! empty( $var_data['cost_of_goods'] ) ) {
+					update_post_meta( $saved_variation_id, '_cogs_total_value', (float) $var_data['cost_of_goods'] );
+				}
 			} else {
 				wc_get_logger()->error( "Failed to save variation for original variant {$original_variant_id}", array( 'source' => 'wc-migrator' ) );
 			}
@@ -1217,6 +1230,16 @@ class WooCommerceProductImporter {
 			$truncated_desc = mb_substr( $final_seo_description, 0, 160 );
 			update_post_meta( $product_id, '_yoast_wpseo_metadesc', $truncated_desc );
 		}
+	}
+
+	/**
+	 * Set COGS value directly using meta data.
+	 *
+	 * @param WC_Product $product The product object.
+	 * @param float      $cogs_value The COGS value to set.
+	 */
+	private function set_cogs_value_direct( WC_Product $product, float $cogs_value ): void {
+		$product->update_meta_data( '_cogs_total_value', $cogs_value );
 	}
 
 	/**
