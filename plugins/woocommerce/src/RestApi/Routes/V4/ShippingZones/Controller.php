@@ -16,6 +16,7 @@ use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_Error;
+use WP_Http;
 use WC_Shipping_Zone;
 use WC_Shipping_Zones;
 
@@ -64,6 +65,55 @@ class Controller extends AbstractController {
 				'schema' => array( $this, 'get_public_item_schema' ),
 			)
 		);
+
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)',
+			array(
+				'schema' => array( $this, 'get_public_item_schema' ),
+				'args'   => array(
+					'id' => array(
+						'description' => __( 'Unique identifier for the resource.', 'woocommerce' ),
+						'type'        => 'integer',
+					),
+				),
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_item' ),
+					'permission_callback' => array( $this, 'get_items_permissions_check' ),
+				),
+			)
+		);
+	}
+
+	/**
+	 * Get shipping zone by ID.
+	 *
+	 * @param WP_REST_Request $request Full details about the request.
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function get_item( $request ) {
+		if ( ! wc_shipping_enabled() ) {
+			return $this->get_route_error_response(
+				$this->get_error_prefix() . 'disabled',
+				__( 'Shipping is disabled.', 'woocommerce' ),
+				WP_Http::SERVICE_UNAVAILABLE
+			);
+		}
+
+		$zone_id = (int) $request['id'];
+
+		$zone = WC_Shipping_Zones::get_zone_by( 'zone_id', $zone_id );
+
+		if ( ! $zone ) {
+			return $this->get_route_error_response(
+				$this->get_error_prefix() . 'invalid_id',
+				__( 'Invalid resource ID.', 'woocommerce' ),
+				WP_Http::NOT_FOUND
+			);
+		}
+
+		return rest_ensure_response( $this->get_zone_detail( $zone ) );
 	}
 
 	/**
@@ -74,7 +124,11 @@ class Controller extends AbstractController {
 	 */
 	public function get_items( $request ) {
 		if ( ! wc_shipping_enabled() ) {
-			return new WP_Error( 'woocommerce_rest_shipping_disabled', __( 'Shipping is disabled.', 'woocommerce' ), array( 'status' => 503 ) );
+			return $this->get_route_error_response(
+				$this->get_error_prefix() . 'disabled',
+				__( 'Shipping is disabled.', 'woocommerce' ),
+				WP_Http::SERVICE_UNAVAILABLE
+			);
 		}
 
 		// Get all zones including "Rest of the World".
@@ -97,8 +151,7 @@ class Controller extends AbstractController {
 			// Handle both 'zone_id' (from get_zones()) and 'id' (from get_data()) keys.
 			$zone_id = isset( $zone_data['zone_id'] ) ? $zone_data['zone_id'] : $zone_data['id'];
 			$zone    = WC_Shipping_Zones::get_zone( $zone_id );
-			$item    = $this->prepare_item_for_response( $zone, $request );
-			$data[]  = $this->prepare_response_for_collection( $item );
+			$data[]  = $this->get_zone_summary( $zone );
 		}
 
 		return rest_ensure_response( $data );
@@ -106,45 +159,77 @@ class Controller extends AbstractController {
 
 
 	/**
-	 * Get the item response for list view.
+	 * Get zone summary for list view.
+	 *
+	 * @param WC_Shipping_Zone $zone Shipping zone object.
+	 * @return array
+	 */
+	protected function get_zone_summary( $zone ): array {
+		return array(
+			'id'        => $zone->get_id(),
+			'name'      => $zone->get_zone_name(),
+			'order'     => $zone->get_zone_order(),
+			'locations' => $this->get_formatted_zone_locations( $zone ),
+			'methods'   => $this->get_formatted_zone_methods( $zone ),
+		);
+	}
+
+	/**
+	 * Get zone detail for single zone view.
+	 *
+	 * @param WC_Shipping_Zone $zone Shipping zone object.
+	 * @return array
+	 */
+	protected function get_zone_detail( $zone ): array {
+		return array(
+			'id'        => $zone->get_id(),
+			'name'      => $zone->get_zone_name(),
+			'locations' => $this->get_formatted_zone_locations( $zone, 'detailed' ),
+			'methods'   => $this->get_formatted_zone_methods( $zone ),
+		);
+	}
+
+	/**
+	 * Get the item response for the parent class compatibility.
 	 *
 	 * @param WC_Shipping_Zone $zone    Shipping zone object.
 	 * @param WP_REST_Request  $request Request object.
 	 * @return array
 	 */
-	protected function get_item_response( $zone, WP_REST_Request $request ): array { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
-		return array(
-			'id'        => $zone->get_id(),
-			'name'      => $zone->get_zone_name(),
-			'order'     => $zone->get_zone_order(),
-			'locations' => $this->get_location_names_array( $zone ),
-			'methods'   => $this->get_formatted_methods_summary( $zone ),
-		);
+	protected function get_item_response( $zone, WP_REST_Request $request ): array {
+		return $this->get_zone_summary( $zone );
 	}
 
 	/**
 	 * Get array of location names for display.
 	 *
 	 * @param WC_Shipping_Zone $zone Shipping zone object.
+	 * @param string           $view The view for which the API is requested ('summary' or 'detailed').
 	 * @return array
 	 */
-	protected function get_location_names_array( $zone ) {
+	protected function get_formatted_zone_locations( WC_Shipping_Zone $zone, string $view = 'summary' ): array {
 		if ( 0 === $zone->get_id() ) {
 			return array( __( 'All regions not covered above', 'woocommerce' ) );
 		}
 
-		$locations      = $zone->get_zone_locations();
-		$location_names = array();
+		$locations = $zone->get_zone_locations();
 
-		foreach ( $locations as $location ) {
-			$location_names[] = $this->get_location_name( $location );
+		if ( 'summary' === $view ) {
+			$location_names = array();
+			foreach ( $locations as $location ) {
+				$location_names[] = $this->get_location_name( $location );
+			}
+			return $location_names;
+		} else {
+			// For detailed view, add name property to each location object.
+			$detailed_locations = array();
+			foreach ( $locations as $location ) {
+				$location_copy        = clone $location;
+				$location_copy->name  = $this->get_location_name( $location );
+				$detailed_locations[] = $location_copy;
+			}
+			return $detailed_locations;
 		}
-
-		if ( empty( $location_names ) ) {
-			return array();
-		}
-
-		return $location_names;
 	}
 
 	/**
@@ -180,12 +265,12 @@ class Controller extends AbstractController {
 	}
 
 	/**
-	 * Get formatted methods summary for list view.
+	 * Get formatted methods for a zone.
 	 *
 	 * @param WC_Shipping_Zone $zone Shipping zone object.
 	 * @return array
 	 */
-	protected function get_formatted_methods_summary( $zone ) {
+	protected function get_formatted_zone_methods( $zone ) {
 		$methods           = $zone->get_shipping_methods( false, 'json' );
 		$formatted_methods = array();
 
