@@ -36,7 +36,7 @@
 		"commander": "^10.0.1",
 		"dotenv": "^10.0.0",
 		"figlet": "^1.7.0",
-		"glob": "^10.3.10",
+		"glob": "^10.5.0",
 		"graphql": "^16.8.1",
 		"gray-matter": "^4.0.3",
 		"js-yaml": "^4.1.0",
