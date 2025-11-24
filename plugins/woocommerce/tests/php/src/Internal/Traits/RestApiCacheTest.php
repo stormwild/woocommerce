@@ -562,7 +562,10 @@ class RestApiCacheTest extends WC_REST_Unit_Test_Case {
 		$headers = $response2->get_headers();
 
 		$this->assertArrayNotHasKey( 'Set-Cookie', $headers, 'Set-Cookie header should not be cached' );
-		$this->assertArrayNotHasKey( 'Date', $headers, 'Date header should not be cached' );
+		$this->assertArrayHasKey( 'Date', $headers, 'Date header should be present with cache timestamp' );
+		$this->assertNotEquals( 'Mon, 01 Jan 2024 00:00:00 GMT', $headers['Date'], 'Date should be cache timestamp, not original' );
+		$this->assertArrayHasKey( 'X-WC-Date', $headers, 'X-WC-Date header should be present' );
+		$this->assertEquals( $headers['Date'], $headers['X-WC-Date'], 'X-WC-Date should match Date' );
 
 		$this->assertArrayHasKey( 'X-Custom-Valid', $headers );
 		$this->assertEquals( 'should-be-present', $headers['X-Custom-Valid'] );
@@ -750,7 +753,10 @@ class RestApiCacheTest extends WC_REST_Unit_Test_Case {
 
 		$headers = $response2->get_headers();
 		$this->assertArrayNotHasKey( 'Set-Cookie', $headers, 'Set-Cookie should not be in cached response' );
-		$this->assertArrayNotHasKey( 'Cache-Control', $headers, 'Cache-Control should not be in cached response' );
+		// Cache-Control IS present because we add our own cache control headers, but it should NOT contain the original "no-cache" value.
+		$this->assertArrayHasKey( 'Cache-Control', $headers, 'Cache-Control should be present with our generated cache headers' );
+		$this->assertStringNotContainsString( 'no-cache', $headers['Cache-Control'], 'Original no-cache value should not be in Cache-Control' );
+		$this->assertStringContainsString( 'max-age', $headers['Cache-Control'], 'Our generated Cache-Control should contain max-age' );
 		$this->assertArrayHasKey( 'X-Custom-Header', $headers );
 
 		remove_filter( 'woocommerce_rest_api_cached_headers', $filter_callback, 10 );
@@ -1060,7 +1066,6 @@ class RestApiCacheTest extends WC_REST_Unit_Test_Case {
 				return $this->default_entity_type;
 			}
 
-
 			protected function response_cache_vary_by_user( WP_REST_Request $request, ?string $endpoint_id = null ): bool {
 				if ( ! is_null( $endpoint_id ) && isset( $this->endpoint_vary_by_user[ $endpoint_id ] ) ) {
 					return $this->endpoint_vary_by_user[ $endpoint_id ];
@@ -1118,5 +1123,181 @@ class RestApiCacheTest extends WC_REST_Unit_Test_Case {
 
 			// phpcs:enable Squiz.Commenting
 		};
+	}
+
+	/**
+	 * @testdox Response includes ETag header on cache MISS.
+	 */
+	public function test_etag_header_on_cache_miss() {
+		$response = $this->query_endpoint( 'single_entity' );
+
+		$this->assertCacheHeader( $response, 'MISS' );
+		$headers = $response->get_headers();
+		$this->assertArrayHasKey( 'ETag', $headers );
+		$this->assertMatchesRegularExpression( '/^"[a-f0-9]{32}"$/', $headers['ETag'] );
+	}
+
+	/**
+	 * @testdox Response includes ETag header on cache HIT.
+	 */
+	public function test_etag_header_on_cache_hit() {
+		$response1 = $this->query_endpoint( 'single_entity' );
+		$etag1     = $response1->get_headers()['ETag'];
+
+		$response2 = $this->query_endpoint( 'single_entity' );
+
+		$this->assertCacheHeader( $response2, 'HIT' );
+		$headers = $response2->get_headers();
+		$this->assertArrayHasKey( 'ETag', $headers );
+		$this->assertSame( $etag1, $headers['ETag'] );
+	}
+
+	/**
+	 * @testdox 304 Not Modified is returned when If-None-Match header matches ETag.
+	 */
+	public function test_304_response_when_etag_matches() {
+		$response1 = $this->query_endpoint( 'single_entity' );
+		$etag      = $response1->get_headers()['ETag'];
+
+		$request = new WP_REST_Request( 'GET', '/wc/v3/rest_api_cache_test/single_entity' );
+		$request->set_header( 'If-None-Match', $etag );
+		$response2 = $this->server->dispatch( $request );
+
+		$this->assertSame( 304, $response2->get_status() );
+		$this->assertNull( $response2->get_data() );
+		$headers = $response2->get_headers();
+		$this->assertArrayHasKey( 'ETag', $headers );
+		$this->assertSame( $etag, $headers['ETag'] );
+	}
+
+	/**
+	 * @testdox 200 response with full data when If-None-Match header does not match.
+	 */
+	public function test_200_response_when_etag_does_not_match() {
+		$this->query_endpoint( 'single_entity' );
+
+		$request = new WP_REST_Request( 'GET', '/wc/v3/rest_api_cache_test/single_entity' );
+		$request->set_header( 'If-None-Match', '"wrong-etag"' );
+		$response = $this->server->dispatch( $request );
+
+		$this->assertSame( 200, $response->get_status() );
+		$this->assertNotNull( $response->get_data() );
+		$this->assertCacheHeader( $response, 'HIT' );
+	}
+
+	/**
+	 * @testdox Cache-Control header is "private" when user is logged in and vary_by_user is true.
+	 */
+	public function test_cache_control_private_when_user_logged_in() {
+		wc_get_container()->get( LegacyProxy::class )->register_function_mocks(
+			array( 'is_user_logged_in' => fn() => true )
+		);
+
+		$response = $this->query_endpoint( 'single_entity' );
+
+		$headers = $response->get_headers();
+		$this->assertArrayHasKey( 'Cache-Control', $headers );
+		$this->assertStringContainsString( 'private', $headers['Cache-Control'] );
+		$this->assertStringContainsString( 'must-revalidate', $headers['Cache-Control'] );
+		$this->assertStringContainsString( 'max-age=', $headers['Cache-Control'] );
+	}
+
+	/**
+	 * @testdox Cache-Control header is "public" when no user is logged in even with vary_by_user true.
+	 */
+	public function test_cache_control_public_when_no_user() {
+		wc_get_container()->get( LegacyProxy::class )->register_function_mocks(
+			array( 'is_user_logged_in' => fn() => false )
+		);
+
+		$response = $this->query_endpoint( 'single_entity' );
+
+		$headers = $response->get_headers();
+		$this->assertArrayHasKey( 'Cache-Control', $headers );
+		$this->assertStringContainsString( 'public', $headers['Cache-Control'] );
+		$this->assertStringContainsString( 'must-revalidate', $headers['Cache-Control'] );
+		$this->assertStringContainsString( 'max-age=', $headers['Cache-Control'] );
+	}
+
+	/**
+	 * @testdox Cache-Control header is "public" when vary_by_user is false regardless of login status.
+	 */
+	public function test_cache_control_public_when_vary_by_user_false() {
+		wc_get_container()->get( LegacyProxy::class )->register_function_mocks(
+			array( 'is_user_logged_in' => fn() => true )
+		);
+
+		$response = $this->query_endpoint( 'no_vary_by_user' );
+
+		$headers = $response->get_headers();
+		$this->assertArrayHasKey( 'Cache-Control', $headers );
+		$this->assertStringContainsString( 'public', $headers['Cache-Control'] );
+	}
+
+	/**
+	 * @testdox Date and X-WC-Date headers are present and correctly formatted on cache HIT.
+	 */
+	public function test_date_header_present() {
+		$this->query_endpoint( 'single_entity' );
+		$response = $this->query_endpoint( 'single_entity' );
+
+		$this->assertCacheHeader( $response, 'HIT' );
+		$headers = $response->get_headers();
+		$this->assertArrayHasKey( 'Date', $headers );
+		$this->assertMatchesRegularExpression( '/^[A-Z][a-z]{2}, \d{2} [A-Z][a-z]{2} \d{4} \d{2}:\d{2}:\d{2} GMT$/', $headers['Date'] );
+		$this->assertArrayHasKey( 'X-WC-Date', $headers );
+		$this->assertEquals( $headers['Date'], $headers['X-WC-Date'], 'X-WC-Date should match Date' );
+	}
+
+	/**
+	 * @testdox ETags are different for different users when vary_by_user is true.
+	 */
+	public function test_etags_differ_per_user() {
+		wc_get_container()->get( LegacyProxy::class )->register_function_mocks(
+			array( 'get_current_user_id' => fn() => 1 )
+		);
+		$response1 = $this->query_endpoint( 'single_entity' );
+		$etag1     = $response1->get_headers()['ETag'];
+
+		wc_get_container()->get( LegacyProxy::class )->register_function_mocks(
+			array( 'get_current_user_id' => fn() => 2 )
+		);
+		$response2 = $this->query_endpoint( 'single_entity' );
+		$etag2     = $response2->get_headers()['ETag'];
+
+		$this->assertNotSame( $etag1, $etag2 );
+	}
+
+	/**
+	 * @testdox User cannot get 304 with another user's ETag.
+	 */
+	public function test_304_not_returned_with_different_user_etag() {
+		wc_get_container()->get( LegacyProxy::class )->register_function_mocks(
+			array( 'get_current_user_id' => fn() => 1 )
+		);
+		$response1 = $this->query_endpoint( 'single_entity' );
+		$etag1     = $response1->get_headers()['ETag'];
+
+		wc_get_container()->get( LegacyProxy::class )->register_function_mocks(
+			array( 'get_current_user_id' => fn() => 2 )
+		);
+		$request = new WP_REST_Request( 'GET', '/wc/v3/rest_api_cache_test/single_entity' );
+		$request->set_header( 'If-None-Match', $etag1 );
+		$response2 = $this->server->dispatch( $request );
+
+		$this->assertSame( 200, $response2->get_status() );
+		$this->assertNotNull( $response2->get_data() );
+	}
+
+	/**
+	 * @testdox WordPress no-cache headers are suppressed for cached endpoints.
+	 */
+	public function test_nocache_headers_suppressed() {
+		$response = $this->query_endpoint( 'single_entity' );
+
+		$headers = $response->get_headers();
+		$this->assertArrayHasKey( 'Cache-Control', $headers );
+		$this->assertStringNotContainsString( 'no-cache', $headers['Cache-Control'] );
+		$this->assertStringNotContainsString( 'no-store', $headers['Cache-Control'] );
 	}
 }
