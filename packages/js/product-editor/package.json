@@ -75,7 +75,7 @@
 		"@wordpress/url": "wp-6.6",
 		"clsx": "2.1.x",
 		"@woocommerce/sanitize": "workspace:*",
-		"lodash": "^4.17.21",
+		"lodash": "^4.17.23",
 		"moment": "^2.29.4",
 		"prop-types": "^15.8.1",
 		"react-router-dom": "~6.3.0"
