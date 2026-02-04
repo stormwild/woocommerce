@@ -29,7 +29,7 @@
 		"build-types"
 	],
 	"dependencies": {
-		"locutus": "^2.0.16"
+		"locutus": "^2.0.39"
 	},
 	"publishConfig": {
 		"access": "public"
