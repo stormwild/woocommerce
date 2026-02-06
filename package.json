@@ -60,7 +60,7 @@
 		"sass-loader": "10.5.x",
 		"syncpack": "^10.9.3",
 		"typescript": "5.7.x",
-		"webpack": "5.97.x"
+		"webpack": "5.104.x"
 	},
 	"dependencies": {
 		"@babel/core": "7.25.7",
